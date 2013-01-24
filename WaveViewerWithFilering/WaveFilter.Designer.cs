@@ -28,13 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.auto_update = new System.Windows.Forms.CheckBox();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
+            this.data_start = new System.Windows.Forms.HScrollBar();
             this.update = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -66,17 +71,31 @@
             this.openFamosDialog = new System.Windows.Forms.OpenFileDialog();
             this.label12 = new System.Windows.Forms.Label();
             this.display_data_length = new System.Windows.Forms.TextBox();
+            this.filter_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.freq_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label13 = new System.Windows.Forms.Label();
+            this.rectangle_window = new System.Windows.Forms.RadioButton();
+            this.blackman_window = new System.Windows.Forms.RadioButton();
+            this.hann_window = new System.Windows.Forms.RadioButton();
+            this.hamming_widow = new System.Windows.Forms.RadioButton();
+            this.kaiser_window = new System.Windows.Forms.RadioButton();
+            this.label14 = new System.Windows.Forms.Label();
+            this.alpha = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.gain = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lower_fc_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.channel_track)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.filter_chart)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.freq_chart)).BeginInit();
             this.SuspendLayout();
             // 
             // auto_update
             // 
             this.auto_update.AutoSize = true;
-            this.auto_update.Location = new System.Drawing.Point(596, 214);
+            this.auto_update.Location = new System.Drawing.Point(699, 202);
             this.auto_update.Name = "auto_update";
             this.auto_update.Size = new System.Drawing.Size(84, 16);
             this.auto_update.TabIndex = 0;
@@ -85,38 +104,42 @@
             // 
             // wave_chart
             // 
-            chartArea1.Name = "ChartArea1";
-            this.wave_chart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.wave_chart.Legends.Add(legend1);
+            chartArea7.AxisX.IsMarginVisible = false;
+            chartArea7.AxisX.IsStartedFromZero = false;
+            chartArea7.Name = "ChartArea1";
+            this.wave_chart.ChartAreas.Add(chartArea7);
+            legend3.Name = "Legend1";
+            this.wave_chart.Legends.Add(legend3);
             this.wave_chart.Location = new System.Drawing.Point(12, 283);
             this.wave_chart.Name = "wave_chart";
             this.wave_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "source";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "result";
-            this.wave_chart.Series.Add(series1);
-            this.wave_chart.Series.Add(series2);
+            series11.ChartArea = "ChartArea1";
+            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series11.Legend = "Legend1";
+            series11.Name = "source";
+            series12.ChartArea = "ChartArea1";
+            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series12.Legend = "Legend1";
+            series12.Name = "result";
+            this.wave_chart.Series.Add(series11);
+            this.wave_chart.Series.Add(series12);
             this.wave_chart.Size = new System.Drawing.Size(774, 337);
             this.wave_chart.TabIndex = 1;
             this.wave_chart.TabStop = false;
             this.wave_chart.Text = "chart1";
             // 
-            // hScrollBar1
+            // data_start
             // 
-            this.hScrollBar1.Location = new System.Drawing.Point(12, 623);
-            this.hScrollBar1.Name = "hScrollBar1";
-            this.hScrollBar1.Size = new System.Drawing.Size(774, 24);
-            this.hScrollBar1.TabIndex = 2;
+            this.data_start.Location = new System.Drawing.Point(12, 623);
+            this.data_start.Name = "data_start";
+            this.data_start.Size = new System.Drawing.Size(774, 24);
+            this.data_start.TabIndex = 2;
+            this.data_start.Scroll += new System.Windows.Forms.ScrollEventHandler(this.data_start_Scroll);
+            this.data_start.ValueChanged += new System.EventHandler(this.data_start_ValueChanged);
             // 
             // update
             // 
-            this.update.Location = new System.Drawing.Point(700, 207);
+            this.update.Location = new System.Drawing.Point(700, 237);
             this.update.Name = "update";
             this.update.Size = new System.Drawing.Size(83, 28);
             this.update.TabIndex = 3;
@@ -274,32 +297,31 @@
             this.filter_length.ReadOnly = true;
             this.filter_length.Size = new System.Drawing.Size(58, 19);
             this.filter_length.TabIndex = 5;
-            this.filter_length.Text = "301";
+            this.filter_length.Text = "299";
             this.filter_length.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // upper_fc_track
             // 
             this.upper_fc_track.Location = new System.Drawing.Point(434, 120);
             this.upper_fc_track.Maximum = 300;
-            this.upper_fc_track.Minimum = 1;
             this.upper_fc_track.Name = "upper_fc_track";
             this.upper_fc_track.Size = new System.Drawing.Size(349, 42);
             this.upper_fc_track.TabIndex = 10;
             this.upper_fc_track.TickFrequency = 10;
             this.upper_fc_track.Value = 150;
             this.upper_fc_track.Scroll += new System.EventHandler(this.upper_fc_track_Scroll);
+            this.upper_fc_track.ValueChanged += new System.EventHandler(this.upper_fc_track_Scroll);
             // 
             // lower_fc_track
             // 
             this.lower_fc_track.Location = new System.Drawing.Point(434, 159);
             this.lower_fc_track.Maximum = 300;
-            this.lower_fc_track.Minimum = 1;
             this.lower_fc_track.Name = "lower_fc_track";
             this.lower_fc_track.Size = new System.Drawing.Size(349, 42);
             this.lower_fc_track.TabIndex = 10;
             this.lower_fc_track.TickFrequency = 10;
-            this.lower_fc_track.Value = 150;
             this.lower_fc_track.Scroll += new System.EventHandler(this.lower_fc_track_Scroll);
+            this.lower_fc_track.ValueChanged += new System.EventHandler(this.lower_fc_track_Scroll);
             // 
             // label8
             // 
@@ -341,6 +363,7 @@
             // 
             // channel_track
             // 
+            this.channel_track.LargeChange = 1;
             this.channel_track.Location = new System.Drawing.Point(68, 25);
             this.channel_track.Maximum = 4;
             this.channel_track.Name = "channel_track";
@@ -406,15 +429,172 @@
             this.display_data_length.Name = "display_data_length";
             this.display_data_length.Size = new System.Drawing.Size(58, 19);
             this.display_data_length.TabIndex = 5;
-            this.display_data_length.Text = "0";
+            this.display_data_length.Text = "100";
             this.display_data_length.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.display_data_length.TextChanged += new System.EventHandler(this.display_data_length_TextChanged);
+            // 
+            // filter_chart
+            // 
+            chartArea8.Name = "ChartArea1";
+            this.filter_chart.ChartAreas.Add(chartArea8);
+            this.filter_chart.Location = new System.Drawing.Point(808, 5);
+            this.filter_chart.Name = "filter_chart";
+            this.filter_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
+            series13.ChartArea = "ChartArea1";
+            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series13.Name = "Factors";
+            series14.ChartArea = "ChartArea1";
+            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series14.Name = "Window";
+            series14.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.filter_chart.Series.Add(series13);
+            this.filter_chart.Series.Add(series14);
+            this.filter_chart.Size = new System.Drawing.Size(352, 314);
+            this.filter_chart.TabIndex = 1;
+            this.filter_chart.TabStop = false;
+            this.filter_chart.Text = "chart1";
+            // 
+            // freq_chart
+            // 
+            chartArea9.AxisX.Crossing = 0D;
+            chartArea9.AxisX.IsMarginVisible = false;
+            chartArea9.AxisX.Maximum = 100D;
+            chartArea9.AxisX.Minimum = 0D;
+            chartArea9.AxisX.Title = "Frequency";
+            chartArea9.AxisY.Interval = 20D;
+            chartArea9.AxisY.IsStartedFromZero = false;
+            chartArea9.AxisY.Maximum = 20D;
+            chartArea9.AxisY.Minimum = -100D;
+            chartArea9.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
+            chartArea9.AxisY.Title = "Gain (dB)";
+            chartArea9.Name = "ChartArea1";
+            this.freq_chart.ChartAreas.Add(chartArea9);
+            this.freq_chart.Location = new System.Drawing.Point(808, 335);
+            this.freq_chart.Name = "freq_chart";
+            this.freq_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
+            series15.ChartArea = "ChartArea1";
+            series15.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series15.Name = "Gain";
+            this.freq_chart.Series.Add(series15);
+            this.freq_chart.Size = new System.Drawing.Size(352, 312);
+            this.freq_chart.TabIndex = 1;
+            this.freq_chart.TabStop = false;
+            this.freq_chart.Text = "chart1";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(278, 227);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(43, 12);
+            this.label13.TabIndex = 4;
+            this.label13.Text = "Window";
+            // 
+            // rectangle_window
+            // 
+            this.rectangle_window.AutoSize = true;
+            this.rectangle_window.Checked = true;
+            this.rectangle_window.Location = new System.Drawing.Point(337, 225);
+            this.rectangle_window.Name = "rectangle_window";
+            this.rectangle_window.Size = new System.Drawing.Size(106, 16);
+            this.rectangle_window.TabIndex = 12;
+            this.rectangle_window.TabStop = true;
+            this.rectangle_window.Text = "RectagleWindow";
+            this.rectangle_window.UseVisualStyleBackColor = true;
+            this.rectangle_window.CheckedChanged += new System.EventHandler(this.rectangle_window_CheckedChanged);
+            // 
+            // blackman_window
+            // 
+            this.blackman_window.AutoSize = true;
+            this.blackman_window.Location = new System.Drawing.Point(449, 227);
+            this.blackman_window.Name = "blackman_window";
+            this.blackman_window.Size = new System.Drawing.Size(111, 16);
+            this.blackman_window.TabIndex = 12;
+            this.blackman_window.Text = "BlackmanWindow";
+            this.blackman_window.UseVisualStyleBackColor = true;
+            this.blackman_window.CheckedChanged += new System.EventHandler(this.blackman_window_CheckedChanged);
+            // 
+            // hann_window
+            // 
+            this.hann_window.AutoSize = true;
+            this.hann_window.Location = new System.Drawing.Point(337, 247);
+            this.hann_window.Name = "hann_window";
+            this.hann_window.Size = new System.Drawing.Size(87, 16);
+            this.hann_window.TabIndex = 12;
+            this.hann_window.Text = "HannWindow";
+            this.hann_window.UseVisualStyleBackColor = true;
+            this.hann_window.CheckedChanged += new System.EventHandler(this.hann_window_CheckedChanged);
+            // 
+            // hamming_widow
+            // 
+            this.hamming_widow.AutoSize = true;
+            this.hamming_widow.Location = new System.Drawing.Point(449, 249);
+            this.hamming_widow.Name = "hamming_widow";
+            this.hamming_widow.Size = new System.Drawing.Size(108, 16);
+            this.hamming_widow.TabIndex = 12;
+            this.hamming_widow.Text = "HammingWindow";
+            this.hamming_widow.UseVisualStyleBackColor = true;
+            this.hamming_widow.CheckedChanged += new System.EventHandler(this.hamming_widow_CheckedChanged);
+            // 
+            // kaiser_window
+            // 
+            this.kaiser_window.AutoSize = true;
+            this.kaiser_window.Location = new System.Drawing.Point(572, 228);
+            this.kaiser_window.Name = "kaiser_window";
+            this.kaiser_window.Size = new System.Drawing.Size(93, 16);
+            this.kaiser_window.TabIndex = 12;
+            this.kaiser_window.Text = "KaiserWindow";
+            this.kaiser_window.UseVisualStyleBackColor = true;
+            this.kaiser_window.CheckedChanged += new System.EventHandler(this.kaiser_window_CheckedChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(588, 253);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(34, 12);
+            this.label14.TabIndex = 4;
+            this.label14.Text = "Alpha";
+            // 
+            // alpha
+            // 
+            this.alpha.Location = new System.Drawing.Point(628, 250);
+            this.alpha.Name = "alpha";
+            this.alpha.Size = new System.Drawing.Size(37, 19);
+            this.alpha.TabIndex = 5;
+            this.alpha.Text = "1.5";
+            this.alpha.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.alpha.TextChanged += new System.EventHandler(this.alpha_TextChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(278, 202);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(85, 12);
+            this.label15.TabIndex = 4;
+            this.label15.Text = "Stop Band Gain";
+            // 
+            // gain
+            // 
+            this.gain.Location = new System.Drawing.Point(370, 202);
+            this.gain.Name = "gain";
+            this.gain.Size = new System.Drawing.Size(58, 19);
+            this.gain.TabIndex = 5;
+            this.gain.Text = "-80";
+            this.gain.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.gain.TextChanged += new System.EventHandler(this.gain_TextChanged);
             // 
             // wave_filter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(795, 658);
+            this.ClientSize = new System.Drawing.Size(1172, 655);
+            this.Controls.Add(this.hamming_widow);
+            this.Controls.Add(this.kaiser_window);
+            this.Controls.Add(this.hann_window);
+            this.Controls.Add(this.blackman_window);
+            this.Controls.Add(this.rectangle_window);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lower_fc_track);
@@ -431,9 +611,11 @@
             this.Controls.Add(this.channel);
             this.Controls.Add(this.data_length);
             this.Controls.Add(this.sampling_rate);
+            this.Controls.Add(this.alpha);
             this.Controls.Add(this.display_data_length);
             this.Controls.Add(this.nyquist_frequency);
             this.Controls.Add(this.upper_fc);
+            this.Controls.Add(this.gain);
             this.Controls.Add(this.lower_fc);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label4);
@@ -443,9 +625,14 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.update);
-            this.Controls.Add(this.hScrollBar1);
+            this.Controls.Add(this.data_start);
+            this.Controls.Add(this.freq_chart);
+            this.Controls.Add(this.filter_chart);
             this.Controls.Add(this.wave_chart);
             this.Controls.Add(this.auto_update);
             this.Name = "wave_filter";
@@ -455,6 +642,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lower_fc_track)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.channel_track)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.filter_chart)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.freq_chart)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -464,7 +653,7 @@
 
         private System.Windows.Forms.CheckBox auto_update;
         private System.Windows.Forms.DataVisualization.Charting.Chart wave_chart;
-        private System.Windows.Forms.HScrollBar hScrollBar1;
+        private System.Windows.Forms.HScrollBar data_start;
         private System.Windows.Forms.Button update;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -496,6 +685,18 @@
         private System.Windows.Forms.OpenFileDialog openFamosDialog;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox display_data_length;
+        private System.Windows.Forms.DataVisualization.Charting.Chart filter_chart;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.RadioButton rectangle_window;
+        private System.Windows.Forms.RadioButton blackman_window;
+        private System.Windows.Forms.RadioButton hann_window;
+        private System.Windows.Forms.RadioButton hamming_widow;
+        private System.Windows.Forms.RadioButton kaiser_window;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox alpha;
+        protected System.Windows.Forms.DataVisualization.Charting.Chart freq_chart;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox gain;
     }
 }
 
