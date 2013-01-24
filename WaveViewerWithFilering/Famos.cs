@@ -573,13 +573,23 @@ namespace WaveViewerWithFilering
             int data_byte = packet_info[ch].bytes;
             int count_of_data = total_buffer_length / data_byte;
             double[] res = new double[count_of_data];
-            double amp = value_ranges[ch].factor;
-            double offset = value_ranges[ch].offset;
 
             r.BaseStream.Seek(origins[bref.index] + bref.offset, System.IO.SeekOrigin.Begin);
-            for (int i = 0; i < count_of_data; i++)
+            if (value_ranges.Count > ch &&  value_ranges[ch].transform)
             {
-                res[i] = conv(r.ReadBytes(data_byte)) * amp + offset;
+                double amp = value_ranges[ch].factor;
+                double offset = value_ranges[ch].offset;
+                for (int i = 0; i < count_of_data; i++)
+                {
+                    res[i] = conv(r.ReadBytes(data_byte)) * amp + offset;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < count_of_data; i++)
+                {
+                    res[i] = conv(r.ReadBytes(data_byte));
+                }
             }
             return res;
         }
@@ -591,18 +601,10 @@ namespace WaveViewerWithFilering
             {
                 case 4: // singed short
                     return read_column_with_convert(ch, 
-                        ba => BitConverter.ToInt16(ba,0) * value_ranges[ch].factor + value_ranges[ch].offset);
+                        ba => BitConverter.ToInt16(ba,0));
                 case 8: // double
-                    if (value_ranges.Count > ch)
-                    {
-                        return read_column_with_convert(ch,
-                            ba => BitConverter.ToDouble(ba, 0) * value_ranges[ch].factor + value_ranges[ch].offset);
-                    }
-                    else
-                    {
-                        return read_column_with_convert(ch,
-                            ba => BitConverter.ToDouble(ba, 0));
-                    }
+                    return read_column_with_convert(ch,
+                        ba => BitConverter.ToDouble(ba, 0));
                 default:
                     throw new NotImplementedException();
             }
