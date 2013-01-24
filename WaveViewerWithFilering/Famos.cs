@@ -34,8 +34,9 @@ namespace WaveViewerWithFilering
             private string key_;
             private char ver_;
             private int size_;
-            private List<byte[]> data;
-
+            private List<string> data;
+            public byte[] raw { get; set; }
+            
             public Tag(BinaryReader reader)
             {
                 r = reader;
@@ -49,9 +50,9 @@ namespace WaveViewerWithFilering
                 {
                     long orig = r.BaseStream.Position;
                     // Read raw data
-                    data = new List<byte[]>(2);
-                    data.Add(BitConverter.GetBytes(read_int()));
-                    data.Add(BitConverter.GetBytes(r.BaseStream.Position));
+                    data = new List<string>(2);
+                    data.Add(read_string());
+                    data.Add(r.BaseStream.Position.ToString());
                     r.BaseStream.Position = orig;
                     r.BaseStream.Seek(size, System.IO.SeekOrigin.Current);
 
@@ -63,11 +64,11 @@ namespace WaveViewerWithFilering
                 }
                 else if (key == "CV")
                 {
-                    data = new List<byte[]>(3);
+                    data = new List<string>(3);
                     long orig = r.BaseStream.Position; 
-                    data.Add(BitConverter.GetBytes(read_int()));
-                    data.Add(BitConverter.GetBytes(read_int()));
-                    data.Add(r.ReadBytes(size - (int)(r.BaseStream.Position - orig)));
+                    data.Add(read_string());
+                    data.Add(read_string());
+                    raw = r.ReadBytes(size - (int)(r.BaseStream.Position - orig));
                     char x = r.ReadChar();
                     if (x != ';')
                     {
@@ -76,16 +77,11 @@ namespace WaveViewerWithFilering
                 }
                 else
                 {
-                    data = new List<byte[]>(20);
-                    var buf = r.ReadBytes(size);
-                    for (int i0 = 0; i0 < buf.Length; i0 += 1 + data.Last().Length)
+                    data = new List<string>(20);
+                    //var buf = r.ReadBytes(size);
+                    while(cont)
                     {
-                        data.Add(buf.Skip(i0).TakeWhile(ch => ch != ',' || ch != ';').ToArray());
-                    }
-                    char x = r.ReadChar();
-                    if (x != ';')
-                    {
-                        throw new Exception("Tag Data delimiter ';' was not found at he end of "+key+". The found char was '" + x + "'");
+                        data.Add(read_string());
                     }
                 }
 
@@ -94,7 +90,7 @@ namespace WaveViewerWithFilering
             public string key { get { return key_; } }
             public int size { get { return size_; } }
             public char ver { get { return ver_; } }
-            public byte[] this[int idx] { get { return data[idx]; } }
+            public string this[int idx] { get { return data[idx]; } }
 
             public override string ToString()
             {
@@ -108,7 +104,7 @@ namespace WaveViewerWithFilering
                 foreach (var item in data)
                 {
                     sb.Append(',');
-                    sb.Append(Encoding.Default.GetString(item));
+                    sb.Append(item);
                 }
                 sb.Append(';');
                 return sb.ToString();                   
@@ -122,26 +118,39 @@ namespace WaveViewerWithFilering
 
             private int read_int()
             {
+                return int.Parse(read_string());
+            }
+            bool cont;
+            private string read_string()
+            {
                 StringBuilder sb = new StringBuilder();
-                while (true)
+                while (r.BaseStream.Position < r.BaseStream.Length )
                 {
-                    char  ch = r.ReadChar();
-                    if(ch == ',') break;
-                    sb.Append(ch);                 
+                    char ch = r.ReadChar();
+                    if (ch == ',') break;
+                    if (ch == ';' || ch == '|')
+                    {
+                        cont = false;
+                        break;
+                    }
+                    sb.Append(ch);
                 }
-                return int.Parse(sb.ToString());
+                return sb.ToString();
             }
 
             private string next_tag()
             {
-                char ch = '.';
-                while (ch != '|')
+                byte ch = 44; // = '.'
+                while (r.BaseStream.Position < r.BaseStream.Length )
                 {
-                    ch = r.ReadChar();
+                    ch = r.ReadByte();
+                    if (ch == 124)  // '|' = 124
+                        break;
                 }
                 //return r.ReadChars(3).Take(2).ToString();
                 var a = r.ReadChars(2);
                 r.ReadChar();
+                cont = true;
                 return new string(a);
             }
             
@@ -186,9 +195,9 @@ namespace WaveViewerWithFilering
 
             public void parse(Tag tag)
             {
-                int n = BitConverter.ToInt32(tag[1],0);
+                int n = int.Parse(tag[1]);
                 DateTime origin = new DateTime(1980, 1, 1);
-                byte[] data = tag[2];
+                byte[] data = tag.raw;
                 int sz = data.Length / n;
                 for (int i = 0; i < data.Length ; i += sz)
                 {
@@ -253,21 +262,16 @@ namespace WaveViewerWithFilering
 
         private List<DataType> data_types_; public List<DataType> data_types { get { return data_types_; } }
 
-        static string get_string(byte[] arg)
+
+        static double get_double(string arg)
         {
-            return Encoding.Default.GetString(arg);
+            return double.Parse(arg);
         }
-        static double get_double(byte[] arg)
+        static int get_int(string arg)
         {
-            return double.Parse(get_string(arg));
-        }
-        static int get_int(byte[] arg)
-        {
-            return int.Parse(get_string(arg));
+            return int.Parse(arg);
         }
 
-        static double to_f(byte[] arg) { return get_double(arg); }
-        static int to_i(byte[] arg) { return get_int(arg); }
 
         private class DataTypeParser : ITag
         {
@@ -277,7 +281,7 @@ namespace WaveViewerWithFilering
             {
                 double dx = get_double(tag[0]);
                 bool cal = tag[1][0] == '1';
-                string unit = get_string(tag[3]);
+                string unit = (tag[3]);
                 if (tag.ver == '1')
                 {
                     parent_.data_types.Add( new DataType(dx,cal,unit));
@@ -389,7 +393,7 @@ namespace WaveViewerWithFilering
 
             public void parse(Tag tag)
             {
-                int size = BitConverter.ToInt32(tag[0], 0);
+                int size = get_int(tag[0]);
                 int[] ivals = new int[7];
                 for (int i = 0; i < size; i++)
                 {
@@ -397,7 +401,7 @@ namespace WaveViewerWithFilering
                     {
                         ivals[k] = int.Parse(tag[2 + i * 9 + k].ToString());
                     }
-                    double add_time = BitConverter.ToDouble(tag[2 + i * 9 + 7], 0);
+                    double add_time = get_double(tag[2 + i * 9 + 7]);
                     string user = tag[2 + i * 9 + 8].ToString();
                     BufferRef bref = new BufferRef(ivals[0], ivals[1], ivals[2], ivals[3], ivals[4], ivals[5], ivals[6], add_time, user);
                     parent_.buffer_refs.Add(bref);
@@ -434,7 +438,7 @@ namespace WaveViewerWithFilering
                 double factor = get_double(tag[1]);
                 double offset = get_double(tag[2]);
                 bool cal = tag[3][0] == '1';
-                string unit = get_string(tag[5]);
+                string unit = (tag[5]);
                 parent_.value_ranges.Add(new ValueRange(trans, factor, offset, cal, unit));
             }
         }
@@ -466,8 +470,8 @@ namespace WaveViewerWithFilering
             {
                 int index = get_int(tag[0]);
                 int bit = get_int(tag[2]);
-                string name = get_string(tag[4]);
-                string comment = get_string(tag[6]);
+                string name = (tag[4]);
+                string comment = (tag[6]);
                 parent_.channel_info.Add(new ChannelInfo(index, bit, name, comment));
             }
         }
@@ -481,8 +485,8 @@ namespace WaveViewerWithFilering
             public void parse(Tag tag)
             {
                 int ch = get_int(tag[0]);
-                long pos = long.Parse(get_string(tag[1]));
-                while (parent_.origins.Count < ch)
+                long pos = long.Parse(tag[1]);
+                while (parent_.origins.Count <= ch)
                     parent_.origins.Add(0);
                 parent_.origins[ch] = pos;
             }
@@ -530,10 +534,10 @@ namespace WaveViewerWithFilering
             {
                 int index = get_int(tag[0]);
                 int num_format = get_int(tag[1]);
-                string name = get_string(tag[3]);
+                string name = (tag[3]);
                 int value = get_int(tag[4]);
-                string unit = get_string(tag[6]);
-                string comment = get_string(tag[8]);
+                string unit = (tag[6]);
+                string comment = (tag[8]);
                 double time = get_double(tag[9]);
                 parent_.values.Add(new Value(index, num_format, name, value, unit, comment, time));
             }
@@ -765,12 +769,13 @@ namespace WaveViewerWithFilering
                 {"Cb", new BufferRefParse(this)},
                 {"CC", dummy},
                 {"CZ", dummy},
-                {"CP", dummy},
+                {"CP", new PacketInfoParser(this)},
                 {"CR", new ValueRangeParser(this)},
                 {"ND", dummy},
                 {"CS", new OriginParser(this)},
                 {"NU", dummy},
                 {"CI", new ValueParser(this)},
+                {"NT", new TimeParser(this)},
             };
 
         }
@@ -826,10 +831,10 @@ namespace WaveViewerWithFilering
             file_ = filename;
 
             // main read part
-            try
-            {
+            //try
+            //{
                 s_ = new System.IO.FileStream(filename, System.IO.FileMode.Open);
-                r_ = new BinaryReader(s_);
+                r_ = new BinaryReader(s_,Encoding.Default);
                 var t = new Tag(r);
                 if (t.key != "CF")
                     throw new ArgumentException(filename + " is not Famos file");
@@ -839,13 +844,13 @@ namespace WaveViewerWithFilering
                 {
                     tags.Add(new Tag(r));
                 }
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(e.Message);
-                check_and_close_stream();
-                return false;
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    System.Windows.Forms.MessageBox.Show(e.Message);
+            //    check_and_close_stream();
+            //    return false;
+            //}
 
             // fix check
             var fix_file = filename + ".FIX";
