@@ -605,6 +605,9 @@ namespace WaveViewerWithFilering
                 case 8: // double
                     return read_column_with_convert(ch,
                         ba => BitConverter.ToDouble(ba, 0));
+                case 11: // t-Byte Word digital for Taikou Kenchi
+                    return read_column_with_convert(ch,
+                        ba => BitConverter.ToUInt16(ba, 0));
                 default:
                     throw new NotImplementedException();
             }
