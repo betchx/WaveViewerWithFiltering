@@ -87,8 +87,9 @@ namespace WaveViewerWithFilering
                 // just overwrite
                 for (int i = 0; i < num_point; i++)
                 {
-                    s[i].XValue = xvalues[i];
-                    s[i].YValues[0] = ans[i + 2 * tap - 1] / nfft;  // 2 * tap - 1 is delay and offset
+                    int k = 2 * (i + 3 * tap);
+                    s[i].XValue = xvalues[i]; // 3 * tap - 1 is delay and offset
+                    s[i].YValues[0] = ans[k] / nfft; 
                 }
             }
             else
@@ -96,7 +97,8 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < num_point; i++)
                 {
-                    s.AddXY(xvalues[i], ans[i + 2 * tap - 1] / nfft);  // 2 * tap - 1 is delay and offset
+                    int k = 2 *  (i + 3 * tap);// 3 * tap  is delay and offset
+                    s.AddXY(xvalues[i], ans[k] / nfft);  
                 }
             }
             wave_chart.ChartAreas[0].RecalculateAxesScale();
@@ -161,24 +163,24 @@ namespace WaveViewerWithFilering
                 return;
 
             data = famos[ch];
-            int pos = data_start.Value;
 
-            update_wave_chart_source(pos);
-            generate_sp_wave(pos);
+            update_wave_chart_source();
+            generate_sp_wave();
             wave_dirty = false;
         }
 
-        private void generate_sp_wave(int pos)
+        private void generate_sp_wave()
         {
-            setup_wave(pos);
+            setup_wave();
 
             Marshal.Copy(wave, 0, pwin, nfft * 2);
             fftw.execute(plan_w);
             Marshal.Copy(pwout, sp_wave, 0, nfft * 2);
         }
 
-        private void setup_wave(int pos)
+        private void setup_wave()
         {
+            int pos = data_start.Value;
             int n_start = pos - tap * 2;
             int nfil = 0;
             int last = Math.Min(nfft, num_data - n_start);
@@ -219,8 +221,9 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private void update_wave_chart_source(int pos)
+        private void update_wave_chart_source()
         {
+            int pos = data_start.Value;
             double dt = famos.dt(ch);
             double x0 = famos.data_types[ch].x0;
 
@@ -288,7 +291,7 @@ namespace WaveViewerWithFilering
                     int k = Math.Abs(i - tap);
                     factors[i * 2] = fir.factor[k];
                 }
-                
+
                 Marshal.Copy(factors, 0, pfin, nfft * 2);
                 fftw.execute(plan_f);
                 Marshal.Copy(pfout, sp_factors, 0, nfft * 2);
@@ -514,11 +517,13 @@ namespace WaveViewerWithFilering
         private void data_start_Scroll(object sender, ScrollEventArgs e)
         {
             obtain_source();
+            update_wave_chart_source();
             CheckUpdate();
         }
 
         private void data_start_ValueChanged(object sender, EventArgs e)
         {
+            wave_dirty = true;
             obtain_source();
             CheckUpdate();
         }
@@ -527,6 +532,9 @@ namespace WaveViewerWithFilering
         {
             update_gain();
         }
+
+
+
 
 
     }
