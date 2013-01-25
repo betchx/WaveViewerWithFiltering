@@ -11,6 +11,9 @@ namespace WaveViewerWithFilering
     {
         private bool dirty;
 
+        public bool is_dirty { get { return dirty; } }
+
+
         public FIRFilter()
         {
             window_type_ = WindowType.None;
