@@ -309,6 +309,8 @@ namespace WaveViewerWithFilering
                 upper_fc_track.Value = tap;
             upper_fc_track.Maximum = tap;
 
+            wave_dirty = true;
+
             fir.tap = tap_track.Value;
             number_of_tap.Text = fir.tap.ToString();
             filter_size = fir.tap * 2 - 1;
@@ -330,6 +332,8 @@ namespace WaveViewerWithFilering
                     num_disp = num_data;
                 else
                     num_disp = val;
+
+                wave_dirty = true;
 
                 step = 1 + ((num_disp - 1) / max_points);
 
