@@ -165,17 +165,51 @@ namespace WaveViewerWithFilering
             data = famos[ch];
 
             update_wave_chart_source();
-            generate_sp_wave();
+            update_sp_wave();
             wave_dirty = false;
         }
 
-        private void generate_sp_wave()
+        private void update_sp_wave()
         {
             setup_wave();
 
             Marshal.Copy(wave, 0, pwin, nfft * 2);
             fftw.execute(plan_w);
             Marshal.Copy(pwout, sp_wave, 0, nfft * 2);
+            update_freq_chart_source();
+        }
+
+        /// <summary>
+        ///  Update PowerSpectrum Series in Frequency Chart
+        /// </summary>
+        private void update_freq_chart_source()
+        {
+            double df = fs / nfft;
+            var s = freq_chart.Series[1].Points;
+            double n = nfft / 2 + 1;
+            if (s.Count == n)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    double real = sp_wave[i * 2];
+                    double imag = sp_wave[i * 2 + 1];
+                    double amp = real * real + imag * imag;
+                    // Same s.Count implies same xvalues.
+                    s[i].YValues[0] = amp;
+                }
+            }
+            else
+            {
+                s.Clear();
+                for (int i = 0; i < n; i++)
+                {
+                    double real = sp_wave[i * 2];
+                    double imag = sp_wave[i * 2 + 1];
+                    double amp = real * real + imag * imag;
+                    s.AddXY(df * i, amp);
+                }
+            }
+            freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         private void setup_wave()
