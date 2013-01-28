@@ -476,8 +476,10 @@ namespace WaveViewerWithFilering
             for (int i = 2; i < nfft; i++)
             {
                 sp[i] = sp_ans[i];
-                sp[size -nfft + i] = sp_ans[nfft + i];
+                sp[2*size -nfft + i] = sp_ans[nfft + i];
             }
+            //sp[nfft] = sp_ans[nfft] * 0.5;
+            //sp[2 * size - nfft] = sp_ans[nfft] * 0.5;
 
             try
             {
@@ -490,7 +492,7 @@ namespace WaveViewerWithFilering
                 int offset = 3 * tap * over_sample;
                 for (int i = 0; i < num_disp * over_sample; i++)
                 {
-                    over_sampled_[i] = wk[2 * (i + offset)]/size;
+                    over_sampled_[i] = wk[2 * (i + offset)]/nfft;
                 }
             }
             finally
