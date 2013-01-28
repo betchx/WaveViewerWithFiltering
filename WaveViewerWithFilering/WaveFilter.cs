@@ -15,83 +15,58 @@ namespace WaveViewerWithFilering
     {
         public wave_filter()
         {
-            nfft = 0;
-            wave_dirty = true;
-            filter_dirty = true;
             InitializeComponent();
-            fir = new FIRFilter();
+            data = null;
             update_display_data_length();
             update_tap_info();
-            source = new double[max_points];
-            xvalues = new double[max_points];
             upper_fc_track.Value = tap_track.Value;
             lower_fc_track.Value = 0;
-            update_gain();
+
         }
-        
+
+        private int nfft {  get { return data[ch].nfft; } }
+        private int tap {  get { return tap_track.Value; } }
+        private WaveData fir { get { return data[ch]; } }
+
         //-----------------------------------------------------------------//
 
+        List<WaveData> data;
+
         int ch;
-        int num_disp;
-        int num_data;
-        int nfft;
-        int tap;
-        int filter_size;
 
         int num_point;
         int step;
         const int max_points = 5000;
 
-
-        private double dt;
         private double fs;
         private double fn;
         private Famos famos;
-        private double[] data;
-        private double[] source;
-        private double[] xvalues;
-        private double[] wave;
-        private double[] ans;
-
-        // Pointers for FFTW
-        IntPtr pwin, pwout, plan_w;  // wave
-        IntPtr pfin, pfout, plan_f;  // filter
-        IntPtr prin, prout, plan_r;  // result
-
-        bool wave_dirty;
-        bool filter_dirty;
-
-        FIRFilter fir;
-        private double[] factors;
-        private double[] sp_factors;
-        private double[] sp_wave;
-        private double[] sp_ans;
 
         private void data_update()
         {
             if (famos == null)
                 return;
-
-            update_filter_info();
-            obtain_source();
-            apply_filter();
+            
+            update_wave_chart_source();
             update_wave_chart_filtered();
             update_filter_chart();
+            update_sp_wave();
             update_freq_chart();
-
         }
 
         private void update_wave_chart_filtered()
         {
             var s = wave_chart.Series[1].Points;
+            var ans = data[ch].filtered;
+            var xvalues = data[ch].xvalues;
+
             if (s.Count == num_point)
             {
                 // just overwrite
                 for (int i = 0; i < num_point; i++)
                 {
-                    int k = 2 * (i + 3 * tap);
-                    s[i].XValue = xvalues[i]; // 3 * tap - 1 is delay and offset
-                    s[i].YValues[0] = ans[k] / nfft; 
+                    s[i].XValue = xvalues[i*step]; 
+                    s[i].YValues[0] = ans[i*step] / nfft; 
                 }
             }
             else
@@ -99,39 +74,34 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < num_point; i++)
                 {
-                    int k = 2 *  (i + 3 * tap);// 3 * tap  is delay and offset
-                    s.AddXY(xvalues[i], ans[k] / nfft);  
+                    s.AddXY(xvalues[i], ans[i*step] / nfft);  
                 }
             }
             wave_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
-        private void apply_filter()
-        {
-            for (int i = 0; i < nfft; i++)
-            {
-                // multiply complex value
-                double a = sp_wave[i * 2];
-                double b = sp_wave[i * 2 + 1];
-                double c = sp_factors[i * 2];
-                double d = sp_factors[i * 2 + 1];
-                sp_ans[i * 2] = a * c - b * d;
-                sp_ans[i * 2 + 1] = a * d + b * c;
-            }
-            Marshal.Copy(sp_ans, 0, prin, nfft * 2);
-            fftw.execute(plan_r);
-            Marshal.Copy(prout, ans, 0, nfft * 2);
-        }
+
 
         private void update_freq_chart()
         {
             var s = this.freq_chart.Series[0].Points;
             double df = fs / tap / 2;
-            s.Clear();
-            for (int i = 0; i < tap; i++)
+            var gains = data[ch].gains;
+
+            if (s.Count == tap + 1)
             {
-                if (!(double.IsNaN(fir.gains[i]) || double.IsInfinity(fir.gains[i])))
-                    s.AddXY(i * df, fir.gains[i]);
+                for (int i = 0; i <= tap; i++)
+                {
+                    s[i].YValues[0] = gains[i];
+                }
+            }
+            else
+            {
+                s.Clear();
+                for (int i = 0; i <= tap; i++)
+                {
+                    s.AddXY(i * df, gains[i]);
+                }
             }
         }
 
@@ -143,8 +113,8 @@ namespace WaveViewerWithFilering
             s.Clear();
             for (int i = -tap; i < tap; i++)
             {
-                f.Add(fir.factor[Math.Abs(i)]);
-                s.Add(fir.window[i]);
+                f.Add(data[ch].factor[Math.Abs(i)]);
+                s.Add(data[ch].window[i]);
             }
         }
 
@@ -156,28 +126,11 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private void obtain_source()
-        {
-            if (famos == null)
-                return;
-
-            if (!wave_dirty)
-                return;
-
-            data = famos[ch];
-
-            update_wave_chart_source();
-            update_sp_wave();
-            wave_dirty = false;
-        }
+  
 
         private void update_sp_wave()
         {
-            setup_wave();
 
-            Marshal.Copy(wave, 0, pwin, nfft * 2);
-            fftw.execute(plan_w);
-            Marshal.Copy(pwout, sp_wave, 0, nfft * 2);
             update_freq_chart_source();
         }
 
@@ -188,15 +141,15 @@ namespace WaveViewerWithFilering
         {
             double df = fs / nfft;
             var s = freq_chart.Series[1].Points;
+            var amps = data[ch].wave_spectrum_amplitude_in_dB();
             double n = nfft / 2 + 1;
             
             if (s.Count == n)
             {
                 for (int i = 0; i < n; i++)
                 {
-                    double db = sp_wave_db(i);
                     // Same s.Count implies same xvalues.
-                    s[i].YValues[0] = db;
+                    s[i].YValues[0] = amps[i];
                 }
             }
             else
@@ -204,68 +157,36 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < n; i++)
                 {
-                    double db = sp_wave_db(i);
-                    s.AddXY(df * i, db);
+                    s.AddXY(df * i, amps[i]);
                 }
             }
             freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
-        private double sp_wave_db(int i)
+        private int num_disp
         {
-            double real = sp_wave[i * 2];
-            double imag = sp_wave[i * 2 + 1];
-            double amp = Math.Max(real * real + imag * imag, 1e-10); // 1e-10: avoid -Inf 
-            amp /= nfft;  //  normalize
-            double db = 20.0 * Math.Log10(amp); // convert to dB
-            return db;
+            get
+            {
+                if (data == null) return 0;
+                return data[ch].num_disp;
+            }
+            set
+            {
+                if (data != null)
+                {
+                    data[ch].num_disp = value;
+                }
+            }
         }
-
-        // copy wave data and FFT
-        private void setup_wave()
+        private int num_data
         {
-            int pos = data_start.Value;
-            int n_start = pos - tap * 2;
-
-            // Zero clear
-            for (int i = 0; i < nfft*2; i++)
+            get
             {
-                wave[i] = 0.0;
+                if (data == null) return 0;
+                return data[ch].data.Length;
             }
-
-            HannWindow hann = new HannWindow(tap);
-
-            // copy with filter
-            for (int i = 0; i < tap; i++)
-            {
-                int k = n_start + i;
-                double amp = hann[tap-k];
-                double value = (k<0)?0.0:data[k];
-                wave[2 * i] = value * amp;
-            }
-            // copy pre_data
-            for (int i = tap; i < tap * 2; i++)
-            {
-                int k = n_start + i;
-                wave[2 * i] = (k < 0) ? 0.0 : data[k];
-            }
-            // copy main_data and post_data
-            for (int i = 0; i < num_disp + tap; i++)
-            {
-                int j = i + 2 * tap;
-                int k = n_start + j;
-                wave[2 * j] = data[k];
-            }
-            // copy with filter
-            for (int i = 0; i < tap; i++)
-            {
-                int j = i + 3 * tap + num_disp;
-                int k = n_start + j;
-                double amp = hann[i + 1];
-                wave[2 * j] = data[k] * amp;
-            }
-            // rest data are zero
-       }
+        }
+        private double[] xvalues {  get { return data[ch].xvalues; } }
 
         private void update_wave_chart_source()
         {
@@ -275,14 +196,14 @@ namespace WaveViewerWithFilering
 
             num_point = Math.Min(num_disp, num_data - pos - 1) / step;
             var s = wave_chart.Series[0].Points;
+            var vals = data[ch].source;
             if (s.Count == num_point)
             {
                 for (int i = 0; i < num_point; i++)
                 {
-                    int x = i * step + pos;
-                    xvalues[i] = x0 + dt * x;
-                    s[i].XValue = xvalues[i];
-                    s[i].YValues[0] = data[x];
+                    int k = i * step;
+                    s[i].XValue = xvalues[k];
+                    s[i].YValues[0] = vals[k];
                 }
                 wave_chart.ChartAreas[0].RecalculateAxesScale();
             }
@@ -291,24 +212,84 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < num_point; i++)
                 {
-                    int x = i * step + pos;
-                    xvalues[i] = x0 + dt * x;
-                    s.AddXY(xvalues[i], data[x]);
+                    int k = i * step;
+                    s.AddXY(xvalues[k], vals[k]);
                 }
             }
+        }
+
+        private double dt { get { return data[ch].dt; } }
+
+        private void open_file(string file_name)
+        {
+            file_path.Text = file_name;
+
+            famos = new Famos(file_name);
+
+            progressBar1.Value = 0;
+            progressBar1.Visible = true;
+            if (!famos.opened)
+                return;
+            progressBar1.Maximum = famos.cols + 2;
+            progressBar1.Value = 1;
+
+            var default_window_type = FIRFilter.WindowType.None;
+            double a = 1.5;
+            double.TryParse(alpha.Text,out a);
+            if (rectangle_window.Checked) default_window_type = FIRFilter.WindowType.Rectangle;
+            if (hann_window.Checked) default_window_type = FIRFilter.WindowType.Han;
+            if (hamming_widow.Checked) default_window_type = FIRFilter.WindowType.Hamming;
+            if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
+            if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
+
+            data = new List<WaveData>(famos.cols);
+
+            for (int i = 0; i < famos.cols; i++)
+            {
+                progressBar1.Value = i + 2;
+                var wave = new WaveData(famos, i);
+                data.Add(wave);
+                wave.tap = tap_track.Value;
+                wave.lower = lower_fc_track.Value;
+                wave.upper = upper_fc_track.Value;
+                wave.alpha = a;
+                wave.window_type = default_window_type;
+
+                wave.gain = -80.0;
+            }
+            progressBar1.Value = progressBar1.Maximum;
+
+            // reset combobox
+            foreach (var item in new List<ComboBox> { ch_P1, ch_P2, ch_Ya, ch_Za })
+            {
+                item.Text = "";
+                item.Items.Clear();
+                for (int i = 0; i < famos.cols; i++)
+                {
+                    item.Items.Add(i.ToString());
+                }
+            }
+
+            channel_track.Value = 0;
+            channel_track.Maximum = famos.cols - 1;
+
+            //            upper_fc_track.Value = upper_fc_track.Maximum;
+            channel_change();
+            CheckUpdate();
+
+            progressBar1.Visible = false;
+
         }
 
         private void channel_change()
         {
             ch = channel_track.Value;
-            channel.Text = ch.ToString();
 
+            channel.Text = ch.ToString();
             channel_name.Text = famos.channel_info[ch].name;
             channel_comment.Text = famos.channel_info[ch].comment;
+            data_length.Text = data[ch].length.ToString();
 
-            num_data = famos.len(ch);
-            data_length.Text = num_data.ToString();
-            dt = famos.dt(ch);
             fs = 1.0 / dt;
             sampling_rate.Text = fs.ToString();
             fn = fs / 2.0;
@@ -317,37 +298,51 @@ namespace WaveViewerWithFilering
             freq_chart.ChartAreas[0].AxisX.Maximum = fn;
 
             data_start.Maximum = num_data - num_disp;
-            update_lower_fc();
-            update_upper_fc();
-            update_display_data_length();
-            wave_dirty = true;
-            obtain_source();
-        }
+            // change data_start
+            data[ch].data_start = data_start.Value;
 
+            var window_type = data[ch].window_type; // save
 
-        private void update_filter_info()
-        {
-            if (fir.is_dirty || filter_dirty )
+            alpha.Text = data[ch].alpha.ToString(); // filter's window type is chened to Kaiser automatically.
+            
+            // switch to actual window_type
+            switch (window_type)
             {
-                fir.design(); // refresh filter if needed
-
-                Array.Clear(factors, 0, 2 * nfft);
-                for (int i = 0; i < filter_size; i++)
-                {
-                    int k = Math.Abs(i - tap);
-                    factors[i * 2] = fir.factor[k];
-                }
-
-                Marshal.Copy(factors, 0, pfin, nfft * 2);
-                fftw.execute(plan_f);
-                Marshal.Copy(pfout, sp_factors, 0, nfft * 2);
-                filter_dirty = false;
+                case FIRFilter.WindowType.None:
+                case FIRFilter.WindowType.Rectangle:
+                    rectangle_window.Checked = true;
+                    break;
+                case FIRFilter.WindowType.Han:
+                    hann_window.Checked = true;
+                    break;
+                case FIRFilter.WindowType.Hamming:
+                    hamming_widow.Checked = true;
+                    break;
+                case FIRFilter.WindowType.Kaiser:
+                    kaiser_window.Checked = true;
+                    break;
+                case FIRFilter.WindowType.Blackman:
+                    blackman_window.Checked = true;
+                    break;
+                default:
+                    throw new ApplicationException("Error in Window type");
             }
+
+            lower_fc_track.Value = data[ch].lower;
+            update_lower_fc();
+            upper_fc_track.Value = data[ch].upper;
+            update_upper_fc();
+
+            update_display_data_length();
+
+            CheckUpdate();
+
         }
 
         private void update_tap_info()
         {
-            tap = tap_track.Value;
+            int tap = tap_track.Value;
+
             if (lower_fc_track.Value > tap)
                 lower_fc_track.Value = tap - 1;
             lower_fc_track.Maximum = tap - 1;
@@ -355,18 +350,21 @@ namespace WaveViewerWithFilering
                 upper_fc_track.Value = tap;
             upper_fc_track.Maximum = tap;
 
-            wave_dirty = true;
-
-            fir.tap = tap_track.Value;
-            number_of_tap.Text = fir.tap.ToString();
-            filter_size = fir.tap * 2 - 1;
+            number_of_tap.Text = tap.ToString();
+            int filter_size = tap * 2 - 1;
             filter_length.Text = filter_size.ToString();
-            update_nfft();
+
+            if(data != null)
+                data[ch].tap = tap;
         }
 
-        private void set_alpha()
+        private void set_alpha(string text)
         {
-            fir.alpha = double.Parse(alpha.Text);
+            double val;
+            if (double.TryParse(text, out val))
+            {
+                data[ch].alpha = val;
+            }
         }
 
         private void update_display_data_length()
@@ -379,83 +377,35 @@ namespace WaveViewerWithFilering
                 else
                     num_disp = val;
 
-                wave_dirty = true;
-
                 step = 1 + ((num_disp - 1) / max_points);
-
                 data_start.LargeChange = num_disp / 5;
-                update_nfft();
+
             }
-        }
-
-        private void update_nfft()
-        {
-            int val = 1024;
-            while (val < num_disp + tap * 4)
-                val *= 2;
-            if (val != nfft)
-            {
-                nfft = val;
-                wave = new double[nfft * 2];
-                factors = new double[nfft * 2];
-                sp_factors = new double[nfft * 2];
-                sp_wave = new double[nfft * 2];
-                sp_ans = new double[nfft * 2];
-                ans = new double[nfft * 2];
-                fftw_setup();
-            }
-        }
-
-        private void fftw_setup()
-        {
-            if (pwin != null)
-                fftw_free();
-            pwin = fftw.malloc(sizeof(double) * nfft * 2);
-            pfin = fftw.malloc(sizeof(double) * nfft * 2);
-            prin = fftw.malloc(sizeof(double) * nfft * 2);
-            pwout = fftw.malloc(sizeof(double) * nfft * 2);
-            pfout = fftw.malloc(sizeof(double) * nfft * 2);
-            prout = fftw.malloc(sizeof(double) * nfft * 2);
-            plan_w = fftw.dft_1d(nfft, pwin, pwout, fftw_direction.Forward, fftw_flags.Estimate);
-            plan_f = fftw.dft_1d(nfft, pfin, pfout, fftw_direction.Forward, fftw_flags.Estimate);
-            plan_r = fftw.dft_1d(nfft, prin, prout, fftw_direction.Backward, fftw_flags.Estimate);
-
-            wave_dirty = true;
-            filter_dirty = true;
-        }
-
-        private void fftw_free()
-        {
-            fftw.free(pwin);
-            fftw.free(pwout);
-            fftw.free(pfin);
-            fftw.free(pfout);
-            fftw.free(prin);
-            fftw.free(prout);
-            fftw.destroy_plan(plan_w);
-            fftw.destroy_plan(plan_f);
-            fftw.destroy_plan(plan_r);
         }
 
 
         private void update_upper_fc()
         {
+            upper_val.Text = upper_fc_track.Value.ToString();
             upper_fc.Text = (upper_fc_track.Value * fn / tap).ToString();
             if (upper_fc_track.Value <= lower_fc_track.Value)
             {
                 lower_fc_track.Value = upper_fc_track.Value - 1;
             }
-            fir.upper = upper_fc_track.Value;
+            if(data != null)
+                fir.upper = upper_fc_track.Value;
         }
 
         private void update_lower_fc()
         {
+            lower_val.Text = lower_fc_track.Value.ToString();
             lower_fc.Text = (lower_fc_track.Value * fn / tap).ToString();
             if (lower_fc_track.Value >= upper_fc_track.Value)
             {
                 upper_fc_track.Value = lower_fc_track.Value + 1;
             }
-            fir.lower = lower_fc_track.Value;
+            if(data != null)
+                fir.lower = lower_fc_track.Value;
         }
 
         
@@ -526,29 +476,9 @@ namespace WaveViewerWithFilering
             if (openFamosDialog.ShowDialog()== System.Windows.Forms.DialogResult.Cancel)
                 return;
 
-            famos = new Famos(openFamosDialog.FileName);
-
-            if (!famos.opened)
-                return;
-
-            // reset combobox
-            foreach (var item in new List<ComboBox> {ch_P1, ch_P2, ch_Ya, ch_Za})
-            {
-                item.Text = "";
-                item.Items.Clear();
-                for (int i = 0; i < famos.cols; i++)
-                {
-                    item.Items.Add(i.ToString());
-                }
-            }
-
-            channel_track.Value = 0;
-            channel_track.Maximum = famos.cols - 1;
-
-//            upper_fc_track.Value = upper_fc_track.Maximum;
-            channel_change();
-            CheckUpdate();
+            open_file(openFamosDialog.FileName);
         }
+
 
         private void display_data_length_TextChanged(object sender, EventArgs e)
         {
@@ -559,14 +489,14 @@ namespace WaveViewerWithFilering
 
         private void kaiser_window_CheckedChanged(object sender, EventArgs e)
         {
-            set_alpha();
+            set_alpha(alpha.Text);
             CheckUpdate();
         }
 
         private void alpha_TextChanged(object sender, EventArgs e)
         {
             if(kaiser_window.Checked )
-                set_alpha();
+                set_alpha(alpha.Text);
             CheckUpdate();
         }
 
@@ -594,17 +524,10 @@ namespace WaveViewerWithFilering
             CheckUpdate();
         }
 
-        private void data_start_Scroll(object sender, ScrollEventArgs e)
-        {
-            obtain_source();
-            update_wave_chart_source();
-            CheckUpdate();
-        }
-
         private void data_start_ValueChanged(object sender, EventArgs e)
         {
-            wave_dirty = true;
-            obtain_source();
+            data[ch].data_start = data_start.Value;
+            update_wave_chart_source();
             CheckUpdate();
         }
 
@@ -622,6 +545,7 @@ namespace WaveViewerWithFilering
         {
             search_channels("YAMA");
         }
+
 
     }
 }

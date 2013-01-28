@@ -40,6 +40,10 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.auto_update = new System.Windows.Forms.CheckBox();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.data_start = new System.Windows.Forms.HScrollBar();
@@ -53,7 +57,7 @@
             this.nyquist_frequency = new System.Windows.Forms.TextBox();
             this.sampling_rate = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.file_path = new System.Windows.Forms.TextBox();
             this.select_file = new System.Windows.Forms.Button();
             this.tap_track = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
@@ -91,13 +95,19 @@
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.yama = new System.Windows.Forms.Button();
+            this.umi = new System.Windows.Forms.Button();
             this.ch_Za = new System.Windows.Forms.ComboBox();
             this.ch_Ya = new System.Windows.Forms.ComboBox();
             this.ch_P2 = new System.Windows.Forms.ComboBox();
             this.ch_P1 = new System.Windows.Forms.ComboBox();
-            this.umi = new System.Windows.Forms.Button();
-            this.yama = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
+            this.peak_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.upper_val = new System.Windows.Forms.TextBox();
+            this.lower_val = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
@@ -107,6 +117,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.freq_chart)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.peak_chart)).BeginInit();
             this.SuspendLayout();
             // 
             // auto_update
@@ -114,12 +125,13 @@
             this.auto_update.AutoSize = true;
             this.auto_update.Checked = true;
             this.auto_update.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.auto_update.Location = new System.Drawing.Point(111, 256);
+            this.auto_update.Location = new System.Drawing.Point(613, 35);
             this.auto_update.Name = "auto_update";
             this.auto_update.Size = new System.Drawing.Size(84, 16);
             this.auto_update.TabIndex = 0;
             this.auto_update.Text = "AutoUpdate";
             this.auto_update.UseVisualStyleBackColor = true;
+            this.auto_update.Visible = false;
             // 
             // wave_chart
             // 
@@ -153,17 +165,17 @@
             this.data_start.Name = "data_start";
             this.data_start.Size = new System.Drawing.Size(774, 24);
             this.data_start.TabIndex = 2;
-            this.data_start.Scroll += new System.Windows.Forms.ScrollEventHandler(this.data_start_Scroll);
             this.data_start.ValueChanged += new System.EventHandler(this.data_start_ValueChanged);
             // 
             // update
             // 
-            this.update.Location = new System.Drawing.Point(201, 244);
+            this.update.Location = new System.Drawing.Point(703, 28);
             this.update.Name = "update";
             this.update.Size = new System.Drawing.Size(83, 28);
             this.update.TabIndex = 3;
             this.update.Text = "Update";
             this.update.UseVisualStyleBackColor = true;
+            this.update.Visible = false;
             this.update.Click += new System.EventHandler(this.update_Click);
             // 
             // label1
@@ -186,7 +198,7 @@
             // 
             // lower_fc
             // 
-            this.lower_fc.Location = new System.Drawing.Point(370, 174);
+            this.lower_fc.Location = new System.Drawing.Point(349, 174);
             this.lower_fc.Name = "lower_fc";
             this.lower_fc.ReadOnly = true;
             this.lower_fc.Size = new System.Drawing.Size(58, 19);
@@ -196,7 +208,7 @@
             // 
             // upper_fc
             // 
-            this.upper_fc.Location = new System.Drawing.Point(370, 135);
+            this.upper_fc.Location = new System.Drawing.Point(349, 134);
             this.upper_fc.Name = "upper_fc";
             this.upper_fc.ReadOnly = true;
             this.upper_fc.Size = new System.Drawing.Size(58, 19);
@@ -251,13 +263,13 @@
             this.label5.TabIndex = 7;
             this.label5.Text = "Data File";
             // 
-            // textBox3
+            // file_path
             // 
-            this.textBox3.Location = new System.Drawing.Point(140, 2);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(646, 19);
-            this.textBox3.TabIndex = 8;
+            this.file_path.Location = new System.Drawing.Point(140, 2);
+            this.file_path.Name = "file_path";
+            this.file_path.ReadOnly = true;
+            this.file_path.Size = new System.Drawing.Size(646, 19);
+            this.file_path.TabIndex = 8;
             // 
             // select_file
             // 
@@ -322,7 +334,7 @@
             // upper_fc_track
             // 
             this.upper_fc_track.Location = new System.Drawing.Point(434, 120);
-            this.upper_fc_track.Maximum = 300;
+            this.upper_fc_track.Maximum = 150;
             this.upper_fc_track.Minimum = 1;
             this.upper_fc_track.Name = "upper_fc_track";
             this.upper_fc_track.Size = new System.Drawing.Size(349, 42);
@@ -335,7 +347,7 @@
             // lower_fc_track
             // 
             this.lower_fc_track.Location = new System.Drawing.Point(434, 159);
-            this.lower_fc_track.Maximum = 300;
+            this.lower_fc_track.Maximum = 149;
             this.lower_fc_track.Name = "lower_fc_track";
             this.lower_fc_track.Size = new System.Drawing.Size(349, 42);
             this.lower_fc_track.TabIndex = 10;
@@ -437,7 +449,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(87, 228);
+            this.label12.Location = new System.Drawing.Point(13, 259);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(109, 12);
             this.label12.TabIndex = 4;
@@ -445,7 +457,7 @@
             // 
             // display_data_length
             // 
-            this.display_data_length.Location = new System.Drawing.Point(226, 225);
+            this.display_data_length.Location = new System.Drawing.Point(131, 256);
             this.display_data_length.Name = "display_data_length";
             this.display_data_length.Size = new System.Drawing.Size(58, 19);
             this.display_data_length.TabIndex = 5;
@@ -604,7 +616,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(300, 217);
+            this.label15.Location = new System.Drawing.Point(300, 207);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(85, 12);
             this.label15.TabIndex = 4;
@@ -612,9 +624,9 @@
             // 
             // gain
             // 
-            this.gain.Location = new System.Drawing.Point(370, 235);
+            this.gain.Location = new System.Drawing.Point(389, 204);
             this.gain.Name = "gain";
-            this.gain.Size = new System.Drawing.Size(58, 19);
+            this.gain.Size = new System.Drawing.Size(42, 19);
             this.gain.TabIndex = 5;
             this.gain.Text = "-80";
             this.gain.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -692,6 +704,26 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Target Wheel";
             // 
+            // yama
+            // 
+            this.yama.Location = new System.Drawing.Point(189, 12);
+            this.yama.Name = "yama";
+            this.yama.Size = new System.Drawing.Size(65, 20);
+            this.yama.TabIndex = 18;
+            this.yama.Text = "Yama";
+            this.yama.UseVisualStyleBackColor = true;
+            this.yama.Click += new System.EventHandler(this.yama_Click);
+            // 
+            // umi
+            // 
+            this.umi.Location = new System.Drawing.Point(118, 12);
+            this.umi.Name = "umi";
+            this.umi.Size = new System.Drawing.Size(65, 20);
+            this.umi.TabIndex = 18;
+            this.umi.Text = "Umi";
+            this.umi.UseVisualStyleBackColor = true;
+            this.umi.Click += new System.EventHandler(this.umi_Click);
+            // 
             // ch_Za
             // 
             this.ch_Za.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -728,26 +760,6 @@
             this.ch_P1.Size = new System.Drawing.Size(58, 20);
             this.ch_P1.TabIndex = 17;
             // 
-            // umi
-            // 
-            this.umi.Location = new System.Drawing.Point(118, 12);
-            this.umi.Name = "umi";
-            this.umi.Size = new System.Drawing.Size(65, 20);
-            this.umi.TabIndex = 18;
-            this.umi.Text = "Umi";
-            this.umi.UseVisualStyleBackColor = true;
-            this.umi.Click += new System.EventHandler(this.umi_Click);
-            // 
-            // yama
-            // 
-            this.yama.Location = new System.Drawing.Point(189, 12);
-            this.yama.Name = "yama";
-            this.yama.Size = new System.Drawing.Size(65, 20);
-            this.yama.TabIndex = 18;
-            this.yama.Text = "Yama";
-            this.yama.UseVisualStyleBackColor = true;
-            this.yama.Click += new System.EventHandler(this.yama_Click);
-            // 
             // label19
             // 
             this.label19.AutoSize = true;
@@ -757,21 +769,98 @@
             this.label19.TabIndex = 14;
             this.label19.Text = "Auto Search";
             // 
+            // peak_chart
+            // 
+            chartArea4.AxisX.IsMarginVisible = false;
+            chartArea4.AxisX.IsStartedFromZero = false;
+            chartArea4.Name = "ChartArea1";
+            this.peak_chart.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.peak_chart.Legends.Add(legend4);
+            this.peak_chart.Location = new System.Drawing.Point(12, 616);
+            this.peak_chart.Name = "peak_chart";
+            this.peak_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Legend = "Legend1";
+            series7.Name = "source";
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Legend = "Legend1";
+            series8.Name = "result";
+            this.peak_chart.Series.Add(series7);
+            this.peak_chart.Series.Add(series8);
+            this.peak_chart.Size = new System.Drawing.Size(774, 300);
+            this.peak_chart.TabIndex = 1;
+            this.peak_chart.TabStop = false;
+            this.peak_chart.Text = "chart1";
+            // 
+            // upper_val
+            // 
+            this.upper_val.Location = new System.Drawing.Point(302, 134);
+            this.upper_val.Name = "upper_val";
+            this.upper_val.ReadOnly = true;
+            this.upper_val.Size = new System.Drawing.Size(29, 19);
+            this.upper_val.TabIndex = 5;
+            this.upper_val.Text = "150";
+            this.upper_val.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // lower_val
+            // 
+            this.lower_val.Location = new System.Drawing.Point(302, 174);
+            this.lower_val.Name = "lower_val";
+            this.lower_val.ReadOnly = true;
+            this.lower_val.Size = new System.Drawing.Size(29, 19);
+            this.lower_val.TabIndex = 5;
+            this.lower_val.Text = "0";
+            this.lower_val.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(413, 137);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(18, 12);
+            this.label20.TabIndex = 11;
+            this.label20.Text = "Hz";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(413, 180);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(18, 12);
+            this.label21.TabIndex = 11;
+            this.label21.Text = "Hz";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(258, 423);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(409, 31);
+            this.progressBar1.TabIndex = 16;
+            this.progressBar1.Visible = false;
+            // 
             // wave_filter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 923);
+            this.Controls.Add(this.auto_update);
+            this.Controls.Add(this.update);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label7);
+            this.Controls.Add(this.label21);
+            this.Controls.Add(this.label20);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lower_fc_track);
             this.Controls.Add(this.upper_fc_track);
             this.Controls.Add(this.channel_track);
             this.Controls.Add(this.tap_track);
             this.Controls.Add(this.select_file);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.file_path);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.filter_length);
             this.Controls.Add(this.number_of_tap);
@@ -782,6 +871,8 @@
             this.Controls.Add(this.sampling_rate);
             this.Controls.Add(this.display_data_length);
             this.Controls.Add(this.nyquist_frequency);
+            this.Controls.Add(this.lower_val);
+            this.Controls.Add(this.upper_val);
             this.Controls.Add(this.upper_fc);
             this.Controls.Add(this.gain);
             this.Controls.Add(this.lower_fc);
@@ -795,12 +886,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.update);
             this.Controls.Add(this.data_start);
             this.Controls.Add(this.freq_chart);
             this.Controls.Add(this.filter_chart);
+            this.Controls.Add(this.peak_chart);
             this.Controls.Add(this.wave_chart);
-            this.Controls.Add(this.auto_update);
             this.Name = "wave_filter";
             this.Text = "WaveFilter";
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).EndInit();
@@ -814,6 +904,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.peak_chart)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -834,7 +925,7 @@
         private System.Windows.Forms.TextBox nyquist_frequency;
         private System.Windows.Forms.TextBox sampling_rate;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox file_path;
         private System.Windows.Forms.Button select_file;
         private System.Windows.Forms.TrackBar tap_track;
         private System.Windows.Forms.Label label6;
@@ -879,6 +970,12 @@
         private System.Windows.Forms.Button yama;
         private System.Windows.Forms.Button umi;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.DataVisualization.Charting.Chart peak_chart;
+        private System.Windows.Forms.TextBox upper_val;
+        private System.Windows.Forms.TextBox lower_val;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

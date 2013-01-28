@@ -164,7 +164,7 @@ namespace WaveViewerWithFilering
             {
                 double r2 = Math.Pow(wk[i * 2], 2.0);
                 double i2 = Math.Pow(wk[i * 2+1], 2.0);
-                double a = Math.Sqrt(r2 + i2);
+                double a = Math.Sqrt(Math.Max(r2 + i2, 1e-20)); // must be positive
                 // gain in dB
                 gains[i] = 20.0 * Math.Log10(a);
             }
