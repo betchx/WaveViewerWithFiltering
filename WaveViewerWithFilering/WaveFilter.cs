@@ -337,8 +337,8 @@ namespace WaveViewerWithFilering
         {
             tap = tap_track.Value;
             if (lower_fc_track.Value > tap)
-                lower_fc_track.Value = tap;
-            lower_fc_track.Maximum = tap;
+                lower_fc_track.Value = tap - 1;
+            lower_fc_track.Maximum = tap - 1;
             if (upper_fc_track.Value > tap)
                 upper_fc_track.Value = tap;
             upper_fc_track.Maximum = tap;

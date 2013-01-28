@@ -307,6 +307,7 @@
             // 
             this.upper_fc_track.Location = new System.Drawing.Point(434, 120);
             this.upper_fc_track.Maximum = 300;
+            this.upper_fc_track.Minimum = 1;
             this.upper_fc_track.Name = "upper_fc_track";
             this.upper_fc_track.Size = new System.Drawing.Size(349, 42);
             this.upper_fc_track.TabIndex = 10;
