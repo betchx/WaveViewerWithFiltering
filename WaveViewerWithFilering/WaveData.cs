@@ -352,6 +352,8 @@ namespace WaveViewerWithFilering
             int pos = data_start;
             int n_start = pos - tap * 2;
 
+            update_nfft();
+
             // Zero clear
             for (int i = 0; i < nfft * 2; i++)
             {
@@ -394,7 +396,7 @@ namespace WaveViewerWithFilering
 
         private void update_sp_factors()
         {
-            if (!filter_dirty)
+            if (!filter_dirty &&  ! filter.is_dirty)
                 return;
 
             update_factors();

@@ -265,7 +265,10 @@ namespace WaveViewerWithFilering
             {
                 if (data != null)
                 {
-                    data[ch].num_disp = value;
+                    foreach (var item in data)
+                    {
+                        item.num_disp = value;
+                    }
                 }
             }
         }
@@ -631,7 +634,14 @@ namespace WaveViewerWithFilering
         private void data_start_ValueChanged(object sender, EventArgs e)
         {
             data[ch].data_start = data_start.Value;
-            update_wave_chart_source();
+            foreach (var item in targets)
+            {
+                int i;
+                if (int.TryParse(item.Text, out i))
+                {
+                    data[i].data_start = data_start.Value;
+                }
+            }
             CheckUpdate();
         }
 
@@ -642,13 +652,21 @@ namespace WaveViewerWithFilering
 
         private void umi_Click(object sender, EventArgs e)
         {
+            bool state = auto_update.Checked;
+            auto_update.Checked = false;
             search_channels("UMI");
+            auto_update.Checked = state;
+            data_start_ValueChanged(sender, e);
             CheckUpdate();
         }
 
         private void yama_Click(object sender, EventArgs e)
         {
+            bool state = auto_update.Checked;
+            auto_update.Checked = false;
             search_channels("YAMA");
+            auto_update.Checked = state;
+            data_start_ValueChanged(sender, e);
             CheckUpdate();
         }
 
@@ -714,6 +732,65 @@ namespace WaveViewerWithFilering
             CheckUpdate();
         }
 
+        private void ch_P1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void ch_P2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void ch_Ya_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void ch_Za_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void th_P1_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void th_P2_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void th_Ya_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void th_Za_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void rl_P1_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void rl_P2_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void rl_Ya_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
+
+        private void rl_Za_TextChanged(object sender, EventArgs e)
+        {
+            CheckUpdate();
+        }
 
     }
 }
