@@ -418,7 +418,7 @@ namespace WaveViewerWithFilering
                 for (int i = 0; i < num_disp; i++)
                 {
                     int k = i + offset;
-                    filtered_[i] = ans[2 * k];
+                    filtered_[i] = ans[2 * k] / nfft; // nfft: normalize
                 }
 
                 // clear dirty flag
