@@ -221,48 +221,51 @@ namespace WaveViewerWithFilering
             return db;
         }
 
+        // copy wave data and FFT
         private void setup_wave()
         {
             int pos = data_start.Value;
             int n_start = pos - tap * 2;
-            int nfil = 0;
-            int last = Math.Min(nfft, num_data - n_start);
-            if (n_start < 0)
+
+            // Zero clear
+            for (int i = 0; i < nfft*2; i++)
             {
-                nfil = n_start * -1;
-                n_start = 0;
-                for (int i = 0; i < nfil; i++)
-                {
-                    wave[i * 2] = 0.0;
-                }
-                for (int i = nfil; i < last; i++)
-                {
-                    wave[i * 2] = data[i - nfil];
-                }
-                for (int i = last; i < nfft; i++)
-                {
-                    wave[i * 2] = 0.0;
-                }
+                wave[i] = 0.0;
             }
-            else if (n_start + nfft > num_data)
+
+            HannWindow hann = new HannWindow(tap);
+
+            // copy with filter
+            for (int i = 0; i < tap; i++)
             {
-                for (int i = 0; i < last; i++)
-                {
-                    wave[i * 2] = data[i + n_start];
-                }
-                for (int i = last; i < nfft; i++)
-                {
-                    wave[i * 2] = 0.0;
-                }
+                int k = n_start + i;
+                double amp = hann[tap-k];
+                double value = (k<0)?0.0:data[k];
+                wave[2 * i] = value * amp;
             }
-            else
+            // copy pre_data
+            for (int i = tap; i < tap * 2; i++)
             {
-                for (int i = 0; i < nfft; i++)
-                {
-                    wave[i * 2] = data[i + n_start];
-                }
+                int k = n_start + i;
+                wave[2 * i] = (k < 0) ? 0.0 : data[k];
             }
-        }
+            // copy main_data and post_data
+            for (int i = 0; i < num_disp + tap; i++)
+            {
+                int j = i + 2 * tap;
+                int k = n_start + j;
+                wave[2 * j] = data[k];
+            }
+            // copy with filter
+            for (int i = 0; i < tap; i++)
+            {
+                int j = i + 3 * tap + num_disp;
+                int k = n_start + j;
+                double amp = hann[i + 1];
+                wave[2 * j] = data[k] * amp;
+            }
+            // rest data are zero
+       }
 
         private void update_wave_chart_source()
         {
