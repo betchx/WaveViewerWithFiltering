@@ -33,6 +33,7 @@ namespace WaveViewerWithFilering
         {
             data_start_ = 0;
             filter = new FIRFilter();
+            over_sample_ = 1;
 
             invalidate_factors();
             invalidate_waves();
@@ -182,6 +183,33 @@ namespace WaveViewerWithFilering
 
             return res;
         }
+
+        private double[] over_sampled_; public double[] over_sampled { get {  return over_sampled_; } }
+
+        private int over_sample_;
+        public int over_sample
+        {
+            get { return over_sample_; }
+            set
+            {
+                switch (value)
+                {
+                    case 1:
+                    case 2:
+                    case 4:
+                    case 8:
+                    over_sample_ = value;
+                    update_over_sampled();
+                        break;
+                    default:
+                        throw new ArgumentException("over_sample can be 1, 2,4 or 8"); 
+                }
+            }
+        }
+
+
+
+
 
 
         //---Inernal Use--------------------------------//
@@ -336,7 +364,7 @@ namespace WaveViewerWithFilering
             for (int i = 0; i < tap; i++)
             {
                 int k = n_start + i;
-                double amp = hann[tap - k];
+                double amp = hann[tap - k -1];
                 double value = (k < 0) ? 0.0 : data[k];
                 wave[2 * i] = value * amp;
             }
@@ -358,7 +386,7 @@ namespace WaveViewerWithFilering
             {
                 int j = i + 3 * tap + num_disp;
                 int k = n_start + j;
-                double amp = hann[i + 1];
+                double amp = hann[i];
                 wave[2 * j] = data[k] * amp;
             }
             // rest data are zero
@@ -423,6 +451,53 @@ namespace WaveViewerWithFilering
 
                 // clear dirty flag
                 ans_dirty = false;
+            }
+        }
+
+        private void update_over_sampled()
+        {
+            apply_filter();  // update required.
+
+            // noneed to upsampling;
+            if (over_sample == 1)
+            {
+                over_sampled_ = filtered_;
+                return;
+            }
+
+            IntPtr pin = IntPtr.Zero, pout = IntPtr.Zero, plan = IntPtr.Zero;
+            int size = nfft * over_sample;
+            double[] sp = new double[size * 2];
+            double[] wk = new double[size * 2];
+            over_sampled_ = new double[num_disp * over_sample];
+
+            sp[0] = sp_ans[0];
+            sp[1] = sp_ans[1];
+            for (int i = 2; i < nfft; i++)
+            {
+                sp[i] = sp_ans[i];
+                sp[size -nfft + i] = sp_ans[nfft + i];
+            }
+
+            try
+            {
+                pin = fftw.malloc(sizeof(double) * size * 2);
+                pout = fftw.malloc(sizeof(double) * size * 2);
+                plan = fftw.dft_1d(size, pin, pout, fftw_direction.Backward, fftw_flags.Estimate);
+                Marshal.Copy(sp, 0, pin, size * 2);
+                fftw.execute(plan);
+                Marshal.Copy(pout, wk, 0, size * 2);
+                int offset = 3 * tap * over_sample;
+                for (int i = 0; i < num_disp * over_sample; i++)
+                {
+                    over_sampled_[i] = wk[2 * (i + offset)]/size;
+                }
+            }
+            finally
+            {
+                fftw.free(pin);
+                fftw.free(pout);
+                fftw.destroy_plan(plan);
             }
         }
 

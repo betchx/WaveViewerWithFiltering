@@ -719,6 +719,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.over_sampling_8);
+            this.groupBox2.Controls.Add(this.over_sampling_4);
+            this.groupBox2.Controls.Add(this.over_sampling_2);
+            this.groupBox2.Controls.Add(this.over_sampling_1);
             this.groupBox2.Controls.Add(this.rl_Za);
             this.groupBox2.Controls.Add(this.rl_Ya);
             this.groupBox2.Controls.Add(this.th_Za);
@@ -736,6 +740,7 @@
             this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.label17);
             this.groupBox2.Controls.Add(this.label16);
+            this.groupBox2.Controls.Add(this.label26);
             this.groupBox2.Controls.Add(this.label19);
             this.groupBox2.Controls.Add(this.label25);
             this.groupBox2.Controls.Add(this.label24);
@@ -748,6 +753,51 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Target Wheel";
             // 
+            // over_sampling_8
+            // 
+            this.over_sampling_8.AutoSize = true;
+            this.over_sampling_8.Location = new System.Drawing.Point(247, 136);
+            this.over_sampling_8.Name = "over_sampling_8";
+            this.over_sampling_8.Size = new System.Drawing.Size(35, 16);
+            this.over_sampling_8.TabIndex = 20;
+            this.over_sampling_8.Text = "x8";
+            this.over_sampling_8.UseVisualStyleBackColor = true;
+            this.over_sampling_8.CheckedChanged += new System.EventHandler(this.over_sampling_8_CheckedChanged);
+            // 
+            // over_sampling_4
+            // 
+            this.over_sampling_4.AutoSize = true;
+            this.over_sampling_4.Location = new System.Drawing.Point(198, 136);
+            this.over_sampling_4.Name = "over_sampling_4";
+            this.over_sampling_4.Size = new System.Drawing.Size(35, 16);
+            this.over_sampling_4.TabIndex = 20;
+            this.over_sampling_4.Text = "x4";
+            this.over_sampling_4.UseVisualStyleBackColor = true;
+            this.over_sampling_4.CheckedChanged += new System.EventHandler(this.over_sampling_4_CheckedChanged);
+            // 
+            // over_sampling_2
+            // 
+            this.over_sampling_2.AutoSize = true;
+            this.over_sampling_2.Location = new System.Drawing.Point(148, 136);
+            this.over_sampling_2.Name = "over_sampling_2";
+            this.over_sampling_2.Size = new System.Drawing.Size(35, 16);
+            this.over_sampling_2.TabIndex = 20;
+            this.over_sampling_2.Text = "x2";
+            this.over_sampling_2.UseVisualStyleBackColor = true;
+            this.over_sampling_2.CheckedChanged += new System.EventHandler(this.over_sampling_2_CheckedChanged);
+            // 
+            // over_sampling_1
+            // 
+            this.over_sampling_1.AutoSize = true;
+            this.over_sampling_1.Checked = true;
+            this.over_sampling_1.Location = new System.Drawing.Point(100, 136);
+            this.over_sampling_1.Name = "over_sampling_1";
+            this.over_sampling_1.Size = new System.Drawing.Size(35, 16);
+            this.over_sampling_1.TabIndex = 20;
+            this.over_sampling_1.TabStop = true;
+            this.over_sampling_1.Text = "x1";
+            this.over_sampling_1.UseVisualStyleBackColor = true;
+            this.over_sampling_1.CheckedChanged += new System.EventHandler(this.over_sampling_1_CheckedChanged);
             // 
             // rl_Za
             // 
@@ -870,6 +920,15 @@
             this.ch_P1.Name = "ch_P1";
             this.ch_P1.Size = new System.Drawing.Size(45, 20);
             this.ch_P1.TabIndex = 17;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(10, 140);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(79, 12);
+            this.label26.TabIndex = 14;
+            this.label26.Text = "Over Sampling";
             // 
             // label19
             // 
@@ -1207,6 +1266,11 @@
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.RadioButton over_sampling_8;
+        private System.Windows.Forms.RadioButton over_sampling_4;
+        private System.Windows.Forms.RadioButton over_sampling_2;
+        private System.Windows.Forms.RadioButton over_sampling_1;
+        private System.Windows.Forms.Label label26;
     }
 }
 

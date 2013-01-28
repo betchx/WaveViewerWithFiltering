@@ -25,6 +25,7 @@ namespace WaveViewerWithFilering
             targets = new ComboBox[] { ch_P1, ch_P2, ch_Ya, ch_Za };
             thresholds = new TextBox[] { th_P1, th_P2, th_Ya, th_Za };
             required_lengths = new TextBox[] { rl_P1, rl_P2, rl_Ya, rl_Za };
+            over_sampling_ = 1;
         }
 
         private int nfft {  get { return data[ch].nfft; } }
@@ -34,6 +35,7 @@ namespace WaveViewerWithFilering
         TextBox[] thresholds;
         TextBox[] required_lengths;
 
+        private int over_sampling_; public int over_sampling { get { return over_sampling_; } }
 
 
         //-----------------------------------------------------------------//
@@ -54,13 +56,49 @@ namespace WaveViewerWithFilering
         {
             if (famos == null)
                 return;
-            
+
             update_wave_chart_source();
             update_wave_chart_filtered();
             update_filter_chart();
+            update_wave_chart_oversampled();
             update_sp_wave();
             update_freq_chart();
             update_peak_chart();
+        }
+
+        private void update_wave_chart_oversampled()
+        {
+            var s = wave_chart.Series[2].Points;
+
+            if (step > 1)
+            {
+                s.Clear();
+                return;
+            }
+
+            data[ch].over_sample = over_sampling;
+            var val = data[ch].over_sampled;
+            double x0 = data[ch].xvalues[0];
+            double dx = dt / over_sampling;
+            if (val.Length == s.Count)
+            {
+                // overwrite
+                for (int i = 0; i < val.Length; i++)
+                {
+                    s[i].XValue = x0 + dx * i;
+                    s[i].YValues[0] = val[i];
+                }
+            }
+            else
+            {
+                // renew
+                s.Clear();
+                for (int i = 0; i < val.Length; i++)
+                {
+                    double x = x0 + dx * i;
+                    s.AddXY(x, val[i]);
+                }
+            }
         }
 
         private void update_peak_chart()
@@ -647,6 +685,29 @@ namespace WaveViewerWithFilering
                     update_lower_fc();
                 }
             }
+        }
+        private void over_sampling_1_CheckedChanged(object sender, EventArgs e)
+        {
+            over_sampling_ = 1;
+            CheckUpdate();
+        }
+
+        private void over_sampling_2_CheckedChanged(object sender, EventArgs e)
+        {
+            over_sampling_ = 2;
+            CheckUpdate();
+        }
+
+        private void over_sampling_4_CheckedChanged(object sender, EventArgs e)
+        {
+            over_sampling_ = 4;
+            CheckUpdate();
+        }
+
+        private void over_sampling_8_CheckedChanged(object sender, EventArgs e)
+        {
+            over_sampling_ = 8;
+            CheckUpdate();
         }
 
 
