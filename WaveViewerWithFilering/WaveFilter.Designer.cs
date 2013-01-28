@@ -76,7 +76,6 @@
             this.display_data_length = new System.Windows.Forms.TextBox();
             this.filter_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.freq_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.label13 = new System.Windows.Forms.Label();
             this.rectangle_window = new System.Windows.Forms.RadioButton();
             this.blackman_window = new System.Windows.Forms.RadioButton();
             this.hann_window = new System.Windows.Forms.RadioButton();
@@ -86,6 +85,19 @@
             this.alpha = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.gain = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ch_Za = new System.Windows.Forms.ComboBox();
+            this.ch_Ya = new System.Windows.Forms.ComboBox();
+            this.ch_P2 = new System.Windows.Forms.ComboBox();
+            this.ch_P1 = new System.Windows.Forms.ComboBox();
+            this.umi = new System.Windows.Forms.Button();
+            this.yama = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
@@ -93,12 +105,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.channel_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filter_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.freq_chart)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // auto_update
             // 
             this.auto_update.AutoSize = true;
-            this.auto_update.Location = new System.Drawing.Point(699, 202);
+            this.auto_update.Checked = true;
+            this.auto_update.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.auto_update.Location = new System.Drawing.Point(111, 256);
             this.auto_update.Name = "auto_update";
             this.auto_update.Size = new System.Drawing.Size(84, 16);
             this.auto_update.TabIndex = 0;
@@ -113,7 +129,7 @@
             this.wave_chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.wave_chart.Legends.Add(legend1);
-            this.wave_chart.Location = new System.Drawing.Point(12, 283);
+            this.wave_chart.Location = new System.Drawing.Point(12, 310);
             this.wave_chart.Name = "wave_chart";
             this.wave_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
             series1.ChartArea = "ChartArea1";
@@ -126,14 +142,14 @@
             series2.Name = "result";
             this.wave_chart.Series.Add(series1);
             this.wave_chart.Series.Add(series2);
-            this.wave_chart.Size = new System.Drawing.Size(774, 337);
+            this.wave_chart.Size = new System.Drawing.Size(774, 300);
             this.wave_chart.TabIndex = 1;
             this.wave_chart.TabStop = false;
             this.wave_chart.Text = "chart1";
             // 
             // data_start
             // 
-            this.data_start.Location = new System.Drawing.Point(12, 623);
+            this.data_start.Location = new System.Drawing.Point(12, 283);
             this.data_start.Name = "data_start";
             this.data_start.Size = new System.Drawing.Size(774, 24);
             this.data_start.TabIndex = 2;
@@ -142,7 +158,7 @@
             // 
             // update
             // 
-            this.update.Location = new System.Drawing.Point(700, 237);
+            this.update.Location = new System.Drawing.Point(201, 244);
             this.update.Name = "update";
             this.update.Size = new System.Drawing.Size(83, 28);
             this.update.TabIndex = 3;
@@ -191,7 +207,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 101);
+            this.label3.Location = new System.Drawing.Point(81, 66);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(79, 12);
             this.label3.TabIndex = 4;
@@ -200,7 +216,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 122);
+            this.label4.Location = new System.Drawing.Point(166, 66);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(101, 12);
             this.label4.TabIndex = 4;
@@ -208,7 +224,7 @@
             // 
             // nyquist_frequency
             // 
-            this.nyquist_frequency.Location = new System.Drawing.Point(155, 115);
+            this.nyquist_frequency.Location = new System.Drawing.Point(212, 84);
             this.nyquist_frequency.Name = "nyquist_frequency";
             this.nyquist_frequency.ReadOnly = true;
             this.nyquist_frequency.Size = new System.Drawing.Size(58, 19);
@@ -218,7 +234,7 @@
             // 
             // sampling_rate
             // 
-            this.sampling_rate.Location = new System.Drawing.Point(155, 94);
+            this.sampling_rate.Location = new System.Drawing.Point(80, 84);
             this.sampling_rate.Name = "sampling_rate";
             this.sampling_rate.ReadOnly = true;
             this.sampling_rate.Size = new System.Drawing.Size(58, 19);
@@ -330,7 +346,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 80);
+            this.label8.Location = new System.Drawing.Point(10, 66);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(63, 12);
             this.label8.TabIndex = 4;
@@ -338,7 +354,7 @@
             // 
             // data_length
             // 
-            this.data_length.Location = new System.Drawing.Point(155, 73);
+            this.data_length.Location = new System.Drawing.Point(15, 84);
             this.data_length.Name = "data_length";
             this.data_length.ReadOnly = true;
             this.data_length.Size = new System.Drawing.Size(58, 19);
@@ -421,7 +437,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(16, 159);
+            this.label12.Location = new System.Drawing.Point(87, 228);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(109, 12);
             this.label12.TabIndex = 4;
@@ -429,7 +445,7 @@
             // 
             // display_data_length
             // 
-            this.display_data_length.Location = new System.Drawing.Point(155, 156);
+            this.display_data_length.Location = new System.Drawing.Point(226, 225);
             this.display_data_length.Name = "display_data_length";
             this.display_data_length.Size = new System.Drawing.Size(58, 19);
             this.display_data_length.TabIndex = 5;
@@ -462,7 +478,7 @@
             series4.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             this.filter_chart.Series.Add(series3);
             this.filter_chart.Series.Add(series4);
-            this.filter_chart.Size = new System.Drawing.Size(352, 314);
+            this.filter_chart.Size = new System.Drawing.Size(352, 300);
             this.filter_chart.TabIndex = 1;
             this.filter_chart.TabStop = false;
             this.filter_chart.Text = "chart1";
@@ -489,7 +505,7 @@
             legend3.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
             legend3.Name = "Legend1";
             this.freq_chart.Legends.Add(legend3);
-            this.freq_chart.Location = new System.Drawing.Point(808, 335);
+            this.freq_chart.Location = new System.Drawing.Point(808, 310);
             this.freq_chart.Name = "freq_chart";
             this.freq_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
             series5.BorderWidth = 2;
@@ -504,25 +520,16 @@
             series6.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             this.freq_chart.Series.Add(series5);
             this.freq_chart.Series.Add(series6);
-            this.freq_chart.Size = new System.Drawing.Size(352, 312);
+            this.freq_chart.Size = new System.Drawing.Size(352, 300);
             this.freq_chart.TabIndex = 1;
             this.freq_chart.TabStop = false;
             this.freq_chart.Text = "chart1";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(278, 227);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(43, 12);
-            this.label13.TabIndex = 4;
-            this.label13.Text = "Window";
             // 
             // rectangle_window
             // 
             this.rectangle_window.AutoSize = true;
             this.rectangle_window.Checked = true;
-            this.rectangle_window.Location = new System.Drawing.Point(337, 225);
+            this.rectangle_window.Location = new System.Drawing.Point(10, 21);
             this.rectangle_window.Name = "rectangle_window";
             this.rectangle_window.Size = new System.Drawing.Size(106, 16);
             this.rectangle_window.TabIndex = 12;
@@ -534,7 +541,7 @@
             // blackman_window
             // 
             this.blackman_window.AutoSize = true;
-            this.blackman_window.Location = new System.Drawing.Point(449, 227);
+            this.blackman_window.Location = new System.Drawing.Point(122, 23);
             this.blackman_window.Name = "blackman_window";
             this.blackman_window.Size = new System.Drawing.Size(111, 16);
             this.blackman_window.TabIndex = 12;
@@ -545,7 +552,7 @@
             // hann_window
             // 
             this.hann_window.AutoSize = true;
-            this.hann_window.Location = new System.Drawing.Point(337, 247);
+            this.hann_window.Location = new System.Drawing.Point(10, 43);
             this.hann_window.Name = "hann_window";
             this.hann_window.Size = new System.Drawing.Size(87, 16);
             this.hann_window.TabIndex = 12;
@@ -556,7 +563,7 @@
             // hamming_widow
             // 
             this.hamming_widow.AutoSize = true;
-            this.hamming_widow.Location = new System.Drawing.Point(449, 249);
+            this.hamming_widow.Location = new System.Drawing.Point(122, 45);
             this.hamming_widow.Name = "hamming_widow";
             this.hamming_widow.Size = new System.Drawing.Size(108, 16);
             this.hamming_widow.TabIndex = 12;
@@ -567,7 +574,7 @@
             // kaiser_window
             // 
             this.kaiser_window.AutoSize = true;
-            this.kaiser_window.Location = new System.Drawing.Point(572, 228);
+            this.kaiser_window.Location = new System.Drawing.Point(245, 24);
             this.kaiser_window.Name = "kaiser_window";
             this.kaiser_window.Size = new System.Drawing.Size(93, 16);
             this.kaiser_window.TabIndex = 12;
@@ -578,7 +585,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(588, 253);
+            this.label14.Location = new System.Drawing.Point(260, 43);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(34, 12);
             this.label14.TabIndex = 4;
@@ -586,7 +593,7 @@
             // 
             // alpha
             // 
-            this.alpha.Location = new System.Drawing.Point(628, 250);
+            this.alpha.Location = new System.Drawing.Point(300, 40);
             this.alpha.Name = "alpha";
             this.alpha.Size = new System.Drawing.Size(37, 19);
             this.alpha.TabIndex = 5;
@@ -597,7 +604,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(278, 202);
+            this.label15.Location = new System.Drawing.Point(300, 217);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(85, 12);
             this.label15.TabIndex = 4;
@@ -605,7 +612,7 @@
             // 
             // gain
             // 
-            this.gain.Location = new System.Drawing.Point(370, 202);
+            this.gain.Location = new System.Drawing.Point(370, 235);
             this.gain.Name = "gain";
             this.gain.Size = new System.Drawing.Size(58, 19);
             this.gain.TabIndex = 5;
@@ -613,16 +620,150 @@
             this.gain.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.gain.TextChanged += new System.EventHandler(this.gain_TextChanged);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.hamming_widow);
+            this.groupBox1.Controls.Add(this.kaiser_window);
+            this.groupBox1.Controls.Add(this.hann_window);
+            this.groupBox1.Controls.Add(this.blackman_window);
+            this.groupBox1.Controls.Add(this.rectangle_window);
+            this.groupBox1.Controls.Add(this.alpha);
+            this.groupBox1.Controls.Add(this.label14);
+            this.groupBox1.Location = new System.Drawing.Point(437, 207);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(349, 73);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Window for Filter";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(10, 39);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(50, 12);
+            this.label13.TabIndex = 14;
+            this.label13.Text = "Ch of P1";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(78, 39);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(50, 12);
+            this.label16.TabIndex = 14;
+            this.label16.Text = "Ch of P2";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(140, 39);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(50, 12);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Ch of Ya";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(204, 39);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(50, 12);
+            this.label18.TabIndex = 14;
+            this.label18.Text = "Ch of Za";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.yama);
+            this.groupBox2.Controls.Add(this.umi);
+            this.groupBox2.Controls.Add(this.ch_Za);
+            this.groupBox2.Controls.Add(this.ch_Ya);
+            this.groupBox2.Controls.Add(this.ch_P2);
+            this.groupBox2.Controls.Add(this.ch_P1);
+            this.groupBox2.Controls.Add(this.label18);
+            this.groupBox2.Controls.Add(this.label17);
+            this.groupBox2.Controls.Add(this.label16);
+            this.groupBox2.Controls.Add(this.label19);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Location = new System.Drawing.Point(6, 122);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(277, 85);
+            this.groupBox2.TabIndex = 15;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Target Wheel";
+            // 
+            // ch_Za
+            // 
+            this.ch_Za.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ch_Za.FormattingEnabled = true;
+            this.ch_Za.Location = new System.Drawing.Point(196, 58);
+            this.ch_Za.Name = "ch_Za";
+            this.ch_Za.Size = new System.Drawing.Size(58, 20);
+            this.ch_Za.TabIndex = 17;
+            // 
+            // ch_Ya
+            // 
+            this.ch_Ya.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ch_Ya.FormattingEnabled = true;
+            this.ch_Ya.Location = new System.Drawing.Point(134, 58);
+            this.ch_Ya.Name = "ch_Ya";
+            this.ch_Ya.Size = new System.Drawing.Size(58, 20);
+            this.ch_Ya.TabIndex = 17;
+            // 
+            // ch_P2
+            // 
+            this.ch_P2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ch_P2.FormattingEnabled = true;
+            this.ch_P2.Location = new System.Drawing.Point(70, 58);
+            this.ch_P2.Name = "ch_P2";
+            this.ch_P2.Size = new System.Drawing.Size(58, 20);
+            this.ch_P2.TabIndex = 17;
+            // 
+            // ch_P1
+            // 
+            this.ch_P1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ch_P1.FormattingEnabled = true;
+            this.ch_P1.Location = new System.Drawing.Point(9, 58);
+            this.ch_P1.Name = "ch_P1";
+            this.ch_P1.Size = new System.Drawing.Size(58, 20);
+            this.ch_P1.TabIndex = 17;
+            // 
+            // umi
+            // 
+            this.umi.Location = new System.Drawing.Point(118, 12);
+            this.umi.Name = "umi";
+            this.umi.Size = new System.Drawing.Size(65, 20);
+            this.umi.TabIndex = 18;
+            this.umi.Text = "Umi";
+            this.umi.UseVisualStyleBackColor = true;
+            this.umi.Click += new System.EventHandler(this.umi_Click);
+            // 
+            // yama
+            // 
+            this.yama.Location = new System.Drawing.Point(189, 12);
+            this.yama.Name = "yama";
+            this.yama.Size = new System.Drawing.Size(65, 20);
+            this.yama.TabIndex = 18;
+            this.yama.Text = "Yama";
+            this.yama.UseVisualStyleBackColor = true;
+            this.yama.Click += new System.EventHandler(this.yama_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(44, 16);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(68, 12);
+            this.label19.TabIndex = 14;
+            this.label19.Text = "Auto Search";
+            // 
             // wave_filter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1172, 655);
-            this.Controls.Add(this.hamming_widow);
-            this.Controls.Add(this.kaiser_window);
-            this.Controls.Add(this.hann_window);
-            this.Controls.Add(this.blackman_window);
-            this.Controls.Add(this.rectangle_window);
+            this.ClientSize = new System.Drawing.Size(1172, 923);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.lower_fc_track);
@@ -639,7 +780,6 @@
             this.Controls.Add(this.channel);
             this.Controls.Add(this.data_length);
             this.Controls.Add(this.sampling_rate);
-            this.Controls.Add(this.alpha);
             this.Controls.Add(this.display_data_length);
             this.Controls.Add(this.nyquist_frequency);
             this.Controls.Add(this.upper_fc);
@@ -653,9 +793,7 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label14);
             this.Controls.Add(this.label15);
-            this.Controls.Add(this.label13);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.update);
             this.Controls.Add(this.data_start);
@@ -672,6 +810,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.channel_track)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.filter_chart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.freq_chart)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -714,7 +856,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox display_data_length;
         private System.Windows.Forms.DataVisualization.Charting.Chart filter_chart;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.RadioButton rectangle_window;
         private System.Windows.Forms.RadioButton blackman_window;
         private System.Windows.Forms.RadioButton hann_window;
@@ -725,6 +866,19 @@
         protected System.Windows.Forms.DataVisualization.Charting.Chart freq_chart;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox gain;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ComboBox ch_Za;
+        private System.Windows.Forms.ComboBox ch_Ya;
+        private System.Windows.Forms.ComboBox ch_P2;
+        private System.Windows.Forms.ComboBox ch_P1;
+        private System.Windows.Forms.Button yama;
+        private System.Windows.Forms.Button umi;
+        private System.Windows.Forms.Label label19;
     }
 }
 

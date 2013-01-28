@@ -468,6 +468,25 @@ namespace WaveViewerWithFilering
             }
         }
 
+        private string find_channel(string in_name)
+        {
+            for (int i = 0; i < famos.cols; i++)
+            {
+                if (famos.channel_info[i].name.Contains(in_name))
+                    return i.ToString();
+            }
+            return "";
+        }
+
+
+        void search_channels(string side)
+        {
+            ch_P1.Text = find_channel(side + "_P1").ToString();
+            ch_P2.Text = find_channel(side + "_P2").ToString();
+            ch_Ya.Text = find_channel(side + "_Ya").ToString();
+            ch_Za.Text = find_channel(side + "_Za").ToString();
+        }
+
 
         //-----------------------------------------------------------------//
 
@@ -511,6 +530,17 @@ namespace WaveViewerWithFilering
 
             if (!famos.opened)
                 return;
+
+            // reset combobox
+            foreach (var item in new List<ComboBox> {ch_P1, ch_P2, ch_Ya, ch_Za})
+            {
+                item.Text = "";
+                item.Items.Clear();
+                for (int i = 0; i < famos.cols; i++)
+                {
+                    item.Items.Add(i.ToString());
+                }
+            }
 
             channel_track.Value = 0;
             channel_track.Maximum = famos.cols - 1;
@@ -583,10 +613,15 @@ namespace WaveViewerWithFilering
             update_gain();
         }
 
+        private void umi_Click(object sender, EventArgs e)
+        {
+            search_channels("UMI");
+        }
 
-
-
-
+        private void yama_Click(object sender, EventArgs e)
+        {
+            search_channels("YAMA");
+        }
 
     }
 }
