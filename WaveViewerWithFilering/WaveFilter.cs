@@ -136,8 +136,12 @@ namespace WaveViewerWithFilering
                 }
             }
             // reset axes
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
             peak_chart.ChartAreas[0].AxisX.Minimum = wave_chart.ChartAreas[0].AxisX.Minimum;
             peak_chart.ChartAreas[0].AxisX.Maximum = wave_chart.ChartAreas[0].AxisX.Maximum;
+            peak_chart.ChartAreas[0].AxisX.MajorGrid.Interval = wave_chart.ChartAreas[0].AxisX.MajorGrid.Interval;
+            peak_chart.ChartAreas[0].AxisX.MajorTickMark.Interval = wave_chart.ChartAreas[0].AxisX.MajorTickMark.Interval;
+            peak_chart.ChartAreas[0].AxisX.LabelStyle.Interval = wave_chart.ChartAreas[0].AxisX.LabelStyle.Interval;
             peak_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
