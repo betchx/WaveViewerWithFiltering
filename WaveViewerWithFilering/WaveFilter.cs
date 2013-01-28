@@ -539,7 +539,7 @@ namespace WaveViewerWithFilering
         private void set_data_length_by_duration(double dur)
         {
             int count = (int)(dur / dt);
-            data_length.Text = count.ToString();
+            display_data_length.Text = count.ToString();
         }
 
         //-----------------------------------------------------------------//
