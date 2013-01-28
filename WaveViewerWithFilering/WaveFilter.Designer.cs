@@ -28,26 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea45 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend45 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series133 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series134 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series135 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series136 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea46 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend46 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series137 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series138 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea47 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend47 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series139 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series140 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea48 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend48 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series141 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series142 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series143 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series144 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.auto_update = new System.Windows.Forms.CheckBox();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.data_start = new System.Windows.Forms.HScrollBar();
@@ -160,35 +160,45 @@
             // 
             // wave_chart
             // 
-            chartArea1.AxisX.IsMarginVisible = false;
-            chartArea1.AxisX.IsStartedFromZero = false;
-            chartArea1.Name = "ChartArea1";
-            this.wave_chart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.wave_chart.Legends.Add(legend1);
+            chartArea45.AxisX.IsMarginVisible = false;
+            chartArea45.AxisX.IsStartedFromZero = false;
+            chartArea45.InnerPlotPosition.Auto = false;
+            chartArea45.InnerPlotPosition.Height = 90F;
+            chartArea45.InnerPlotPosition.Width = 90F;
+            chartArea45.InnerPlotPosition.X = 8F;
+            chartArea45.InnerPlotPosition.Y = 3.5F;
+            chartArea45.Name = "ChartArea1";
+            chartArea45.Position.Auto = false;
+            chartArea45.Position.Height = 90F;
+            chartArea45.Position.Width = 80F;
+            chartArea45.Position.X = 5F;
+            chartArea45.Position.Y = 3F;
+            this.wave_chart.ChartAreas.Add(chartArea45);
+            legend45.Name = "Legend1";
+            this.wave_chart.Legends.Add(legend45);
             this.wave_chart.Location = new System.Drawing.Point(12, 310);
             this.wave_chart.Name = "wave_chart";
             this.wave_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "source";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "result";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series3.Legend = "Legend1";
-            series3.Name = "over";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series4.Legend = "Legend1";
-            series4.Name = "peaks";
-            this.wave_chart.Series.Add(series1);
-            this.wave_chart.Series.Add(series2);
-            this.wave_chart.Series.Add(series3);
-            this.wave_chart.Series.Add(series4);
+            series133.ChartArea = "ChartArea1";
+            series133.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series133.Legend = "Legend1";
+            series133.Name = "source";
+            series134.ChartArea = "ChartArea1";
+            series134.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series134.Legend = "Legend1";
+            series134.Name = "result";
+            series135.ChartArea = "ChartArea1";
+            series135.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series135.Legend = "Legend1";
+            series135.Name = "over";
+            series136.ChartArea = "ChartArea1";
+            series136.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series136.Legend = "Legend1";
+            series136.Name = "peaks";
+            this.wave_chart.Series.Add(series133);
+            this.wave_chart.Series.Add(series134);
+            this.wave_chart.Series.Add(series135);
+            this.wave_chart.Series.Add(series136);
             this.wave_chart.Size = new System.Drawing.Size(774, 300);
             this.wave_chart.TabIndex = 1;
             this.wave_chart.TabStop = false;
@@ -500,29 +510,29 @@
             // 
             // filter_chart
             // 
-            chartArea2.AxisY2.MajorGrid.Enabled = false;
-            chartArea2.AxisY2.Maximum = 1D;
-            chartArea2.AxisY2.Minimum = 0D;
-            chartArea2.Name = "ChartArea1";
-            this.filter_chart.ChartAreas.Add(chartArea2);
-            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-            legend2.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
-            legend2.Name = "Legend1";
-            this.filter_chart.Legends.Add(legend2);
+            chartArea46.AxisY2.MajorGrid.Enabled = false;
+            chartArea46.AxisY2.Maximum = 1D;
+            chartArea46.AxisY2.Minimum = 0D;
+            chartArea46.Name = "ChartArea1";
+            this.filter_chart.ChartAreas.Add(chartArea46);
+            legend46.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend46.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
+            legend46.Name = "Legend1";
+            this.filter_chart.Legends.Add(legend46);
             this.filter_chart.Location = new System.Drawing.Point(808, 5);
             this.filter_chart.Name = "filter_chart";
             this.filter_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Legend = "Legend1";
-            series5.Name = "Factors (Left Axis)";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Legend = "Legend1";
-            series6.Name = "Window (Right Axis)";
-            series6.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.filter_chart.Series.Add(series5);
-            this.filter_chart.Series.Add(series6);
+            series137.ChartArea = "ChartArea1";
+            series137.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series137.Legend = "Legend1";
+            series137.Name = "Factors (Left Axis)";
+            series138.ChartArea = "ChartArea1";
+            series138.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series138.Legend = "Legend1";
+            series138.Name = "Window (Right Axis)";
+            series138.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.filter_chart.Series.Add(series137);
+            this.filter_chart.Series.Add(series138);
             this.filter_chart.Size = new System.Drawing.Size(352, 300);
             this.filter_chart.TabIndex = 1;
             this.filter_chart.TabStop = false;
@@ -530,41 +540,41 @@
             // 
             // freq_chart
             // 
-            chartArea3.AxisX.IsMarginVisible = false;
-            chartArea3.AxisX.Maximum = 500D;
-            chartArea3.AxisX.Minimum = 0D;
-            chartArea3.AxisX.Title = "Frequency";
-            chartArea3.AxisY.Interval = 20D;
-            chartArea3.AxisY.IsStartedFromZero = false;
-            chartArea3.AxisY.Maximum = 20D;
-            chartArea3.AxisY.Minimum = -100D;
-            chartArea3.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
-            chartArea3.AxisY.Title = "Gain (dB)";
-            chartArea3.AxisY2.Interval = 20D;
-            chartArea3.AxisY2.IsStartedFromZero = false;
-            chartArea3.AxisY2.MajorGrid.Enabled = false;
-            chartArea3.AxisY2.Title = "Power (dB)";
-            chartArea3.Name = "ChartArea1";
-            this.freq_chart.ChartAreas.Add(chartArea3);
-            legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-            legend3.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
-            legend3.Name = "Legend1";
-            this.freq_chart.Legends.Add(legend3);
+            chartArea47.AxisX.IsMarginVisible = false;
+            chartArea47.AxisX.Maximum = 500D;
+            chartArea47.AxisX.Minimum = 0D;
+            chartArea47.AxisX.Title = "Frequency";
+            chartArea47.AxisY.Interval = 20D;
+            chartArea47.AxisY.IsStartedFromZero = false;
+            chartArea47.AxisY.Maximum = 20D;
+            chartArea47.AxisY.Minimum = -100D;
+            chartArea47.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
+            chartArea47.AxisY.Title = "Gain (dB)";
+            chartArea47.AxisY2.Interval = 20D;
+            chartArea47.AxisY2.IsStartedFromZero = false;
+            chartArea47.AxisY2.MajorGrid.Enabled = false;
+            chartArea47.AxisY2.Title = "Power (dB)";
+            chartArea47.Name = "ChartArea1";
+            this.freq_chart.ChartAreas.Add(chartArea47);
+            legend47.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend47.LegendStyle = System.Windows.Forms.DataVisualization.Charting.LegendStyle.Row;
+            legend47.Name = "Legend1";
+            this.freq_chart.Legends.Add(legend47);
             this.freq_chart.Location = new System.Drawing.Point(808, 310);
             this.freq_chart.Name = "freq_chart";
             this.freq_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright;
-            series7.BorderWidth = 2;
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series7.Legend = "Legend1";
-            series7.Name = "Filter Gain";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series8.Legend = "Legend1";
-            series8.Name = "Source Spectrum";
-            series8.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.freq_chart.Series.Add(series7);
-            this.freq_chart.Series.Add(series8);
+            series139.BorderWidth = 2;
+            series139.ChartArea = "ChartArea1";
+            series139.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series139.Legend = "Legend1";
+            series139.Name = "Filter Gain";
+            series140.ChartArea = "ChartArea1";
+            series140.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series140.Legend = "Legend1";
+            series140.Name = "Source Spectrum";
+            series140.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.freq_chart.Series.Add(series139);
+            this.freq_chart.Series.Add(series140);
             this.freq_chart.Size = new System.Drawing.Size(352, 300);
             this.freq_chart.TabIndex = 1;
             this.freq_chart.TabStop = false;
@@ -806,6 +816,7 @@
             this.rl_Za.Size = new System.Drawing.Size(44, 19);
             this.rl_Za.TabIndex = 19;
             this.rl_Za.Text = "5";
+            this.rl_Za.TextChanged += new System.EventHandler(this.rl_Za_TextChanged);
             // 
             // rl_Ya
             // 
@@ -814,6 +825,7 @@
             this.rl_Ya.Size = new System.Drawing.Size(44, 19);
             this.rl_Ya.TabIndex = 19;
             this.rl_Ya.Text = "5";
+            this.rl_Ya.TextChanged += new System.EventHandler(this.rl_Ya_TextChanged);
             // 
             // th_Za
             // 
@@ -822,6 +834,7 @@
             this.th_Za.Size = new System.Drawing.Size(44, 19);
             this.th_Za.TabIndex = 19;
             this.th_Za.Text = "5";
+            this.th_Za.TextChanged += new System.EventHandler(this.th_Za_TextChanged);
             // 
             // rl_P2
             // 
@@ -830,6 +843,7 @@
             this.rl_P2.Size = new System.Drawing.Size(44, 19);
             this.rl_P2.TabIndex = 19;
             this.rl_P2.Text = "20";
+            this.rl_P2.TextChanged += new System.EventHandler(this.rl_P2_TextChanged);
             // 
             // th_Ya
             // 
@@ -838,6 +852,7 @@
             this.th_Ya.Size = new System.Drawing.Size(44, 19);
             this.th_Ya.TabIndex = 19;
             this.th_Ya.Text = "5";
+            this.th_Ya.TextChanged += new System.EventHandler(this.th_Ya_TextChanged);
             // 
             // rl_P1
             // 
@@ -846,6 +861,7 @@
             this.rl_P1.Size = new System.Drawing.Size(44, 19);
             this.rl_P1.TabIndex = 19;
             this.rl_P1.Text = "20";
+            this.rl_P1.TextChanged += new System.EventHandler(this.rl_P1_TextChanged);
             // 
             // th_P2
             // 
@@ -854,6 +870,7 @@
             this.th_P2.Size = new System.Drawing.Size(44, 19);
             this.th_P2.TabIndex = 19;
             this.th_P2.Text = "10";
+            this.th_P2.TextChanged += new System.EventHandler(this.th_P2_TextChanged);
             // 
             // th_P1
             // 
@@ -862,6 +879,7 @@
             this.th_P1.Size = new System.Drawing.Size(44, 19);
             this.th_P1.TabIndex = 19;
             this.th_P1.Text = "10";
+            this.th_P1.TextChanged += new System.EventHandler(this.th_P1_TextChanged);
             // 
             // yama
             // 
@@ -893,6 +911,7 @@
             this.ch_Za.Name = "ch_Za";
             this.ch_Za.Size = new System.Drawing.Size(45, 20);
             this.ch_Za.TabIndex = 17;
+            this.ch_Za.SelectedIndexChanged += new System.EventHandler(this.ch_Za_SelectedIndexChanged);
             // 
             // ch_Ya
             // 
@@ -902,6 +921,7 @@
             this.ch_Ya.Name = "ch_Ya";
             this.ch_Ya.Size = new System.Drawing.Size(45, 20);
             this.ch_Ya.TabIndex = 17;
+            this.ch_Ya.SelectedIndexChanged += new System.EventHandler(this.ch_Ya_SelectedIndexChanged);
             // 
             // ch_P2
             // 
@@ -911,6 +931,7 @@
             this.ch_P2.Name = "ch_P2";
             this.ch_P2.Size = new System.Drawing.Size(45, 20);
             this.ch_P2.TabIndex = 17;
+            this.ch_P2.SelectedIndexChanged += new System.EventHandler(this.ch_P2_SelectedIndexChanged);
             // 
             // ch_P1
             // 
@@ -920,6 +941,7 @@
             this.ch_P1.Name = "ch_P1";
             this.ch_P1.Size = new System.Drawing.Size(45, 20);
             this.ch_P1.TabIndex = 17;
+            this.ch_P1.SelectedIndexChanged += new System.EventHandler(this.ch_P1_SelectedIndexChanged);
             // 
             // label26
             // 
@@ -968,12 +990,22 @@
             // 
             // peak_chart
             // 
-            chartArea4.AxisX.IsMarginVisible = false;
-            chartArea4.AxisX.IsStartedFromZero = false;
-            chartArea4.Name = "ChartArea1";
-            this.peak_chart.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.peak_chart.Legends.Add(legend4);
+            chartArea48.AxisX.IsMarginVisible = false;
+            chartArea48.AxisX.IsStartedFromZero = false;
+            chartArea48.InnerPlotPosition.Auto = false;
+            chartArea48.InnerPlotPosition.Height = 90F;
+            chartArea48.InnerPlotPosition.Width = 90F;
+            chartArea48.InnerPlotPosition.X = 8F;
+            chartArea48.InnerPlotPosition.Y = 3.5F;
+            chartArea48.Name = "ChartArea1";
+            chartArea48.Position.Auto = false;
+            chartArea48.Position.Height = 90F;
+            chartArea48.Position.Width = 80F;
+            chartArea48.Position.X = 5F;
+            chartArea48.Position.Y = 3F;
+            this.peak_chart.ChartAreas.Add(chartArea48);
+            legend48.Name = "Legend1";
+            this.peak_chart.Legends.Add(legend48);
             this.peak_chart.Location = new System.Drawing.Point(12, 616);
             this.peak_chart.Name = "peak_chart";
             this.peak_chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
@@ -982,30 +1014,30 @@
         System.Drawing.Color.Blue,
         System.Drawing.Color.Purple,
         System.Drawing.Color.Red};
-            series9.ChartArea = "ChartArea1";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series9.Legend = "Legend1";
-            series9.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Triangle;
-            series9.Name = "P1";
-            series10.ChartArea = "ChartArea1";
-            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series10.Legend = "Legend1";
-            series10.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Triangle;
-            series10.Name = "P2";
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series11.Legend = "Legend1";
-            series11.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
-            series11.Name = "Ya";
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
-            series12.Legend = "Legend1";
-            series12.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series12.Name = "Za";
-            this.peak_chart.Series.Add(series9);
-            this.peak_chart.Series.Add(series10);
-            this.peak_chart.Series.Add(series11);
-            this.peak_chart.Series.Add(series12);
+            series141.ChartArea = "ChartArea1";
+            series141.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series141.Legend = "Legend1";
+            series141.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Triangle;
+            series141.Name = "P1";
+            series142.ChartArea = "ChartArea1";
+            series142.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series142.Legend = "Legend1";
+            series142.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Triangle;
+            series142.Name = "P2";
+            series143.ChartArea = "ChartArea1";
+            series143.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series143.Legend = "Legend1";
+            series143.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+            series143.Name = "Ya";
+            series144.ChartArea = "ChartArea1";
+            series144.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
+            series144.Legend = "Legend1";
+            series144.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series144.Name = "Za";
+            this.peak_chart.Series.Add(series141);
+            this.peak_chart.Series.Add(series142);
+            this.peak_chart.Series.Add(series143);
+            this.peak_chart.Series.Add(series144);
             this.peak_chart.Size = new System.Drawing.Size(774, 300);
             this.peak_chart.TabIndex = 1;
             this.peak_chart.TabStop = false;
