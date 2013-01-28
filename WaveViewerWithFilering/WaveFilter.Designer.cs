@@ -478,9 +478,10 @@
             chartArea6.AxisY.Minimum = -100D;
             chartArea6.AxisY.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Rotated270;
             chartArea6.AxisY.Title = "Gain (dB)";
-            chartArea6.AxisY2.IsLogarithmic = true;
+            chartArea6.AxisY2.Interval = 20D;
             chartArea6.AxisY2.IsStartedFromZero = false;
-            chartArea6.AxisY2.Title = "Power";
+            chartArea6.AxisY2.MajorGrid.Enabled = false;
+            chartArea6.AxisY2.Title = "Power (dB)";
             chartArea6.Name = "ChartArea1";
             this.freq_chart.ChartAreas.Add(chartArea6);
             legend6.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;

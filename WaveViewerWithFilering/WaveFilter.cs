@@ -52,6 +52,8 @@ namespace WaveViewerWithFilering
         private double[] xvalues;
         private double[] wave;
         private double[] ans;
+
+        // Pointers for FFTW
         IntPtr pwin, pwout, plan_w;  // wave
         IntPtr pfin, pfout, plan_f;  // filter
         IntPtr prin, prout, plan_r;  // result
@@ -187,15 +189,14 @@ namespace WaveViewerWithFilering
             double df = fs / nfft;
             var s = freq_chart.Series[1].Points;
             double n = nfft / 2 + 1;
+            
             if (s.Count == n)
             {
                 for (int i = 0; i < n; i++)
                 {
-                    double real = sp_wave[i * 2];
-                    double imag = sp_wave[i * 2 + 1];
-                    double amp = real * real + imag * imag;
+                    double db = sp_wave_db(i);
                     // Same s.Count implies same xvalues.
-                    s[i].YValues[0] = amp;
+                    s[i].YValues[0] = db;
                 }
             }
             else
@@ -203,13 +204,21 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < n; i++)
                 {
-                    double real = sp_wave[i * 2];
-                    double imag = sp_wave[i * 2 + 1];
-                    double amp = real * real + imag * imag;
-                    s.AddXY(df * i, amp);
+                    double db = sp_wave_db(i);
+                    s.AddXY(df * i, db);
                 }
             }
             freq_chart.ChartAreas[0].RecalculateAxesScale();
+        }
+
+        private double sp_wave_db(int i)
+        {
+            double real = sp_wave[i * 2];
+            double imag = sp_wave[i * 2 + 1];
+            double amp = Math.Max(real * real + imag * imag, 1e-10); // 1e-10: avoid -Inf 
+            amp /= nfft;  //  normalize
+            double db = 20.0 * Math.Log10(amp); // convert to dB
+            return db;
         }
 
         private void setup_wave()
@@ -570,6 +579,7 @@ namespace WaveViewerWithFilering
         {
             update_gain();
         }
+
 
 
 
