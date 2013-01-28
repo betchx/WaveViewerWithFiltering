@@ -21,12 +21,20 @@ namespace WaveViewerWithFilering
             update_tap_info();
             upper_fc_track.Value = tap_track.Value;
             lower_fc_track.Value = 0;
-
+            sampling_rate.Text = "1000.0";
+            targets = new ComboBox[] { ch_P1, ch_P2, ch_Ya, ch_Za };
+            thresholds = new TextBox[] { th_P1, th_P2, th_Ya, th_Za };
+            required_lengths = new TextBox[] { rl_P1, rl_P2, rl_Ya, rl_Za };
         }
 
         private int nfft {  get { return data[ch].nfft; } }
         private int tap {  get { return tap_track.Value; } }
         private WaveData fir { get { return data[ch]; } }
+        ComboBox[] targets;
+        TextBox[] thresholds;
+        TextBox[] required_lengths;
+
+
 
         //-----------------------------------------------------------------//
 
@@ -52,6 +60,47 @@ namespace WaveViewerWithFilering
             update_filter_chart();
             update_sp_wave();
             update_freq_chart();
+            update_peak_chart();
+        }
+
+        private void update_peak_chart()
+        {
+            int channel;
+
+            int required_length;
+            double threshold;
+
+            var wave_peaks = wave_chart.Series[3].Points;
+            wave_peaks.Clear();
+
+            for (int i = 0; i < targets.Length; i++)
+            {
+                if (int.TryParse(targets[i].Text, out channel) &&
+                    double.TryParse(thresholds[i].Text, out threshold) &&
+                    int.TryParse(required_lengths[i].Text, out required_length))
+                {
+                    var wave = data[channel];
+                    var finder = new PeakFinder(threshold, required_length);
+                    wave.over_sample = over_sampling;
+                    var peaks = finder.apply(wave.over_sampled);
+                    var x0 = wave.xvalues[0];
+                    var dx = wave.dt / over_sampling;
+                    var s = peak_chart.Series[i].Points;
+                    s.Clear();
+
+                    bool add_wave = ch == channel;
+                    foreach (var item in peaks)
+                    {
+                        double x = x0 + dx * item.Key;
+                        s.AddXY(x, item.Value);
+                        if (add_wave) wave_peaks.AddXY(x, item.Value);
+                    }
+                }
+            }
+            // reset axes
+            peak_chart.ChartAreas[0].AxisX.Minimum = wave_chart.ChartAreas[0].AxisX.Minimum;
+            peak_chart.ChartAreas[0].AxisX.Maximum = wave_chart.ChartAreas[0].AxisX.Maximum;
+            peak_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         private void update_wave_chart_filtered()
@@ -66,7 +115,7 @@ namespace WaveViewerWithFilering
                 for (int i = 0; i < num_point; i++)
                 {
                     s[i].XValue = xvalues[i*step]; 
-                    s[i].YValues[0] = ans[i*step] / nfft; 
+                    s[i].YValues[0] = ans[i*step]; 
                 }
             }
             else
@@ -74,7 +123,7 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 for (int i = 0; i < num_point; i++)
                 {
-                    s.AddXY(xvalues[i], ans[i*step] / nfft);  
+                    s.AddXY(xvalues[i], ans[i*step]);  
                 }
             }
             wave_chart.ChartAreas[0].RecalculateAxesScale();
@@ -260,7 +309,7 @@ namespace WaveViewerWithFilering
             progressBar1.Value = progressBar1.Maximum;
 
             // reset combobox
-            foreach (var item in new List<ComboBox> { ch_P1, ch_P2, ch_Ya, ch_Za })
+            foreach (var item in targets)
             {
                 item.Text = "";
                 item.Items.Clear();
@@ -279,6 +328,13 @@ namespace WaveViewerWithFilering
 
             progressBar1.Visible = false;
 
+            umi.Enabled = true;
+            yama.Enabled = true;
+            len_0_1sec.Enabled = true;
+            len_0_5sec.Enabled = true;
+            len_1sec.Enabled = true;
+            len_5sec.Enabled = true;
+
         }
 
         private void channel_change()
@@ -292,6 +348,7 @@ namespace WaveViewerWithFilering
 
             fs = 1.0 / dt;
             sampling_rate.Text = fs.ToString();
+            sampling_rate.ReadOnly = true;
             fn = fs / 2.0;
             nyquist_frequency.Text = fn.ToString();
 
@@ -437,6 +494,11 @@ namespace WaveViewerWithFilering
             ch_Za.Text = find_channel(side + "_Za").ToString();
         }
 
+        private void set_data_length_by_duration(double dur)
+        {
+            int count = (int)(dur / dt);
+            data_length.Text = count.ToString();
+        }
 
         //-----------------------------------------------------------------//
 
@@ -539,11 +601,52 @@ namespace WaveViewerWithFilering
         private void umi_Click(object sender, EventArgs e)
         {
             search_channels("UMI");
+            CheckUpdate();
         }
 
         private void yama_Click(object sender, EventArgs e)
         {
             search_channels("YAMA");
+            CheckUpdate();
+        }
+
+        private void len_0_1sec_Click(object sender, EventArgs e)
+        {
+            set_data_length_by_duration(0.1);
+            CheckUpdate();
+        }
+
+
+        private void len_0_5sec_Click(object sender, EventArgs e)
+        {
+            set_data_length_by_duration(0.5);
+            CheckUpdate();
+        }
+
+        private void len_1sec_Click(object sender, EventArgs e)
+        {
+            set_data_length_by_duration(1.0);
+            CheckUpdate();
+        }
+
+        private void len_5sec_Click(object sender, EventArgs e)
+        {
+            set_data_length_by_duration(5.0);
+            CheckUpdate();
+        }
+
+        private void sampling_rate_TextChanged(object sender, EventArgs e)
+        {
+            if (!sampling_rate.ReadOnly)
+            {
+                if (double.TryParse(sampling_rate.Text, out fs))
+                {
+                    fn = (fs / 2.0);
+                    nyquist_frequency.Text = fn.ToString();
+                    update_upper_fc();
+                    update_lower_fc();
+                }
+            }
         }
 
 
