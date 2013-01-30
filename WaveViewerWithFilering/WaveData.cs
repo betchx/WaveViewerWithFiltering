@@ -341,6 +341,8 @@ namespace WaveViewerWithFilering
 
         private void update_over_sampled()
         {
+            if (ans == null)
+                return;
             // noneed to upsampling;
             if (over_sample == 1)
             {
@@ -383,12 +385,13 @@ namespace WaveViewerWithFilering
                 raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
             }
             // copy main_data
+            int last_index = data.Length - 1;
             for (int i = 0; i < num_disp; i++)
             {
-                raw_wave[i] = data[data_start+i] - base_line;
+                int k = last_index - Math.Abs(last_index - (data_start + i));
+                raw_wave[i] = data[k] - base_line;
             }
             // copy postdata
-            int last_index = data.Length - 1;
             for (int i = 0; i < tap; i++)
             {
                 int k = last_index - Math.Abs(last_index - (n_end + i));
