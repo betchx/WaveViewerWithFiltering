@@ -275,7 +275,10 @@ namespace WaveViewerWithFilering
             var s = freq_chart.Series[1].Points;
             var amps = data[ch].wave_spectrum_amplitude_in_dB();
             int n = nfft / 2;
-            
+            if (data[ch].category == "DIS" || data[ch].category == "VEL")
+            {
+                n -= 1;
+            }
             if (s.Count == n)
             {
                 for (int i = 1; i <= n; i++)
