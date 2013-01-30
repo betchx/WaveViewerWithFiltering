@@ -74,6 +74,7 @@ namespace WaveViewerWithFilering
                     break;
             }
             dirty = true;
+            design();
         }
 
         // attributes
@@ -99,7 +100,6 @@ namespace WaveViewerWithFilering
                 psout = fftw.malloc(sizeof(double) * 2 * size);
                 plan_f = fftw.dft_1d(size, psin, psout, fftw_direction.Forward, fftw_flags.Estimate);
                 setup_window();
-                dirty = true;
             }
         }
         private int lower_; public int lower { get { return lower_; } set { lower_ = value; dirty = true; } }
