@@ -13,11 +13,14 @@ namespace WaveViewerWithFilering
     class ComplexArray
     {
         private double[] data;
-        private int size;
-        private int len;
+        public int size{get; private set;}
+        public int len{get; private set;}
         private IntPtr pin;
         private IntPtr pout;
         private IntPtr plan;
+
+        public class None { }
+
 
         public ComplexArray(int length)
         {
@@ -51,7 +54,37 @@ namespace WaveViewerWithFilering
             }
         }
 
+        public ComplexArray(ComplexArray ca)
+        {
+            len = ca.len;
+            size = ca.size;
+            data = ca.data.ToArray();
+        }
+
         // special construction
+
+
+        public ComplexArray(double[] wave, ComplexArray.None dummy)
+        {
+            len = wave.Length;
+            size = len * 2;
+            data = new double[size];
+            for (int i = 0; i < len; i++)
+            {
+                data[i * 2] = wave[i];
+            }
+        }
+
+        public ComplexArray(ComplexArray.None dummy, double[] wave)
+        {
+            len = wave.Length;
+            size = len * 2;
+            data = new double[size];
+            for (int i = 0; i < len; i++)
+            {
+                data[i * 2 + 1] = wave[i];
+            }
+        }
 
 
         public static ComplexArray real(double[] wave)
@@ -71,7 +104,7 @@ namespace WaveViewerWithFilering
             ComplexArray ans = new ComplexArray(len);
             for (int i = 0; i < len; i++)
             {
-                ans.data[i * 2+1] = wave[i];
+                ans.data[i * 2 + 1] = wave[i];
             }
             return ans;
         }
@@ -83,12 +116,13 @@ namespace WaveViewerWithFilering
         /// <returns>Constructed ComplexArray (Spectrum)</returns>
         public static ComplexArray by_fft(double[] wave)
         {
+            throw new NotImplementedException();
             IntPtr pin = IntPtr.Zero;
             IntPtr pout = IntPtr.Zero;
             IntPtr plan = IntPtr.Zero;
             int len = wave.Length;
-            int size = len * 2;
-            var res = new ComplexArray(len);
+            int size = len + 2;
+            var res = new ComplexArray(size/2);
             try
             {
                 pin = fftw.malloc(sizeof(double) * len);
@@ -126,6 +160,7 @@ namespace WaveViewerWithFilering
                 data[index * 2 + 1] = value.imag;
             }
         }
+
 
 
         // operation
@@ -173,15 +208,18 @@ namespace WaveViewerWithFilering
         /// <returns>real wave by iDFT</returns>
         public double[] idft_wave()
         {
-            double[] ans = new double[len];
+            throw new NotImplementedException();
+
+            int nfft = size - 2;
+            double[] ans = new double[nfft];
             try
             {
                 pin = fftw.malloc(sizeof(double) * size);
-                pout = fftw.malloc(sizeof(double) * len);
+                pout = fftw.malloc(sizeof(double) * nfft);
                 plan = fftw.dft_c2r_1d(len, pin, pout, fftw_flags.Estimate);
                 Marshal.Copy(data, 0, pin, size);
                 fftw.execute(plan);
-                Marshal.Copy(pout, ans, 0, size);
+                Marshal.Copy(pout, ans, 0, nfft);
             }
             finally
             {

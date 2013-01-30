@@ -37,8 +37,7 @@ namespace WaveViewerWithFilering
             else
                 integral = -1;
 
-            invalidate_factors();
-            invalidate_waves();
+            update_nfft();
         }
 
         private int integral;
@@ -61,44 +60,17 @@ namespace WaveViewerWithFilering
                     if (val != integral)
                     {
                         integral = val;
-                        invalidate_waves();
+                        update_wave();
                     }
                 }
             }
         }
 
-
-
         // properties
-        private double[] data_;
-        public double[] data
-        {
-            get { return data_; }
-            set
-            {
-                data_ = value;
-                invalidate_waves();
-            }
-        }
-
+        public double[] data { get; private set; }
         public bool is_acc { get; private set; }
 
-        private double dt_;
-        public double dt
-        {
-            get { return dt_; }
-            set
-            {
-                dt_ = value;
-                invalidate_waves();
-                filter_dirty = true;
-            }
-        }
-
-        // dirty flags
-        private bool filter_dirty;
-        private bool wave_dirty;
-        private bool ans_dirty;
+        public double dt { get; private set; }
 
         private FIRFilter filter;
 
@@ -111,7 +83,6 @@ namespace WaveViewerWithFilering
                 num_disp_ = value;
                 filtered_ = new double[value];
                 update_nfft();
-                invalidate_waves();
             }
         }
 
@@ -125,7 +96,7 @@ namespace WaveViewerWithFilering
             set
             {
                 data_start_ = value;
-                invalidate_waves();
+                setup_raw_wave();
             }
         }
 
@@ -168,52 +139,29 @@ namespace WaveViewerWithFilering
             set
             {
                 filter.tap = value;
-                invalidate_waves();
-                invalidate_factors();
+                update_nfft();
             }
         }
-        public int lower { get { return filter.lower; } set { filter.lower = value; invalidate_factors(); } }
-        public int upper { get { return filter.upper; } set { filter.upper = value; invalidate_factors(); } }
-        public double gain { get { return filter.gain; } set { filter.gain = value; invalidate_factors(); } }
+        public int lower { get { return filter.lower; } set { filter.lower = value; update_factors(); } }
+        public int upper { get { return filter.upper; } set { filter.upper = value; update_factors(); } }
+        public double gain { get { return filter.gain; } set { filter.gain = value; update_factors(); } }
         public double[] gains { get { return filter.gains; }}
         public double[] factor { get { return filter.factor; }}
+        public double[] source { get; private set; }
+        public double[] xvalues { get; private set; }
+
         public WindowFunction window { get { return filter.window; } }
         public double alpha { get { return filter.alpha; } set { filter.alpha = value; } }
         public FIRFilter.WindowType  window_type { get { return filter.window_type; } set { filter.window_type = value; } }
 
         //---Public Methods--------------------------------//
 
-        private double[] source_;
-        public double[] source
-        {
-            get
-            {
-                update_source();
-                return source_;
-            }
-        }
 
-
-        private double[] xvalues_;
-        public double[] xvalues
-        {
-            get
-            {
-                update_xvalues();
-                return xvalues_;
-            }
-        }
 
         public double[] wave_spectrum_amplitude_in_dB()
         {
             int sz = nfft / 2 + 1;
-            var res = new double[nfft / 2 + 1];
-            for (int i = 0; i < sz; i++)
-            {
-                res[i] = sp_wave_in_dB(i);
-            }
-
-            return res;
+            return sp_wave.power().Take(sz).Select(p => 20.0 * Math.Log10(Math.Max(p, 1e-100))).ToArray();
         }
 
         private double[] over_sampled_; public double[] over_sampled { get {  return over_sampled_; } }
@@ -231,15 +179,13 @@ namespace WaveViewerWithFilering
                     case 4:
                     case 8:
                     over_sample_ = value;
-                    alloc_over();
                     update_over_sampled();
                         break;
                     default:
-                        throw new ArgumentException("over_sample can be 1, 2,4 or 8"); 
+                        throw new ArgumentException("over_sample can be 1, 2, 4 or 8"); 
                 }
             }
         }
-
 
         //---Inernal Use--------------------------------//
 
@@ -250,374 +196,215 @@ namespace WaveViewerWithFilering
         private double[] factors;     // expanded filter data
         private double[] ans;         // filtered wave (iDFT of sp_ans)
         private double[] over;
-        private double[] sp_raw_wave; // DFT of raw_wave;
-        private double[] sp_wave;     // DFT of wave
-        private double[] sp_factors;  // DFT of factors
-        private double[] sp_ans;      // sp_wave * sp_factors 
-        private double[] sp_over;
-
-        // Pointers for FFTW
-        IntPtr pfin, pfout, plan_f;  // forward
-        IntPtr prin, prout, plan_r;  // Reverse (inverse)
+        private double base_line;
+        private ComplexArray sp_raw_wave; // DFT of raw_wave;
+        private ComplexArray sp_wave;     // DFT of wave
+        private ComplexArray sp_factors;  // DFT of factors
+        private ComplexArray sp_ans;      // sp_wave * sp_factors 
+        private ComplexArray sp_over;
+        private ComplexArray omega;
 
         //---Private methods
-
-        private void invalidate_waves()
-        {
-            source_ = null;
-            xvalues_ = null;
-            wave_dirty = true;
-            ans_dirty = true;
-        }
-
-        private void invalidate_factors()
-        {
-            filter_dirty = true;
-            ans_dirty = true;
-        }
-
-        private void update_source()
-        {
-            if (source_ == null)
-            {
-                update_sp_wave();
-                source_ = new double[num_disp];
-                for (int i = 0; i < num_disp; i++)
-                {
-                    source_[i] = wave[2 * (i + 2 * tap)];
-                }
-            }
-        }
-
-        private void update_xvalues()
-        {
-            if (xvalues_  == null)
-            {
-                xvalues_ = new double[num_disp];
-                for (int i = 0; i < num_disp; i++)
-                {
-                    xvalues_[i] = (i + data_start) * dt;
-                }
-            }
-        }
 
         private void update_nfft()
         {
             int val = 1024;
             while (val < num_disp + filter.tap * 4)
                 val *= 2;
-            if (val != nfft)
-            {
-                nfft_ = val;
-                raw_wave = new double[nfft * 2];
-                sp_raw_wave = new double[nfft * 2];
-                wave = new double[nfft * 2];
-                factors = new double[nfft * 2];
-                sp_factors = new double[nfft * 2];
-                sp_wave = new double[nfft * 2];
-                sp_ans = new double[nfft * 2];
-                ans = new double[nfft * 2];
-                alloc_over();
-                fftw_setup();
-            }
-        }
 
-        private void alloc_over()
-        {
-            over = new double[nfft * 2 * over_sample];
-            sp_over = new double[nfft * 2 * over_sample];
-        }
-
-        private void fftw_setup()
-        {
-            if (pfin != null)
-                fftw_free();
-            pfin = fftw.malloc(sizeof(double) * nfft * 2);
-            prin = fftw.malloc(sizeof(double) * nfft * 2);
-            pfout = fftw.malloc(sizeof(double) * nfft * 2);
-            prout = fftw.malloc(sizeof(double) * nfft * 2);
-            plan_f = fftw.dft_1d(nfft, pfin, pfout, fftw_direction.Forward, fftw_flags.Estimate);
-            plan_r = fftw.dft_1d(nfft, prin, prout, fftw_direction.Backward, fftw_flags.Estimate);
-            filter_dirty = true;
-        }
-
-        private void fftw_free()
-        {
-            fftw.free(pfin);
-            fftw.free(pfout);
-            fftw.free(prin);
-            fftw.free(prout);
-            fftw.destroy_plan(plan_f);
-            fftw.destroy_plan(plan_r);
-        }
-
-        private double sp_wave_in_dB(int i)
-        {
-            if (sp_wave == null)
-            {
-                update_nfft();
-                update_sp_wave();
-            }
-
-            double real = sp_wave[i * 2];
-            double imag = sp_wave[i * 2 + 1];
-            double amp = Math.Max(real * real + imag * imag, 1e-40); // 1e-10: avoid -Inf 
-            amp /= nfft;  //  normalize
-            double db = 20.0 * Math.Log10(amp); // convert to dB
-            return db;
-        }
-
-        private void update_sp_wave()
-        {
-            if (wave_dirty)
-            {
-                setup_raw_wave();
-                Marshal.Copy(raw_wave, 0, pfin, nfft * 2);
-                fftw.execute(plan_f);
-                Marshal.Copy(pfout, sp_raw_wave, 0, nfft * 2);
-
-
-                if (integral < 1)
-                {
-                    // ACC and others are not need integration.
-                    //Array.Copy(sp_raw_wave, sp_wave, nfft * 2);
-                    //sp_wave = sp_raw_wave.Select(e => e / nfft);
-                    for (int i = 0; i < nfft*2; i++)
-                    {
-                        sp_wave[i] = sp_raw_wave[i] / nfft_;
-                    }
-                    Array.Copy(raw_wave, wave, nfft * 2);
-                }
-                else
-                {
-                    // VEL and DISP need integration.
-
-                    integrate_wave();
-                }
-                wave_dirty  = false;
-                ans_dirty = true;
-            }
-        }
-
-
-
-        private void integrate_wave()
-        {
-            // Integrate in frequency domain.
-            double c0, d0;
-            switch (integral)
-            {
-                case 1: // vel
-                    c0 = 0.0;
-                    d0 = 1.0;
-                    break;
-                case 2: // dis
-                    c0 = -1.0;
-                    d0 = 0.0;
-                    break;
-                default:
-                    c0 = 1.0;
-                    d0 = 0.0;
-                    break;
-            }
+            nfft_ = val;
             double fs = 1.0 / dt;
             double df = fs / nfft;
-            sp_wave[0] = 0.0; // eliminating DC compornent.  (avoiding divide by zero)
-            sp_wave[1] = 0.0;
-            double[] omega = new double[nfft];
-            omega[0] = 0.0;
-            for (int i = 1; i <= nfft / 2; i++)
-            {
-                omega[nfft - i] = omega[i] = Math.Pow(df * i * 2 * Math.PI, integral);
-            }
 
-            for (int i = 1; i < nfft; i++)
-            {
-                double a = sp_raw_wave[2 * i];
-                double b = sp_raw_wave[2 * i + 1];
-                double c = c0 * omega[i];
-                double d = d0 * omega[i];
-                double div = 1.0 / (c * c + d * d) / nfft;
-                sp_wave[i * 2] = (a * c - b * d) * div;
-                sp_wave[i * 2 + 1] = (a * d - b * c) * div;
-            }
-            Marshal.Copy(sp_wave, 0, prin, nfft * 2);
-            fftw.execute(plan_r);
-            Marshal.Copy(prout, wave, 0, nfft * 2);
+            var half = Enumerable.Range(1, nfft / 2 - 1).Select(n => - 1.0/( n * df * 2 * Math.PI));
+            var i_arr = Enumerable.Repeat(0.0, 1)
+                .Concat(half)
+                .Concat(Enumerable.Repeat(0.0, 1))
+                .Concat(half.Reverse()).ToArray();
+            omega = ComplexArray.imag(i_arr);
+            if (omega.len != nfft)
+                throw new ApplicationException();
+
+            wave = null; //  to skip apply_filter()
+            update_factors();
+
+            // next
+            setup_raw_wave();
         }
-        
 
         // copy wave data and FFT
         private void setup_raw_wave()
         {
-            int tap = filter.tap;
+            if (num_disp == 0)
+                return;
+            raw_wave = new double[nfft];
+
             int n_start = data_start_ - tap * 2;
-
-            update_nfft();
-
-            // obtain average
-            double base_line = data.Skip(n_start).Take(num_disp).Average();
-
-            // clear data with baseline
-            for (int i = 0; i < nfft; i++)
+            var base_wave = data.Skip(n_start).Take(num_disp);
+            base_line = base_wave.Average();
+            var range = base_wave.Max() - base_wave.Min();
+            var delta = range / 1e6;
+            for (int i = 0; i < 20; i++)
             {
-                raw_wave[i*2] = base_line;
-                raw_wave[i * 2 + 1] = 0.0;
+                take_raw_wave_with_baseline();
+
+                var error = raw_wave.Average();
+                if (Math.Abs(error) < delta)
+                    break;
+                base_line += error / 2; //update
             }
 
-            HannWindow hann = new HannWindow(tap);
-
-
-            // copy with filter
-            for (int i = 0; i < tap; i++)
-            {
-                int k = n_start + i;
-                double amp = hann[tap - i -1];
-                double value = data[Math.Max(k, 0)];
-                raw_wave[2 * i] = (value - base_line ) * amp + base_line;
-            }
-            // copy pre_data
-            for (int i = tap; i < tap * 2; i++)
-            {
-                int k = n_start + i;
-                raw_wave[2 * i] = data[Math.Max(k,0)];
-            }
-            // copy main_data
-            for (int i = 0; i < num_disp; i++)
-            {
-                int j = i + 2 * tap;
-                int k = n_start + j;
-                raw_wave[2 * j] = data[k];
-            }
-            // copy postdata
-            int last_index = data.Length - 1;
-            for (int i = 0; i < tap; i++)
-            {
-                int j = i + 2 * tap + num_disp;
-                int k = Math.Min(data_start + num_disp + i, last_index);
-                raw_wave[2 * j] = data[k];
-            }
-            // copy with filter
-            for (int i = 0; i < tap; i++)
-            {
-                int j = i + 3 * tap + num_disp;
-                int k = Math.Min(data_start + num_disp + tap + i, last_index);
-                double amp = hann[i];
-                raw_wave[2 * j] = (data[k] - base_line) * amp + base_line;
-            }
-            // rest data are base_line.
+            // next
+            update_wave();
         }
 
-        private void update_sp_factors()
+        private void update_wave()
         {
-            if (!filter_dirty &&  ! filter.is_dirty)
+            if (raw_wave == null)
                 return;
 
-            update_factors();
+            if (integral < 1)
+            {
+                // ACC and others are not need integration.
+                sp_raw_wave = ComplexArray.real(raw_wave).dft() / nfft;
+                wave = raw_wave.Select(d => d + base_line).ToArray();
+                sp_wave = ComplexArray.real(wave).dft() / nfft;
+            }
+            else
+            {
+                // VEL and DISP need integration.
+                sp_raw_wave = ComplexArray.real(raw_wave).dft()/ nfft;
+                sp_wave = new ComplexArray(sp_raw_wave);
+                // Integrate in frequency domain.
+                for (int i = 0; i < integral; i++)
+                {
+                    sp_wave *= omega;
+                }
+                //sp_wave[0] *= 0.0;
+                //for (int k = 0; k < integral; k++)
+                //{
+                //    for (int i = 1; i < nfft / 2; i++)
+                //    {
+                //        sp_wave[i] *= omega[i];
+                //        sp_wave[nfft - i] = sp_wave[i].conj;
+                //    }
+                //}
+                wave = sp_wave.idft().real();
+            }
+            source = wave.Take(num_disp).ToArray();
+            xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
 
-            Marshal.Copy(factors, 0, pfin, nfft * 2);
-            fftw.execute(plan_f);
-            Marshal.Copy(pfout, sp_factors, 0, nfft * 2);
-            filter_dirty = false;
-            ans_dirty = true;
+            if (factors == null)
+                return;
+
+            apply_filter();
         }
+
 
         private void update_factors()
         {
 
-            filter.design(); // refresh filter if needed
-            factors = new double[2 * nfft];
-
-            for (int i = 0; i < filter.size; i++)
+            if (filter.design()) // refresh filter if needed
             {
-                int k = Math.Abs(i - filter.tap);
-                factors[i * 2] = filter.factor[k];
+                factors = new double[nfft];
+
+                factors[0] = filter.factor[0];
+                for (int i = 1; i <= filter.tap; i++)
+                {
+                    factors[nfft - i] = factors[i] = filter.factor[i];
+                }
+                sp_factors = ComplexArray.real(factors).dft();
+                if (wave == null)
+                    return;
+
+                apply_filter();
             }
         }
 
         private void apply_filter()
         {
-            update_sp_wave();
-            update_sp_factors();
-            if (ans_dirty)
-            {
-                for (int i = 0; i < nfft; i++)
-                {
-                    // multiply complex value
-                    double a = sp_wave[i * 2];
-                    double b = sp_wave[i * 2 + 1];
-                    double c = sp_factors[i * 2];
-                    double d = sp_factors[i * 2 + 1];
-                    sp_ans[i * 2] = a * c - b * d;
-                    sp_ans[i * 2 + 1] = a * d + b * c;
-                }
+            if (wave == null || factors == null)
+                return;
 
-                Marshal.Copy(sp_ans, 0, prin, nfft * 2);
-                fftw.execute(plan_r);
-                Marshal.Copy(prout, ans, 0, nfft * 2);
+            // convolution in Frequency domain
+            sp_ans = sp_wave * sp_factors;
 
-                // copy result to filtered_
-                int offset = filter.tap * 3;  // 2*tap is pre_data, 1*tap is delay 
+            // inverse fft
+            ans = sp_ans.idft().real();
 
-                for (int i = 0; i < num_disp; i++)
-                {
-                    int k = i + offset;
-                    filtered_[i] = ans[2 * k]; // sp_wave was normalized already.
-                }
+            // copy result to filtered_
+            filtered_ = ans.Take(num_disp).ToArray();
 
-                // clear dirty flag
-                ans_dirty = false;
-            }
+            // Next is oversamle
+            update_over_sampled();
         }
 
         private void update_over_sampled()
         {
-            apply_filter();  // update required.
-
-            over_sampled_ = new double[num_disp * over_sample];
-
             // noneed to upsampling;
             if (over_sample == 1)
             {
-                Array.Copy(filtered_, over_sampled_, num_disp);
-                Array.Copy(ans, over, nfft*2);
-                Array.Copy(sp_ans, sp_over, nfft*2);
+                over_sampled_ = filtered_.ToArray();
+                over = ans.ToArray();
+                sp_over = new ComplexArray(sp_ans);
                 return;
             }
+            int size = sp_ans.len * over_sample;
 
-            IntPtr pin = IntPtr.Zero, pout = IntPtr.Zero, plan = IntPtr.Zero;
-            int size = nfft * over_sample;
-
+            sp_over = new ComplexArray(size);
 
             sp_over[0] = sp_ans[0];
-            sp_over[1] = sp_ans[1];
-            for (int i = 2; i < nfft; i++)
+            for (int i = 1; i <= nfft/2; i++)
             {
                 sp_over[i] = sp_ans[i];
-                sp_over[2*size -nfft + i] = sp_ans[nfft + i];
+                sp_over[size - i] = sp_ans[i].conj;
             }
 
-            try
-            {
-                pin = fftw.malloc(sizeof(double) * size * 2);
-                pout = fftw.malloc(sizeof(double) * size * 2);
-                plan = fftw.dft_1d(size, pin, pout, fftw_direction.Backward, fftw_flags.Estimate);
-                Marshal.Copy(sp_over, 0, pin, size * 2);
-                fftw.execute(plan);
-                Marshal.Copy(pout, over, 0, size * 2);
-                int offset = 3 * tap * over_sample;
-                for (int i = 0; i < num_disp * over_sample; i++)
-                {
-                    over_sampled_[i] = over[2 * (i + offset)];
-                }
-            }
-            finally
-            {
-                fftw.free(pin);
-                fftw.free(pout);
-                fftw.destroy_plan(plan);
-            }
+            over = sp_over.idft().real();
+            over_sampled_ = over.Take(num_disp * over_sample).ToArray();
+
+            // no next
         }
+
+        private void take_raw_wave_with_baseline()
+        {
+            int tap = filter.tap;
+            int n_start = data_start - tap * 2;
+            int n_end = data_start + num_disp;
+
+            Array.Clear(raw_wave, 0, nfft); 
+
+            HannWindow hann = new HannWindow(tap);
+
+            // copy pre_data with filter
+            for (int i = 0; i < tap; i++)
+            {
+                raw_wave[nfft - 2 * tap + i] = (data[Math.Abs(i + n_start)] - base_line) * hann[tap-i];
+                raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
+            }
+            // copy main_data
+            for (int i = 0; i < num_disp; i++)
+            {
+                raw_wave[i] = data[data_start+i] - base_line;
+            }
+            // copy postdata
+            int last_index = data.Length - 1;
+            for (int i = 0; i < tap; i++)
+            {
+                int k = last_index - Math.Abs(last_index - (n_end + i));
+                raw_wave[num_disp + i] = data[k] - base_line;
+            }
+            // copy with filter
+            for (int i = 0; i < tap; i++)
+            {
+                int j = i + 3 * tap + num_disp;
+                int k = last_index - Math.Abs(last_index - (n_end + tap + i));
+                raw_wave[num_disp + tap + i] = (data[k] - base_line) * hann[i];
+            }
+
+        }
+
+
 
         // for debug
         public double[][] debug_waves()
@@ -629,13 +416,15 @@ namespace WaveViewerWithFilering
                 raw_wave,
             };
         }
+
+
         public double[][] debug_spectrums()
         {
             return new double[][]{
-                sp_wave,
-                sp_ans,
-                sp_over,
-                sp_raw_wave,
+                sp_wave.abs(),
+                sp_ans.abs(),
+                sp_over.abs(),
+                sp_raw_wave.abs(),
             };
         }
         
