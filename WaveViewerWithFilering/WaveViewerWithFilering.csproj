@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Complex.cs" />
+    <Compile Include="ComplexArray.cs" />
     <Compile Include="Famos.cs" />
     <Compile Include="FIRFilter.cs" />
     <Compile Include="PeakFinder.cs" />
