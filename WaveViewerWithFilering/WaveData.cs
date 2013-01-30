@@ -409,11 +409,13 @@ namespace WaveViewerWithFilering
         // for debug
         public double[][] debug_waves()
         {
+            int zeros = Math.Max(2 * tap - data_start,0);
             return new double[][]{
                 wave,
                 ans,
                 over,
                 raw_wave,
+                Enumerable.Repeat(0.0,zeros).Concat(data.Skip(data_start - 2*tap).Take(num_disp + 4*tap-zeros)).ToArray()
             };
         }
 

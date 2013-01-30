@@ -28,7 +28,7 @@ namespace WaveViewerWithFilering
             over_sampling_ = 1;
             integ.Text = "ACC";
             update_chart_visible();
-            hide_flag = new bool[] { false, false, false, false};
+            hide_flag = new bool[] { false, false, false, false, false};
         }
 
         private int nfft {  get { return data[ch].nfft; } }

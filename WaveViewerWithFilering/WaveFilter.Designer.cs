@@ -55,6 +55,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series16 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.auto_update = new System.Windows.Forms.CheckBox();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.data_start = new System.Windows.Forms.HScrollBar();
@@ -1070,11 +1071,13 @@
             series11.Legend = "Legend1";
             series11.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
             series11.Name = "Ya";
+            series11.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             series12.ChartArea = "ChartArea1";
             series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
             series12.Legend = "Legend1";
             series12.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
             series12.Name = "Za";
+            series12.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
             this.peak_chart.Series.Add(series9);
             this.peak_chart.Series.Add(series10);
             this.peak_chart.Series.Add(series11);
@@ -1257,10 +1260,15 @@
             series16.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series16.Legend = "Legend1";
             series16.Name = "raw_wave";
+            series17.ChartArea = "ChartArea2";
+            series17.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series17.Legend = "Legend1";
+            series17.Name = "data";
             this.wave_fft_chart.Series.Add(series13);
             this.wave_fft_chart.Series.Add(series14);
             this.wave_fft_chart.Series.Add(series15);
             this.wave_fft_chart.Series.Add(series16);
+            this.wave_fft_chart.Series.Add(series17);
             this.wave_fft_chart.Size = new System.Drawing.Size(1129, 300);
             this.wave_fft_chart.TabIndex = 1;
             this.wave_fft_chart.TabStop = false;
@@ -1271,7 +1279,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 923);
-            this.Controls.Add(this.wave_fft_chart);
             this.Controls.Add(this.hide_over);
             this.Controls.Add(this.hide_result);
             this.Controls.Add(this.hide_source);
@@ -1326,6 +1333,7 @@
             this.Controls.Add(this.peak_chart);
             this.Controls.Add(this.wave_chart);
             this.Controls.Add(this.show_fft_data);
+            this.Controls.Add(this.wave_fft_chart);
             this.Name = "wave_filter";
             this.Text = "WaveFilter";
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).EndInit();
