@@ -117,6 +117,8 @@ namespace WaveViewerWithFilering
 
         public bool design()
         {
+            if(tap == 0)
+                return false;
             if (plan_b == null)
                 return false;
             if (!dirty)
