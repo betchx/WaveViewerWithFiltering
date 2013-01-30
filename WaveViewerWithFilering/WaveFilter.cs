@@ -26,6 +26,9 @@ namespace WaveViewerWithFilering
             thresholds = new TextBox[] { th_P1, th_P2, th_Ya, th_Za };
             required_lengths = new TextBox[] { rl_P1, rl_P2, rl_Ya, rl_Za };
             over_sampling_ = 1;
+            integ.Text = "ACC";
+            update_chart_visible();
+            hide_flag = new bool[] { false, false, false, false};
         }
 
         private int nfft {  get { return data[ch].nfft; } }
@@ -52,6 +55,12 @@ namespace WaveViewerWithFilering
         private double fn;
         private Famos famos;
 
+        bool[] hide_flag;
+        const int HIDE_WAVE = 0;
+        const int HIDE_ANS = 1;
+        const int HIDE_OVER = 2;
+
+
         private void data_update()
         {
             if (famos == null)
@@ -61,23 +70,32 @@ namespace WaveViewerWithFilering
             update_wave_chart_filtered();
             update_filter_chart();
             update_wave_chart_oversampled();
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
             update_sp_wave();
             update_freq_chart();
-            update_peak_chart();
+            if (show_fft_data.Checked)
+            {
+                update_wave_fft_chart();
+            }
+            else
+            {
+                update_peak_chart();
+            }
         }
 
         private void update_wave_chart_oversampled()
         {
             var s = wave_chart.Series[2].Points;
 
-            if (step > 1)
+            if (hide_over.Checked || step > 1)
             {
                 s.Clear();
                 return;
             }
 
             data[ch].over_sample = over_sampling;
-            var val = data[ch].over_sampled;
+
+            double[] val = data[ch].over_sampled;
             double x0 = data[ch].xvalues[0];
             double dx = dt / over_sampling;
             if (val.Length == s.Count)
@@ -100,6 +118,24 @@ namespace WaveViewerWithFilering
                 }
             }
         }
+
+        private void update_wave_fft_chart()
+        {
+            var waves = data[ch].debug_waves();
+
+            for (int i = 0; i < waves.Length; i++)
+            {
+                var s = wave_fft_chart.Series[i].Points;
+                s.Clear();
+                if (hide_flag[i])
+                    continue;
+                for (int k = 0; k < waves[i].Length / 2; k++)
+                {
+                    s.AddXY(k, waves[i][k * 2]);
+                }
+            }
+        }
+
 
         private void update_peak_chart()
         {
@@ -148,6 +184,11 @@ namespace WaveViewerWithFilering
         private void update_wave_chart_filtered()
         {
             var s = wave_chart.Series[1].Points;
+            if (hide_result.Checked)
+            {
+                s.Clear();
+                return;
+            }
             var ans = data[ch].filtered;
             var xvalues = data[ch].xvalues;
 
@@ -233,20 +274,20 @@ namespace WaveViewerWithFilering
             double df = fs / nfft;
             var s = freq_chart.Series[1].Points;
             var amps = data[ch].wave_spectrum_amplitude_in_dB();
-            double n = nfft / 2 + 1;
+            int n = nfft / 2;
             
             if (s.Count == n)
             {
-                for (int i = 0; i < n; i++)
+                for (int i = 1; i <= n; i++)
                 {
                     // Same s.Count implies same xvalues.
-                    s[i].YValues[0] = amps[i];
+                    s[i-1].YValues[0] = amps[i];
                 }
             }
             else
             {
                 s.Clear();
-                for (int i = 0; i < n; i++)
+                for (int i = 1; i <= n; i++)
                 {
                     s.AddXY(df * i, amps[i]);
                 }
@@ -284,13 +325,18 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_source()
         {
-            int pos = data_start.Value;
-            double dt = famos.dt(ch);
-            double x0 = famos.data_types[ch].x0;
 
-            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
             var s = wave_chart.Series[0].Points;
-            var vals = data[ch].source;
+            if (hide_source.Checked )// (data[ch].category == "DIS" || data[ch].category == "VEL")
+            {
+                // integrated wave should not show
+                s.Clear();
+                return;
+            }
+
+            int pos = data_start.Value;
+            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
+            var vals = data[ch].source; 
             if (s.Count == num_point)
             {
                 for (int i = 0; i < num_point; i++)
@@ -791,6 +837,49 @@ namespace WaveViewerWithFilering
         {
             CheckUpdate();
         }
+
+        private void integ_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (data == null)
+                return;
+            foreach (var item in data)
+            {
+                item.category = integ.Text;
+            }
+            CheckUpdate();
+        }
+
+
+        private void hide_over_CheckedChanged(object sender, EventArgs e)
+        {
+            hide_flag[HIDE_OVER] = hide_over.Checked;
+            CheckUpdate();
+        }
+
+        private void hide_result_CheckedChanged(object sender, EventArgs e)
+        {
+            hide_flag[HIDE_ANS] = hide_result.Checked;
+            CheckUpdate();
+        }
+
+        private void hide_source_CheckedChanged(object sender, EventArgs e)
+        {
+            hide_flag[HIDE_WAVE] = hide_source.Checked;
+            CheckUpdate();
+        }
+
+        private void show_fft_data_CheckedChanged(object sender, EventArgs e)
+        {
+            update_chart_visible();
+            CheckUpdate();
+        }
+
+        private void update_chart_visible()
+        {
+            wave_fft_chart.Visible = show_fft_data.Checked;
+            peak_chart.Visible = !show_fft_data.Checked;
+        }
+
 
     }
 }

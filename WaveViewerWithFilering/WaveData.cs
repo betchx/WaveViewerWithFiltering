@@ -9,23 +9,20 @@ namespace WaveViewerWithFilering
 {
     class WaveData
     {
-        // Construct
-        //public WaveData()
-        //{
-        //    data_start_ = 0;
-        //    invalidate_factors();
-        //    invalidate_waves();
-        //}
-        public WaveData(double[] wave_data, double delta_t)
+
+        public WaveData(double[] wave_data, double delta_t, bool acc_data = false)
         {
             data = wave_data;
             dt = delta_t;
+            is_acc = acc_data;
             init();
         }
         public WaveData(Famos famos, int ch)
         {
             data = famos[ch];
             dt = famos.dt(ch);
+            is_acc = famos.channel_info[ch].name.Contains("_Ya_") ||
+                famos.channel_info[ch].name.Contains("_Za_");
             init();
         }
 
@@ -35,9 +32,42 @@ namespace WaveViewerWithFilering
             filter = new FIRFilter();
             over_sample_ = 1;
 
+            if (is_acc)
+                integral = 0;
+            else
+                integral = -1;
+
             invalidate_factors();
             invalidate_waves();
         }
+
+        private int integral;
+
+        static readonly string[] CATEGORY = new string[] { "ACC", "VEL", "DIS", "NONE" };
+
+        public string category
+        {
+            get
+            {
+                if (integral < 0)
+                    return CATEGORY.Last();
+                return CATEGORY[integral];
+            }
+            set
+            {
+                if (is_acc)
+                {
+                    var val = Array.FindIndex(CATEGORY, s => s == value);
+                    if (val != integral)
+                    {
+                        integral = val;
+                        invalidate_waves();
+                    }
+                }
+            }
+        }
+
+
 
         // properties
         private double[] data_;
@@ -50,6 +80,8 @@ namespace WaveViewerWithFilering
                 invalidate_waves();
             }
         }
+
+        public bool is_acc { get; private set; }
 
         private double dt_;
         public double dt
@@ -199,6 +231,7 @@ namespace WaveViewerWithFilering
                     case 4:
                     case 8:
                     over_sample_ = value;
+                    alloc_over();
                     update_over_sampled();
                         break;
                     default:
@@ -208,25 +241,24 @@ namespace WaveViewerWithFilering
         }
 
 
-
-
-
-
         //---Inernal Use--------------------------------//
 
 
         //--Private members
-        private double[] wave;        // wave data
+        private double[] raw_wave;    // raw wave. this is partial copy of data. 
+        private double[] wave;        // wave data (it can be disp or vel wave)
         private double[] factors;     // expanded filter data
         private double[] ans;         // filtered wave (iDFT of sp_ans)
+        private double[] over;
+        private double[] sp_raw_wave; // DFT of raw_wave;
         private double[] sp_wave;     // DFT of wave
         private double[] sp_factors;  // DFT of factors
         private double[] sp_ans;      // sp_wave * sp_factors 
+        private double[] sp_over;
 
         // Pointers for FFTW
-        IntPtr pwin, pwout, plan_w;  // wave
-        IntPtr pfin, pfout, plan_f;  // filter
-        IntPtr prin, prout, plan_r;  // result
+        IntPtr pfin, pfout, plan_f;  // forward
+        IntPtr prin, prout, plan_r;  // Reverse (inverse)
 
         //---Private methods
 
@@ -248,10 +280,11 @@ namespace WaveViewerWithFilering
         {
             if (source_ == null)
             {
+                update_sp_wave();
                 source_ = new double[num_disp];
                 for (int i = 0; i < num_disp; i++)
                 {
-                    source_[i] = data[i + data_start];
+                    source_[i] = wave[2 * (i + 2 * tap)];
                 }
             }
         }
@@ -276,27 +309,33 @@ namespace WaveViewerWithFilering
             if (val != nfft)
             {
                 nfft_ = val;
+                raw_wave = new double[nfft * 2];
+                sp_raw_wave = new double[nfft * 2];
                 wave = new double[nfft * 2];
                 factors = new double[nfft * 2];
                 sp_factors = new double[nfft * 2];
                 sp_wave = new double[nfft * 2];
                 sp_ans = new double[nfft * 2];
                 ans = new double[nfft * 2];
+                alloc_over();
                 fftw_setup();
             }
         }
 
+        private void alloc_over()
+        {
+            over = new double[nfft * 2 * over_sample];
+            sp_over = new double[nfft * 2 * over_sample];
+        }
+
         private void fftw_setup()
         {
-            if (pwin != null)
+            if (pfin != null)
                 fftw_free();
-            pwin = fftw.malloc(sizeof(double) * nfft * 2);
             pfin = fftw.malloc(sizeof(double) * nfft * 2);
             prin = fftw.malloc(sizeof(double) * nfft * 2);
-            pwout = fftw.malloc(sizeof(double) * nfft * 2);
             pfout = fftw.malloc(sizeof(double) * nfft * 2);
             prout = fftw.malloc(sizeof(double) * nfft * 2);
-            plan_w = fftw.dft_1d(nfft, pwin, pwout, fftw_direction.Forward, fftw_flags.Estimate);
             plan_f = fftw.dft_1d(nfft, pfin, pfout, fftw_direction.Forward, fftw_flags.Estimate);
             plan_r = fftw.dft_1d(nfft, prin, prout, fftw_direction.Backward, fftw_flags.Estimate);
             filter_dirty = true;
@@ -304,13 +343,10 @@ namespace WaveViewerWithFilering
 
         private void fftw_free()
         {
-            fftw.free(pwin);
-            fftw.free(pwout);
             fftw.free(pfin);
             fftw.free(pfout);
             fftw.free(prin);
             fftw.free(prout);
-            fftw.destroy_plan(plan_w);
             fftw.destroy_plan(plan_f);
             fftw.destroy_plan(plan_r);
         }
@@ -325,7 +361,7 @@ namespace WaveViewerWithFilering
 
             double real = sp_wave[i * 2];
             double imag = sp_wave[i * 2 + 1];
-            double amp = Math.Max(real * real + imag * imag, 1e-10); // 1e-10: avoid -Inf 
+            double amp = Math.Max(real * real + imag * imag, 1e-40); // 1e-10: avoid -Inf 
             amp /= nfft;  //  normalize
             double db = 20.0 * Math.Log10(amp); // convert to dB
             return db;
@@ -335,63 +371,141 @@ namespace WaveViewerWithFilering
         {
             if (wave_dirty)
             {
-                setup_wave();
-                Marshal.Copy(wave, 0, pwin, nfft * 2);
-                fftw.execute(plan_w);
-                Marshal.Copy(pwout, sp_wave, 0, nfft * 2);
+                setup_raw_wave();
+                Marshal.Copy(raw_wave, 0, pfin, nfft * 2);
+                fftw.execute(plan_f);
+                Marshal.Copy(pfout, sp_raw_wave, 0, nfft * 2);
+
+
+                if (integral < 1)
+                {
+                    // ACC and others are not need integration.
+                    //Array.Copy(sp_raw_wave, sp_wave, nfft * 2);
+                    //sp_wave = sp_raw_wave.Select(e => e / nfft);
+                    for (int i = 0; i < nfft*2; i++)
+                    {
+                        sp_wave[i] = sp_raw_wave[i] / nfft_;
+                    }
+                    Array.Copy(raw_wave, wave, nfft * 2);
+                }
+                else
+                {
+                    // VEL and DISP need integration.
+
+                    integrate_wave();
+                }
                 wave_dirty  = false;
                 ans_dirty = true;
             }
         }
+
+
+
+        private void integrate_wave()
+        {
+            // Integrate in frequency domain.
+            double c0, d0;
+            switch (integral)
+            {
+                case 1: // vel
+                    c0 = 0.0;
+                    d0 = 1.0;
+                    break;
+                case 2: // dis
+                    c0 = -1.0;
+                    d0 = 0.0;
+                    break;
+                default:
+                    c0 = 1.0;
+                    d0 = 0.0;
+                    break;
+            }
+            double fs = 1.0 / dt;
+            double df = fs / nfft;
+            sp_wave[0] = 0.0; // eliminating DC compornent.  (avoiding divide by zero)
+            sp_wave[1] = 0.0;
+            double[] omega = new double[nfft];
+            omega[0] = 0.0;
+            for (int i = 1; i <= nfft / 2; i++)
+            {
+                omega[nfft - i] = omega[i] = Math.Pow(df * i * 2 * Math.PI, integral);
+            }
+
+            for (int i = 1; i < nfft; i++)
+            {
+                double a = sp_raw_wave[2 * i];
+                double b = sp_raw_wave[2 * i + 1];
+                double c = c0 * omega[i];
+                double d = d0 * omega[i];
+                double div = 1.0 / (c * c + d * d) / nfft;
+                sp_wave[i * 2] = (a * c - b * d) * div;
+                sp_wave[i * 2 + 1] = (a * d - b * c) * div;
+            }
+            Marshal.Copy(sp_wave, 0, prin, nfft * 2);
+            fftw.execute(plan_r);
+            Marshal.Copy(prout, wave, 0, nfft * 2);
+        }
         
 
         // copy wave data and FFT
-        private void setup_wave()
+        private void setup_raw_wave()
         {
             int tap = filter.tap;
-            int pos = data_start;
-            int n_start = pos - tap * 2;
+            int n_start = data_start_ - tap * 2;
 
             update_nfft();
 
-            // Zero clear
-            for (int i = 0; i < nfft * 2; i++)
+            // obtain average
+            double base_line = data.Skip(n_start).Take(num_disp).Average();
+
+            // clear data with baseline
+            for (int i = 0; i < nfft; i++)
             {
-                wave[i] = 0.0;
+                raw_wave[i*2] = base_line;
+                raw_wave[i * 2 + 1] = 0.0;
             }
 
             HannWindow hann = new HannWindow(tap);
+
 
             // copy with filter
             for (int i = 0; i < tap; i++)
             {
                 int k = n_start + i;
-                double amp = hann[tap - k -1];
-                double value = (k < 0) ? 0.0 : data[k];
-                wave[2 * i] = value * amp;
+                double amp = hann[tap - i -1];
+                double value = data[Math.Max(k, 0)];
+                raw_wave[2 * i] = (value - base_line ) * amp + base_line;
             }
             // copy pre_data
             for (int i = tap; i < tap * 2; i++)
             {
                 int k = n_start + i;
-                wave[2 * i] = (k < 0) ? 0.0 : data[k];
+                raw_wave[2 * i] = data[Math.Max(k,0)];
             }
-            // copy main_data and post_data
-            for (int i = 0; i < num_disp + tap; i++)
+            // copy main_data
+            for (int i = 0; i < num_disp; i++)
             {
                 int j = i + 2 * tap;
                 int k = n_start + j;
-                wave[2 * j] = data[k];
+                raw_wave[2 * j] = data[k];
+            }
+            // copy postdata
+            int last_index = data.Length - 1;
+            for (int i = 0; i < tap; i++)
+            {
+                int j = i + 2 * tap + num_disp;
+                int k = Math.Min(data_start + num_disp + i, last_index);
+                raw_wave[2 * j] = data[k];
             }
             // copy with filter
             for (int i = 0; i < tap; i++)
             {
                 int j = i + 3 * tap + num_disp;
-                int k = n_start + j;
+                int k = Math.Min(data_start + num_disp + tap + i, last_index);
                 double amp = hann[i];
-                wave[2 * j] = data[k] * amp;
+                raw_wave[2 * j] = (data[k] - base_line) * amp + base_line;
             }
-            // rest data are zero
+            // rest data are base_line.
         }
 
         private void update_sp_factors()
@@ -448,7 +562,7 @@ namespace WaveViewerWithFilering
                 for (int i = 0; i < num_disp; i++)
                 {
                     int k = i + offset;
-                    filtered_[i] = ans[2 * k] / nfft; // nfft: normalize
+                    filtered_[i] = ans[2 * k]; // sp_wave was normalized already.
                 }
 
                 // clear dirty flag
@@ -460,41 +574,41 @@ namespace WaveViewerWithFilering
         {
             apply_filter();  // update required.
 
+            over_sampled_ = new double[num_disp * over_sample];
+
             // noneed to upsampling;
             if (over_sample == 1)
             {
-                over_sampled_ = filtered_;
+                Array.Copy(filtered_, over_sampled_, num_disp);
+                Array.Copy(ans, over, nfft*2);
+                Array.Copy(sp_ans, sp_over, nfft*2);
                 return;
             }
 
             IntPtr pin = IntPtr.Zero, pout = IntPtr.Zero, plan = IntPtr.Zero;
             int size = nfft * over_sample;
-            double[] sp = new double[size * 2];
-            double[] wk = new double[size * 2];
-            over_sampled_ = new double[num_disp * over_sample];
 
-            sp[0] = sp_ans[0];
-            sp[1] = sp_ans[1];
+
+            sp_over[0] = sp_ans[0];
+            sp_over[1] = sp_ans[1];
             for (int i = 2; i < nfft; i++)
             {
-                sp[i] = sp_ans[i];
-                sp[2*size -nfft + i] = sp_ans[nfft + i];
+                sp_over[i] = sp_ans[i];
+                sp_over[2*size -nfft + i] = sp_ans[nfft + i];
             }
-            //sp[nfft] = sp_ans[nfft] * 0.5;
-            //sp[2 * size - nfft] = sp_ans[nfft] * 0.5;
 
             try
             {
                 pin = fftw.malloc(sizeof(double) * size * 2);
                 pout = fftw.malloc(sizeof(double) * size * 2);
                 plan = fftw.dft_1d(size, pin, pout, fftw_direction.Backward, fftw_flags.Estimate);
-                Marshal.Copy(sp, 0, pin, size * 2);
+                Marshal.Copy(sp_over, 0, pin, size * 2);
                 fftw.execute(plan);
-                Marshal.Copy(pout, wk, 0, size * 2);
+                Marshal.Copy(pout, over, 0, size * 2);
                 int offset = 3 * tap * over_sample;
                 for (int i = 0; i < num_disp * over_sample; i++)
                 {
-                    over_sampled_[i] = wk[2 * (i + offset)]/nfft;
+                    over_sampled_[i] = over[2 * (i + offset)];
                 }
             }
             finally
@@ -505,7 +619,25 @@ namespace WaveViewerWithFilering
             }
         }
 
-
-
+        // for debug
+        public double[][] debug_waves()
+        {
+            return new double[][]{
+                wave,
+                ans,
+                over,
+                raw_wave,
+            };
+        }
+        public double[][] debug_spectrums()
+        {
+            return new double[][]{
+                sp_wave,
+                sp_ans,
+                sp_over,
+                sp_raw_wave,
+            };
+        }
+        
     }
 }
