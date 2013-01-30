@@ -17,11 +17,11 @@ namespace WaveViewerWithFilering
         {
             InitializeComponent();
             data = null;
-            update_display_data_length();
             update_tap_info();
             upper_fc_track.Value = tap_track.Value;
             lower_fc_track.Value = 0;
             sampling_rate.Text = "1000.0";
+            display_data_length.Text = "100";
             targets = new ComboBox[] { ch_P1, ch_P2, ch_Ya, ch_Za };
             thresholds = new TextBox[] { th_P1, th_P2, th_Ya, th_Za };
             required_lengths = new TextBox[] { rl_P1, rl_P2, rl_Ya, rl_Za };
@@ -87,13 +87,11 @@ namespace WaveViewerWithFilering
         {
             var s = wave_chart.Series[2].Points;
 
-            if (hide_over.Checked || step > 1)
+            if (hide_over.Checked || data[ch].over_sampled == null || step > 1)
             {
                 s.Clear();
                 return;
             }
-
-            data[ch].over_sample = over_sampling;
 
             double[] val = data[ch].over_sampled;
             double x0 = data[ch].xvalues[0];
@@ -447,7 +445,7 @@ namespace WaveViewerWithFilering
             nyquist_frequency.Text = fn.ToString();
 
             freq_chart.ChartAreas[0].AxisX.Maximum = fn;
-
+            update_display_data_length();
             data_start.Maximum = num_data - num_disp;
             // change data_start
             data[ch].data_start = data_start.Value;
@@ -517,19 +515,27 @@ namespace WaveViewerWithFilering
                 data[ch].alpha = val;
             }
         }
+        const int MAX_DISP_SIZE = 100000;
 
         private void update_display_data_length()
         {
             int val;
             if (int.TryParse(display_data_length.Text, out val))
             {
-                if (val > num_data)
-                    num_disp = num_data;
-                else
-                    num_disp = val;
+                if (val > num_data || val > MAX_DISP_SIZE)
+                {
+                    display_data_length.Text = Math.Min(num_data, MAX_DISP_SIZE).ToString();
+                    return;
+                }
+                
+                num_disp = val;
 
                 step = 1 + ((num_disp - 1) / max_points);
                 data_start.LargeChange = num_disp / 5;
+                int largest = num_data - num_disp;
+                //if (data_start.Value > largest)
+                //    data_start.Value = largest;
+                data_start.Maximum = largest;
 
             }
         }
