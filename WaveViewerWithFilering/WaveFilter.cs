@@ -328,17 +328,17 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_source()
         {
+            int pos = data_start.Value;
+            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
 
             var s = wave_chart.Series[0].Points;
-            if (hide_source.Checked )// (data[ch].category == "DIS" || data[ch].category == "VEL")
+            if (hide_source.Checked)// (data[ch].category == "DIS" || data[ch].category == "VEL")
             {
                 // integrated wave should not show
                 s.Clear();
                 return;
             }
 
-            int pos = data_start.Value;
-            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
             var vals = data[ch].source; 
             if (s.Count == num_point)
             {
