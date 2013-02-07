@@ -8,7 +8,6 @@ using fftwlib;
 
 namespace WaveViewerWithFilering
 {
-
     public
     class ComplexArray
     {
@@ -20,7 +19,8 @@ namespace WaveViewerWithFilering
         private IntPtr plan;
 
         public class None { }
-
+        private class AssignTag { }
+        private static AssignTag ASSIGN;
 
         public ComplexArray(int length)
         {
@@ -29,9 +29,10 @@ namespace WaveViewerWithFilering
             data = new double[size];
         }
 
-        public ComplexArray(double[] arr)
+        // for intarnal use
+        private ComplexArray(double[] arr, AssignTag dummy)
         {
-            data = arr;
+            data = arr;  // use original array
             size = arr.Length;
             len = size / 2;
 
@@ -84,6 +85,11 @@ namespace WaveViewerWithFilering
             {
                 data[i * 2 + 1] = wave[i];
             }
+        }
+
+        public static ComplexArray assign(double[] data)
+        {
+            return new ComplexArray(data, ASSIGN);
         }
 
 
