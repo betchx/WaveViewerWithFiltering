@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ComplexArray">
+      <HintPath>..\..\ComplexArray\Debug\ComplexArray.dll</HintPath>
+    </Reference>
     <Reference Include="fftwlib">
       <HintPath>.\fftwlib.dll</HintPath>
     </Reference>
@@ -50,8 +53,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Complex.cs" />
-    <Compile Include="ComplexArray.cs" />
     <Compile Include="Famos.cs" />
     <Compile Include="FIRFilter.cs" />
     <Compile Include="PeakFinder.cs" />
@@ -76,7 +77,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

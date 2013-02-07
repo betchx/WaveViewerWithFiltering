@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using fftwlib;
+using ComplexArrayLib;
 
 namespace WaveViewerWithFilering
 {
@@ -161,7 +162,7 @@ namespace WaveViewerWithFilering
         public double[] wave_spectrum_amplitude_in_dB()
         {
             int sz = nfft / 2 + 1;
-            return sp_wave.power().Take(sz).Select(p => 20.0 * Math.Log10(Math.Max(p, 1e-100))).ToArray();
+            return sp_wave.Power.Take(sz).Select(p => 20.0 * Math.Log10(Math.Max(p, 1e-100))).ToArray();
         }
 
         private double[] over_sampled_; public double[] over_sampled { get {  return over_sampled_; } }
@@ -222,7 +223,7 @@ namespace WaveViewerWithFilering
                 .Concat(Enumerable.Repeat(0.0, 1))
                 .Concat(half.Reverse()).ToArray();
             omega = ComplexArray.imag(i_arr);
-            if (omega.len != nfft)
+            if (omega.Length != nfft)
                 throw new ApplicationException();
 
             wave = null; //  to skip apply_filter()
@@ -266,14 +267,18 @@ namespace WaveViewerWithFilering
             if (integral < 1)
             {
                 // ACC and others are not need integration.
-                sp_raw_wave = ComplexArray.real(raw_wave).dft() / nfft;
+                var s = ComplexArray.real(raw_wave);
+                var w = s.fft();
+                sp_raw_wave = w / nfft;
                 wave = raw_wave.Select(d => d + base_line).ToArray();
-                sp_wave = ComplexArray.real(wave).dft() / nfft;
+                var ww = ComplexArray.real(wave);
+                var ss = ww.fft();
+                sp_wave = ss / nfft;
             }
             else
             {
                 // VEL and DISP need integration.
-                sp_raw_wave = ComplexArray.real(raw_wave).dft()/ nfft;
+                sp_raw_wave = ComplexArray.real(raw_wave).fft()/ nfft;
                 sp_wave = new ComplexArray(sp_raw_wave);
                 // Integrate in frequency domain.
                 for (int i = 0; i < integral; i++)
@@ -289,7 +294,7 @@ namespace WaveViewerWithFilering
                 //        sp_wave[nfft - i] = sp_wave[i].conj;
                 //    }
                 //}
-                wave = sp_wave.idft().real();
+                wave = sp_wave.ifft().real();
             }
             source = wave.Take(num_disp).ToArray();
             xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
@@ -313,7 +318,7 @@ namespace WaveViewerWithFilering
                 {
                     factors[nfft - i] = factors[i] = filter.factor[i];
                 }
-                sp_factors = ComplexArray.real(factors).dft();
+                sp_factors = ComplexArray.real(factors).fft();
                 if (wave == null)
                     return;
 
@@ -330,7 +335,7 @@ namespace WaveViewerWithFilering
             sp_ans = sp_wave * sp_factors;
 
             // inverse fft
-            ans = sp_ans.idft().real();
+            ans = sp_ans.ifft().real();
 
             // copy result to filtered_
             filtered_ = ans.Take(num_disp).ToArray();
@@ -351,7 +356,7 @@ namespace WaveViewerWithFilering
                 sp_over = new ComplexArray(sp_ans);
                 return;
             }
-            int size = sp_ans.len * over_sample;
+            int size = sp_ans.Length * over_sample;
 
             sp_over = new ComplexArray(size);
 
@@ -359,10 +364,10 @@ namespace WaveViewerWithFilering
             for (int i = 1; i <= nfft/2; i++)
             {
                 sp_over[i] = sp_ans[i];
-                sp_over[size - i] = sp_ans[i].conj;
+                sp_over[size - i] = sp_ans[i].Conj;
             }
 
-            over = sp_over.idft().real();
+            over = sp_over.ifft().real();
             over_sampled_ = over.Take(num_disp * over_sample).ToArray();
 
             // no next
