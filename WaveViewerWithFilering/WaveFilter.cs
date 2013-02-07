@@ -38,7 +38,20 @@ namespace WaveViewerWithFilering
         TextBox[] thresholds;
         TextBox[] required_lengths;
 
-        private int over_sampling_; public int over_sampling { get { return over_sampling_; } }
+        private int over_sampling_; 
+        public int over_sampling {
+            get { return over_sampling_; }
+            set {
+                if (over_sampling_ != value)
+                {
+                    over_sampling_ = value;
+                    foreach (var item in data)
+                    {
+                        item.over_sample = value;
+                    }
+                }
+            }
+        }
 
 
         //-----------------------------------------------------------------//
@@ -765,25 +778,25 @@ namespace WaveViewerWithFilering
         }
         private void over_sampling_1_CheckedChanged(object sender, EventArgs e)
         {
-            over_sampling_ = 1;
+            over_sampling = 1;
             CheckUpdate();
         }
 
         private void over_sampling_2_CheckedChanged(object sender, EventArgs e)
         {
-            over_sampling_ = 2;
+            over_sampling = 2;
             CheckUpdate();
         }
 
         private void over_sampling_4_CheckedChanged(object sender, EventArgs e)
         {
-            over_sampling_ = 4;
+            over_sampling = 4;
             CheckUpdate();
         }
 
         private void over_sampling_8_CheckedChanged(object sender, EventArgs e)
         {
-            over_sampling_ = 8;
+            over_sampling = 8;
             CheckUpdate();
         }
 
