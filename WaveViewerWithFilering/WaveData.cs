@@ -153,7 +153,15 @@ namespace WaveViewerWithFilering
         public double alpha { get { return filter.alpha; } set { filter.alpha = value; } }
         public FIRFilter.WindowType  window_type { get { return filter.window_type; } set { filter.window_type = value; } }
         private IEnumerable<double> over_sampled_;
-        public IEnumerable<double> over_sampled { get { return over_sampled_; } }
+        public IEnumerable<double> over_sampled { get { return over_sampled_.ToList(); } }
+
+        public uint over_id { get { return over.wave_id; } }
+        public uint filtered_id { get { return ans.wave_id; } }
+        public uint factor_id { get { return factors.wave_id; } }
+        public uint gain_id { get { return factors.sp_id; } }
+        public uint source_id { get { return wave.wave_id; } }
+
+
         private int over_sample_;
         public int over_sample
         {

@@ -29,6 +29,11 @@ namespace WaveViewerWithFilering
             integ.Text = "ACC";
             update_chart_visible();
             hide_flag = new bool[] { false, false, false, false, false};
+            factor_id = 0u;
+            filtered_id = 0u;
+            gain_id = 0u;
+            source_id = 0u;
+            over_id = 0u;
         }
 
         private int nfft {  get { return data[ch].nfft; } }
@@ -98,6 +103,12 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_oversampled()
         {
+            // skip update if id does not changed
+            if (over_id == data[ch].over_id)
+                return;
+
+            over_id = data[ch].over_id;
+
             var s = wave_chart.Series[2].Points;
 
             if (hide_over.Checked || data[ch].over_sampled == null || step > 1)
@@ -191,6 +202,10 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_filtered()
         {
+            if (filtered_id == data[ch].filtered_id)
+                return;
+            filtered_id = data[ch].filtered_id;
+
             var s = wave_chart.Series[1].Points;
             if (hide_result.Checked)
                 s.Clear();
@@ -207,6 +222,10 @@ namespace WaveViewerWithFilering
 
         private void update_freq_chart()
         {
+            if (gain_id == data[ch].gain_id)
+                return;
+            gain_id = data[ch].gain_id;
+
             var s = this.freq_chart.Series[0].Points;
             double df = fs / tap / 2;
             var gains = data[ch].gains.ToList();
@@ -226,6 +245,10 @@ namespace WaveViewerWithFilering
 
         private void update_filter_chart()
         {
+            if (factor_id == data[ch].factor_id)
+                return;
+            factor_id = data[ch].factor_id;
+
             var f = filter_chart.Series[0].Points;
             var s = filter_chart.Series[1].Points;
             f.Clear();
@@ -306,6 +329,11 @@ namespace WaveViewerWithFilering
         }
         private void update_wave_chart_source()
         {
+            if (source_id == data[ch].source_id)
+                return;
+
+            source_id = data[ch].source_id;
+
             int pos = data_start.Value;
             num_point = Math.Min(num_disp, num_data - pos - 1) / step;
 
@@ -478,6 +506,11 @@ namespace WaveViewerWithFilering
             }
         }
         const int MAX_DISP_SIZE = 100000;
+        private uint over_id;
+        private uint source_id;
+        private uint filtered_id;
+        private uint factor_id;
+        private uint gain_id;
 
         private void update_display_data_length()
         {
