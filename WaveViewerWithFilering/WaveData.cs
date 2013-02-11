@@ -11,9 +11,9 @@ namespace WaveViewerWithFilering
     class WaveDataSet
     {
 
-        public WaveDataSet(double[] wave_data, double delta_t, bool acc_data = false)
+        public WaveDataSet(double[] wave, double delta_t, bool acc_data = false)
         {
-            data = wave_data;
+            data = wave;
             dt = delta_t;
             is_acc = acc_data;
             init();
@@ -37,7 +37,7 @@ namespace WaveViewerWithFilering
                 integral = 0;
             else
                 integral = -1;
-
+            nfft_ = 0;
             update_nfft();
         }
 
@@ -69,6 +69,7 @@ namespace WaveViewerWithFilering
 
         // properties
         public double[] data { get; private set; }
+        public IEnumerable<double> Data { get { return data; } }
         public bool is_acc { get; private set; }
 
         public double dt { get; private set; }
@@ -114,16 +115,14 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private double[] filtered_;
-       
-        public double[] filtered
+        private IEnumerable<double> filtered_;
+
+        public IEnumerable<double> filtered
         {
             get
             {
                 if (is_valid)
                 {
-                    if (filtered_ == null)
-                        filtered_ = new double[num_disp];
                     apply_filter();
                     return filtered_;
                 }
@@ -139,33 +138,22 @@ namespace WaveViewerWithFilering
             set
             {
                 filter.tap = value;
+                hann = new HannWindow(value);
                 update_nfft();
             }
         }
         public int lower { get { return filter.lower; } set { filter.lower = value; update_factors(); } }
         public int upper { get { return filter.upper; } set { filter.upper = value; update_factors(); } }
         public double gain { get { return filter.gain; } set { filter.gain = value; update_factors(); } }
-        public double[] gains { get { return filter.gains; }}
+        public IEnumerable<double> gains { get { return filter.gains; } }
         public double[] factor { get { return filter.factor; }}
-        public double[] source { get; private set; }
-        public double[] xvalues { get; private set; }
-
+        public IEnumerable<double> source { get; private set; }
+        public IEnumerable<double> xvalues { get; private set; }
         public WindowFunction window { get { return filter.window; } }
         public double alpha { get { return filter.alpha; } set { filter.alpha = value; } }
         public FIRFilter.WindowType  window_type { get { return filter.window_type; } set { filter.window_type = value; } }
-
-        //---Public Methods--------------------------------//
-
-
-
-        public double[] wave_spectrum_amplitude_in_dB()
-        {
-            int sz = nfft / 2 + 1;
-            return sp_wave.Power.Take(sz).Select(p => 20.0 * Math.Log10(Math.Max(p, 1e-100))).ToArray();
-        }
-
-        private double[] over_sampled_; public double[] over_sampled { get {  return over_sampled_; } }
-
+        private IEnumerable<double> over_sampled_;
+        public IEnumerable<double> over_sampled { get { return over_sampled_; } }
         private int over_sample_;
         public int over_sample
         {
@@ -178,31 +166,37 @@ namespace WaveViewerWithFilering
                     case 2:
                     case 4:
                     case 8:
-                    over_sample_ = value;
-                    update_over_sampled();
+                        over_sample_ = value;
+                        update_over_sampled();
                         break;
                     default:
-                        throw new ArgumentException("over_sample can be 1, 2, 4 or 8"); 
+                        throw new ArgumentException("over_sample can be 1, 2, 4 or 8");
                 }
             }
+        }
+
+
+        //---Public Methods--------------------------------//
+
+        public IEnumerable<double> wave_spectrum_amplitude_in_dB()
+        {
+            return wave.dB;
         }
 
         //---Inernal Use--------------------------------//
 
 
         //--Private members
-        private double[] raw_wave;    // raw wave. this is partial copy of data. 
-        private double[] wave;        // wave data (it can be disp or vel wave)
-        private double[] factors;     // expanded filter data
-        private double[] ans;         // filtered wave (iDFT of sp_ans)
-        private double[] over;
+        private WaveData raw_wave;    // raw wave. this is partial copy of data. 
+        private WaveData wave;        // wave data (it can be disp or vel wave)
+        private WaveData factors;     // expanded filter data
+        private WaveData ans;         // filtered wave (iDFT of sp_ans)
+        private WaveData over;
         private double base_line;
-        private ComplexArray sp_raw_wave; // DFT of raw_wave;
-        private ComplexArray sp_wave;     // DFT of wave
-        private ComplexArray sp_factors;  // DFT of factors
-        private ComplexArray sp_ans;      // sp_wave * sp_factors 
-        private ComplexArray sp_over;
         private ComplexArray omega;
+        private HannWindow hann;
+        private int raw_wave_start;
+        private int current_over_sample;
 
         //---Private methods
 
@@ -219,33 +213,36 @@ namespace WaveViewerWithFilering
             {
                 // update
                 nfft_ = val;
+
+                raw_wave = new WaveData(nfft_);
+                wave = new WaveData(nfft_);
+                ans = new WaveData(nfft_);
+                factors = new WaveData(nfft_);
+                over = new WaveData(nfft * over_sample_);
+
+                // update Omega
                 double fs = 1.0 / dt;
                 double df = fs / nfft;
-                omega = new ComplexArray(nfft);
+                omega = new ComplexArray(nfft/2+1);
 
                 double df0 = -1.0 / (df*2*Math.PI);
                 double v;
-
                 for (int i = 1; i < nfft/2; i++)
                 {
                     v = df0 / i;
                     omega[i].Real = v;
-                    omega[nfft - i].Real = v;
                 }
             }
-            wave = null; //  to skip apply_filter()
-            update_factors();
-
-            // next
-            setup_raw_wave();
         }
 
         // copy wave data and FFT
-        private void setup_raw_wave()
+        private bool setup_raw_wave()
         {
             if (num_disp == 0)
-                return;
-            raw_wave = new double[nfft];
+                return false;
+
+            if (raw_wave_start == data_start)
+                return false;
 
             int n_start = data_start_ - tap * 2;
             var base_wave = data.Skip(n_start).Take(num_disp);
@@ -256,128 +253,97 @@ namespace WaveViewerWithFilering
             {
                 take_raw_wave_with_baseline();
 
-                var error = raw_wave.Average();
+                var error = raw_wave.Wave.Average();
                 if (Math.Abs(error) < delta)
                     break;
                 base_line += error / 2; //update
             }
-
-            // next
-            update_wave();
+            raw_wave_start = data_start;
+            return true;
         }
 
-        private void update_wave()
+        private bool update_wave()
         {
             if (raw_wave == null)
-                return;
+                return false;
 
-            if (integral < 1)
+            if (setup_raw_wave())
             {
-                // ACC and others are not need integration.
-                var s = ComplexArray.real(raw_wave);
-                var w = s.fft();
-                sp_raw_wave = w / nfft;
-                wave = raw_wave.Select(d => d + base_line).ToArray();
-                var ww = ComplexArray.real(wave);
-                var ss = ww.fft();
-                sp_wave = ss / nfft;
-            }
-            else
-            {
-                // VEL and DISP need integration.
-                sp_raw_wave = ComplexArray.real(raw_wave).fft()/ nfft;
-                sp_wave = new ComplexArray(sp_raw_wave);
-                // Integrate in frequency domain.
-                for (int i = 0; i < integral; i++)
+
+                if (integral < 1)
                 {
-                    sp_wave *= omega;
+                    // ACC and others are not need integration.
+                    wave.Spectrum = raw_wave.Spectrum;
                 }
-                //sp_wave[0] *= 0.0;
-                //for (int k = 0; k < integral; k++)
-                //{
-                //    for (int i = 1; i < nfft / 2; i++)
-                //    {
-                //        sp_wave[i] *= omega[i];
-                //        sp_wave[nfft - i] = sp_wave[i].conj;
-                //    }
-                //}
-                wave = sp_wave.ifft().real();
+                else
+                {
+                    // VEL and DISP need integration.
+
+                    // Integrate in frequency domain.
+                    for (int i = 0; i < integral; i++)
+                    {
+                        wave.Spectrum = raw_wave.Spectrum.Zip(omega, (a, b) => a / b);
+                    }
+                }
+                source = wave.Wave.Take(num_disp);
+                xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt);
+
+                return true;
             }
-            source = wave.Take(num_disp).ToArray();
-            xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
-
-            if (factors == null)
-                return;
-
-            apply_filter();
+            return false;
         }
 
 
-        private void update_factors()
+        private bool update_factors()
         {
 
             if (filter.design()) // refresh filter if needed
             {
-                factors = new double[nfft];
-
                 factors[0] = filter.factor[0];
                 for (int i = 1; i <= filter.tap; i++)
                 {
                     factors[nfft - i] = factors[i] = filter.factor[i];
                 }
-                sp_factors = ComplexArray.real(factors).fft();
-                if (wave == null)
-                    return;
-
-                apply_filter();
+                return true;
             }
+            return false;
         }
 
-        private void apply_filter()
+        private bool apply_filter()
         {
-            if (wave == null || factors == null)
-                return;
+            if (update_wave() || update_factors())
+            {
+                // convolution in Frequency domain
+                ans = wave * factors;
 
-            // convolution in Frequency domain
-            sp_ans = sp_wave * sp_factors;
+                // copy result to filtered_
+                filtered_ = ans.Wave.Take(num_disp);
 
-            // inverse fft
-            ans = sp_ans.ifft().real();
-
-            // copy result to filtered_
-            filtered_ = ans.Take(num_disp).ToArray();
-
-            // Next is oversamle
-            update_over_sampled();
+                return true;
+            }
+            return false;
         }
 
         private void update_over_sampled()
         {
             if (ans == null)
                 return;
-            // noneed to upsampling;
-            if (over_sample == 1)
+
+            if (apply_filter() || current_over_sample != over_sample)
             {
-                over_sampled_ = filtered_;
-                over = ans;
-                sp_over = sp_ans;
-                return;
+                // noneed to upsampling;
+                if (over_sample == 1)
+                {
+                    over.Wave = ans.Wave;
+                }
+                else
+                {
+                    over.clear_sp();
+                    over.Spectrum = ans.Spectrum;
+                    over_sampled_ = over.Wave.Take(num_disp * over_sample);
+                }
+                current_over_sample = over_sample;
             }
-            int size = sp_ans.Length * over_sample;
-
-            sp_over = new ComplexArray(size);
-
-            sp_over[0] = sp_ans[0];
-            for (int i = 1; i <= nfft/2; i++)
-            {
-                sp_over[i] = sp_ans[i];
-                sp_over[size - i] = sp_ans[i].Conj;
-            }
-
-            over = sp_over.ifft().real();
-            over_sampled_ = over.Take(num_disp * over_sample).ToArray();
-
-            // no next
         }
 
         private void take_raw_wave_with_baseline()
@@ -386,9 +352,7 @@ namespace WaveViewerWithFilering
             int n_start = data_start - tap * 2;
             int n_end = data_start + num_disp;
 
-            Array.Clear(raw_wave, 0, nfft); 
-
-            HannWindow hann = new HannWindow(tap);
+            raw_wave.clear_wave();
 
             // copy pre_data with filter
             for (int i = 0; i < tap; i++)
@@ -419,29 +383,27 @@ namespace WaveViewerWithFilering
 
         }
 
-
-
         // for debug
-        public double[][] debug_waves()
+        public IEnumerable<double>[] debug_waves()
         {
             int zeros = Math.Max(2 * tap - data_start,0);
-            return new double[][]{
-                wave,
-                ans,
-                over,
-                raw_wave,
-                Enumerable.Repeat(0.0,zeros).Concat(data.Skip(data_start - 2*tap).Take(num_disp + 4*tap-zeros)).ToArray()
+            return new IEnumerable<double>[]{
+                wave.Wave,
+                ans.Wave,
+                over.Wave,
+                raw_wave.Wave,
+                Enumerable.Repeat(0.0,zeros).Concat(data.Skip(data_start - 2*tap).Take(num_disp + 4*tap-zeros))
             };
         }
 
 
-        public double[][] debug_spectrums()
+        public IEnumerable<double>[] debug_spectrums()
         {
-            return new double[][]{
-                sp_wave.abs(),
-                sp_ans.abs(),
-                sp_over.abs(),
-                sp_raw_wave.abs(),
+            return new IEnumerable<double>[]{
+                wave.Abs,
+                ans.Abs,
+                over.Abs,
+                raw_wave.Abs,
             };
         }
         
