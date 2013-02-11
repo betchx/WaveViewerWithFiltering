@@ -33,7 +33,7 @@ namespace WaveViewerWithFilering
 
         private int nfft {  get { return data[ch].nfft; } }
         private int tap {  get { return tap_track.Value; } }
-        private WaveData fir { get { return data[ch]; } }
+        private WaveDataSet fir { get { return data[ch]; } }
         ComboBox[] targets;
         TextBox[] thresholds;
         TextBox[] required_lengths;
@@ -56,7 +56,7 @@ namespace WaveViewerWithFilering
 
         //-----------------------------------------------------------------//
 
-        List<WaveData> data;
+        List<WaveDataSet> data;
 
         int ch;
 
@@ -396,12 +396,12 @@ namespace WaveViewerWithFilering
             if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
             if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
 
-            data = new List<WaveData>(famos.cols);
+            data = new List<WaveDataSet>(famos.cols);
 
             for (int i = 0; i < famos.cols; i++)
             {
                 progressBar1.Value = i + 2;
-                var wave = new WaveData(famos, i);
+                var wave = new WaveDataSet(famos, i);
                 data.Add(wave);
                 wave.tap = tap_track.Value;
                 wave.lower = lower_fc_track.Value;

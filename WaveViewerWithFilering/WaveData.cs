@@ -8,17 +8,18 @@ using ComplexArrayLib;
 
 namespace WaveViewerWithFilering
 {
-    class WaveData
+
+    class WaveDataSet
     {
 
-        public WaveData(double[] wave_data, double delta_t, bool acc_data = false)
+        public WaveDataSet(double[] wave_data, double delta_t, bool acc_data = false)
         {
             data = wave_data;
             dt = delta_t;
             is_acc = acc_data;
             init();
         }
-        public WaveData(Famos famos, int ch)
+        public WaveDataSet(Famos famos, int ch)
         {
             data = famos[ch];
             dt = famos.dt(ch);
