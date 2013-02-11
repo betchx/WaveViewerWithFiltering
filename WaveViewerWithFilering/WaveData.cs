@@ -8,7 +8,6 @@ using ComplexArrayLib;
 
 namespace WaveViewerWithFilering
 {
-
     class WaveDataSet
     {
 
@@ -83,7 +82,6 @@ namespace WaveViewerWithFilering
             set
             {
                 num_disp_ = value;
-                filtered_ = new double[value];
                 update_nfft();
             }
         }
@@ -208,25 +206,33 @@ namespace WaveViewerWithFilering
 
         //---Private methods
 
+        /// <summary>
+        /// NFFT： Number of data for FFT (= 2^n > 4tap + num_disp, >1024)
+        /// </summary>
         private void update_nfft()
         {
             int val = 1024;
             while (val < num_disp + filter.tap * 4)
                 val *= 2;
 
-            nfft_ = val;
-            double fs = 1.0 / dt;
-            double df = fs / nfft;
+            if (nfft != val)
+            {
+                // update
+                nfft_ = val;
+                double fs = 1.0 / dt;
+                double df = fs / nfft;
+                omega = new ComplexArray(nfft);
 
-            var half = Enumerable.Range(1, nfft / 2 - 1).Select(n => - 1.0/( n * df * 2 * Math.PI));
-            var i_arr = Enumerable.Repeat(0.0, 1)
-                .Concat(half)
-                .Concat(Enumerable.Repeat(0.0, 1))
-                .Concat(half.Reverse()).ToArray();
-            omega = ComplexArray.imag(i_arr);
-            if (omega.Length != nfft)
-                throw new ApplicationException();
+                double df0 = -1.0 / (df*2*Math.PI);
+                double v;
 
+                for (int i = 1; i < nfft/2; i++)
+                {
+                    v = df0 / i;
+                    omega[i].Real = v;
+                    omega[nfft - i].Real = v;
+                }
+            }
             wave = null; //  to skip apply_filter()
             update_factors();
 
@@ -352,9 +358,9 @@ namespace WaveViewerWithFilering
             // noneed to upsampling;
             if (over_sample == 1)
             {
-                over_sampled_ = filtered_.ToArray();
-                over = ans.ToArray();
-                sp_over = new ComplexArray(sp_ans);
+                over_sampled_ = filtered_;
+                over = ans;
+                sp_over = sp_ans;
                 return;
             }
             int size = sp_ans.Length * over_sample;
