@@ -1,0 +1,112 @@
+﻿使わなくなったメモ
+
+    class WavePair
+    {
+        // real wave
+        private ComplexArray wave_;
+        // Spectrum
+        private ComplexArray sp_;
+        // dirty_flags
+        private bool dirty_wave_;
+        private bool dirty_spectram_;
+
+        public WavePair(int size)
+        {
+            wave_ = new ComplexArray(size, false);
+            dirty_wave_ = true;
+            sp_ = new ComplexArray(size, false);
+            dirty_spectram_ = true;
+        }
+        public WavePair(double[] arr)
+        {
+            wave_ = new ComplexArray(arr);
+            dirty_wave_ = false;
+            sp_ = new ComplexArray(arr.Length);
+            dirty_spectram_ = true;
+        }
+
+        private void update_spectrum()
+        {
+            if (dirty_spectram_ && !dirty_wave_)
+            {
+                wave_ = sp_.ifft();
+            }
+        }
+
+        private void update_wave()
+        {
+            if (dirty_wave_ && !dirty_spectram_)
+            {
+                sp_ = wave_.fft() / wave_.Length;
+            }
+        }
+
+
+        public IEnumerable<double> Wave
+        {
+            get
+            {
+                update_wave();
+                return wave_.Real;
+            }
+        }
+
+        public IEnumerable<double> Real
+        {
+            get
+            {
+                update_spectrum();
+                return sp_.Real;
+            }
+        }
+        public IEnumerable<double> Imag
+        {
+            get
+            {
+                update_spectrum();
+                return sp_.Imag;
+            }
+        }
+
+        public double[] wave()
+        {
+            update_wave();
+            return wave_.real();
+        }
+        public double[] abs()
+        {
+            update_spectrum();
+            return sp_.abs();
+        }
+        public double[] power()
+        {
+            update_spectrum();
+            return sp_.power();
+        }
+        public double[] ang()
+        {
+            update_spectrum();
+            return sp_.ang();
+        }
+        public double[] real()
+        {
+            update_spectrum();
+            return sp_.real();
+        }
+        public void real(IEnumerable<double> c)
+        {
+            sp_.real_assign(c);
+            dirty_wave_ = true;
+        }
+        public void imag(IEnumerable<double> c)
+        {
+            sp_.imag_assign(c);
+            dirty_wave_ = true;
+        }
+        public void wave(IEnumerable<double> c)
+        {
+            wave_.real_assign(c);
+            dirty_spectram_ = true;
+        }
+
+    }
