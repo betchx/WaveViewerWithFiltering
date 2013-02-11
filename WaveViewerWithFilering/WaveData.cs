@@ -174,6 +174,7 @@ namespace WaveViewerWithFilering
                 }
             }
         }
+        public double[] freqs { get; private set; }
 
 
         //---Public Methods--------------------------------//
@@ -232,6 +233,9 @@ namespace WaveViewerWithFilering
                     v = df0 / i;
                     omega[i].Real = v;
                 }
+
+                // update freqs
+                freqs = Enumerable.Range(0, nfft / 2).Select(i => df * i).ToArray();
             }
         }
 
@@ -406,6 +410,7 @@ namespace WaveViewerWithFilering
                 raw_wave.Abs,
             };
         }
-        
+
+
     }
 }

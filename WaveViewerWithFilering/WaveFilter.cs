@@ -236,7 +236,7 @@ namespace WaveViewerWithFilering
             }
             else
             {
-                s.DataBindXY(Enumerable.Range(0, tap + 1).Select((x) => x * df), new[] { gains });
+                s.DataBindXY(data[ch].freqs, gains);
             }
         }
 
@@ -288,7 +288,7 @@ namespace WaveViewerWithFilering
             }
             else
             {
-                s.DataBindXY(Enumerable.Range(1, n + 1).Select(i=>i*df), amps.Skip(1));
+                s.DataBindXY(data[ch].freqs.Skip(1).ToArray(), amps.Skip(1).ToList());
             }
             freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
