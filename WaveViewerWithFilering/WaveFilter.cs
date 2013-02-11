@@ -106,26 +106,26 @@ namespace WaveViewerWithFilering
                 return;
             }
 
-            var val = data[ch].over_sampled;
+            var val = data[ch].over_sampled.ToList();
             double x0 = data[ch].xvalues.First();
             double dx = dt / over_sampling;
             if (num_disp  == s.Count)
             {
                 // overwrite
-                foreach (var item in val.Select((v,i)=>new {v,i}))
+                for (int i = 0; i < num_disp; i++)
                 {
-                    s[item.i].XValue = x0 + dx * item.i;
-                    s[item.i].YValues[0] = item.v;
+                    s[i].XValue = x0 + dx * i;
+                    s[i].YValues[0] = val[i];
                 }
             }
             else
             {
                 // renew
                 s.Clear();
-                foreach (var item in val.Select((v,i)=>new {v,i}))
+                for (int i = 0; i < num_disp; i++)
                 {
-                    double x = x0 + dx * item.i;
-                    s.AddXY(x, item.v);
+                    double x = x0 + dx * i;
+                    s.AddXY(x, val[i]);
                 }
             }
         }
@@ -140,10 +140,7 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 if (hide_flag[i])
                     continue;
-                foreach (var item in waves[i].Select((v,k)=>new {v,k}))
-                {
-                    s.AddXY(item.k, item.v);
-                }
+                s.DataBindY(waves[i]);
             }
         }
 
@@ -196,43 +193,30 @@ namespace WaveViewerWithFilering
         {
             var s = wave_chart.Series[1].Points;
             if (hide_result.Checked)
-            {
                 s.Clear();
-                return;
-            }
-            var ans = data[ch].filtered.ToArray();
-            var xvalues = data[ch].xvalues.ToArray();
-
-            if (s.Count == num_point)
-            {
-                for (int i = 0; i < num_point; i++)
-                {
-                    s[i].XValue = xvalues[i*step]; 
-                    s[i].YValues[0] = ans[i*step]; 
-                }
-            }
             else
             {
-                s.Clear();
-                for (int i = 0; i < num_point; i++)
-                {
-                    s.AddXY(xvalues[i], ans[i*step]);  
-                }
+                if (step > 1)
+                    s.DataBindXY(data[ch].xvalues.Where((x, i) => i % step == 0).ToList(),
+                           data[ch].filtered.Where((x, i) => i % step == 0).ToList());
+                else
+                    s.DataBindXY(data[ch].xvalues, data[ch].filtered);
             }
             wave_chart.ChartAreas[0].RecalculateAxesScale();
         }
-
-
 
         private void update_freq_chart()
         {
             var s = this.freq_chart.Series[0].Points;
             double df = fs / tap / 2;
-            var gains = data[ch].gains;
+            var gains = data[ch].gains.ToList();
 
             if (s.Count == tap + 1)
             {
-                s.DataBindY(gains, "");
+                for (int i = 0; i < s.Count; i++)
+                {
+                    s[i].YValues[0] = gains[i];
+                }
             }
             else
             {
@@ -261,11 +245,8 @@ namespace WaveViewerWithFilering
             }
         }
 
-  
-
         private void update_sp_wave()
         {
-
             update_freq_chart_source();
         }
 
@@ -284,7 +265,11 @@ namespace WaveViewerWithFilering
             }
             if (s.Count == n)
             {
-                s.DataBindY(amps.Skip(1));
+                int i =0;
+                foreach( var v in amps.Skip(1))
+                {
+                    s[i++].YValues[0] = v;
+                }
             }
             else
             {
@@ -331,28 +316,9 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 return;
             }
-
-            var vals = data[ch].source.ToArray();
-            var xvalues = data[ch].xvalues.ToArray();
-            if (s.Count == num_point)
-            {
-                for (int i = 0; i < num_point; i++)
-                {
-                    int k = i * step;
-                    s[i].XValue = xvalues[k];
-                    s[i].YValues[0] = vals[k];
-                }
-                wave_chart.ChartAreas[0].RecalculateAxesScale();
-            }
-            else
-            {
-                s.Clear();
-                for (int i = 0; i < num_point; i++)
-                {
-                    int k = i * step;
-                    s.AddXY(xvalues[k], vals[k]);
-                }
-            }
+            s.DataBindXY(data[ch].xvalues.Where((x, i) => i % step == 0).ToList(),
+                data[ch].source.Where((x, i) => i % step == 0).ToList());
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         private double dt { get { return data[ch].dt; } }
