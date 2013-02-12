@@ -146,15 +146,16 @@ namespace WaveViewerWithFilering
         public int lower { get { return filter.lower; } set { filter.lower = value; update_factors(); } }
         public int upper { get { return filter.upper; } set { filter.upper = value; update_factors(); } }
         public double gain { get { return filter.gain; } set { filter.gain = value; update_factors(); } }
-        public IEnumerable<double> gains { get { return filter.gains; } }
         public double[] factor { get { return filter.factor; }}
-        public IEnumerable<double> source { get; private set; }
-        public IEnumerable<double> xvalues { get; private set; }
+        public double x0 { get { return data_start_ * dt; } }
         public WindowFunction window { get { return filter.window; } }
         public double alpha { get { return filter.alpha; } set { filter.alpha = value; } }
         public FIRFilter.WindowType  window_type { get { return filter.window_type; } set { filter.window_type = value; } }
-        private IEnumerable<double> over_sampled_;
-        public IEnumerable<double> over_sampled { get { return over_sampled_.ToList(); } }
+        public double[] source { get; private set; }
+        public double[] xvalues { get; private set; }
+        public double[] gains { get { return filter.gains; } }
+        public double[] over_sampled { get; private set; }
+        public double[] filtered { get; private set; }
 
         public uint over_id { get { return over.wave_id; } }
         public uint filtered_id { get { return ans.wave_id; } }
@@ -188,9 +189,10 @@ namespace WaveViewerWithFilering
 
         //---Public Methods--------------------------------//
 
-        public IEnumerable<double> wave_spectrum_amplitude_in_dB()
+        public double[] wave_spectrum_amplitude_in_dB()
         {
-            return wave.dB;
+            return wave.dB.ToArray();
+        }
         }
 
         //---Inernal Use--------------------------------//
