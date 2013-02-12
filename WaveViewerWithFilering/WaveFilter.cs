@@ -408,7 +408,6 @@ namespace WaveViewerWithFilering
 
             //            upper_fc_track.Value = upper_fc_track.Maximum;
             channel_change();
-            CheckUpdate();
 
             progressBar1.Visible = false;
 
