@@ -122,7 +122,7 @@ namespace WaveViewerWithFilering
             if (plan_b == null)
                 return false;
             if (!dirty)
-                return true;
+                return false;
 
             double low_amp = amp * Math.Pow(10.0, 10 * gain);
 
