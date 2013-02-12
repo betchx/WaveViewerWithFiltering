@@ -162,8 +162,12 @@ namespace WaveViewerWithFilering
                     case 2:
                     case 4:
                     case 8:
-                        over_sample_ = value;
-                        update_over_sampled();
+                        if (over_sample != value)
+                        {
+                            over_sample_ = value;
+                            over = new WaveData(nfft * over_sample);
+                            update();
+                        }
                         break;
                     default:
                         throw new ArgumentException("over_sample can be 1, 2, 4 or 8");
