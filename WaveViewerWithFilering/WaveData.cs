@@ -32,7 +32,7 @@ namespace WaveViewerWithFilering
             data_start_ = 0;
             filter = new FIRFilter();
             over_sample_ = 1;
-
+            raw_wave_start = -1;
             if (is_acc)
                 integral = 0;
             else
