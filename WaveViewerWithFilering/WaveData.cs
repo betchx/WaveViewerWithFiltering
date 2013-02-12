@@ -61,7 +61,7 @@ namespace WaveViewerWithFilering
                     if (val != integral)
                     {
                         integral = val;
-                        update_wave();
+                        update_wave(true);
                     }
                 }
             }
@@ -116,20 +116,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private IEnumerable<double> filtered_;
-
-        public IEnumerable<double> filtered
-        {
-            get
-            {
-                if (is_valid)
-                {
-                    apply_filter();
-                    return filtered_;
-                }
-                return new double [0];
-            }
-        }
 
 
         public int length { get { return data.Length; } }
@@ -193,7 +179,36 @@ namespace WaveViewerWithFilering
         {
             return wave.dB.ToArray();
         }
+
+        public void update()
+        {
+            setup_raw_wave();
+            apply_filter();
+
+            if (current_over_sample != over_sample || over.wave_id < ans.wave_id)
+            {
+                if (over.Length != ans.Length * over_sample)
+                {
+                    over = new WaveData(ans.Length * over_sample);
+                }
+
+                if (over_sample == 1)
+                {
+                    // noneed to upsampling;
+                    over.Wave = ans.Wave;
+                }
+                else
+                {
+                    over.clear_sp(); // need clear
+                    over.Spectrum = ans.Spectrum.Select(x=>x*over_sample);
+                }
+                over_sampled = over.Wave.Take(num_disp * over_sample).ToArray();
+                current_over_sample = over_sample; //calc
+            }
+
         }
+
+
 
         //---Inernal Use--------------------------------//
 
@@ -209,6 +224,8 @@ namespace WaveViewerWithFilering
         private HannWindow hann;
         private int raw_wave_start;
         private int current_over_sample;
+        private int raw_wave_num_disp;
+        private double[] extracted_raw_wave;
 
         //---Private methods
 
@@ -231,6 +248,7 @@ namespace WaveViewerWithFilering
                 ans = new WaveData(nfft_);
                 factors = new WaveData(nfft_);
                 over = new WaveData(nfft * over_sample_);
+                extracted_raw_wave = new double[nfft_];
 
                 // update Omega
                 double fs = 1.0 / dt;
@@ -251,12 +269,15 @@ namespace WaveViewerWithFilering
         }
 
         // copy wave data and FFT
-        private bool setup_raw_wave()
+        private bool setup_raw_wave(bool force = false)
         {
             if (num_disp == 0)
                 return false;
 
-            if (raw_wave_start == data_start)
+
+            if (! force &&
+                raw_wave_start == data_start &&
+                raw_wave_num_disp == num_disp)
                 return false;
 
             int n_start = data_start_ - tap * 2;
@@ -267,24 +288,62 @@ namespace WaveViewerWithFilering
             for (int i = 0; i < 20; i++)
             {
                 take_raw_wave_with_baseline();
-
-                var error = raw_wave.Wave.Average();
+                var error = extracted_raw_wave.Average();
                 if (Math.Abs(error) < delta)
                     break;
                 base_line += error / 2; //update
             }
+            raw_wave.Wave = extracted_raw_wave;
+
             raw_wave_start = data_start;
+            raw_wave_num_disp = num_disp;
+
             return true;
         }
 
-        private bool update_wave()
+        private void take_raw_wave_with_baseline()
         {
-            if (raw_wave == null)
-                return false;
+            int tap = filter.tap;
+            int n_start = data_start - tap * 2;
+            int n_end = data_start + num_disp;
 
-            if (setup_raw_wave())
+            //raw_wave.clear_wave();
+            Array.Clear(extracted_raw_wave, 0, nfft_);
+
+            // copy pre_data with filter
+            for (int i = 0; i < tap; i++)
             {
+                extracted_raw_wave[nfft - 2 * tap + i] = (data[Math.Abs(i + n_start)] - base_line) * hann[tap - i];
+                extracted_raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
+            }
+            // copy main_data
+            int last_index = data.Length - 1;
+            for (int i = 0; i < num_disp; i++)
+            {
+                int k = last_index - Math.Abs(last_index - (data_start + i));
+                extracted_raw_wave[i] = data[k] - base_line;
+            }
+            // copy postdata
+            for (int i = 0; i < tap; i++)
+            {
+                int k = last_index - Math.Abs(last_index - (n_end + i));
+                extracted_raw_wave[num_disp + i] = data[k] - base_line;
+            }
+            // copy with filter
+            for (int i = 0; i < tap; i++)
+            {
+                int j = i + 3 * tap + num_disp;
+                int k = last_index - Math.Abs(last_index - (n_end + tap + i));
+                extracted_raw_wave[num_disp + tap + i] = (data[k] - base_line) * hann[i];
+            }
 
+        }
+
+        private bool update_wave(bool force = false)
+        {
+            setup_raw_wave();
+            if (force || wave.wave_id < raw_wave.wave_id)
+            {
                 if (integral < 1)
                 {
                     // ACC and others are not need integration.
@@ -300,19 +359,18 @@ namespace WaveViewerWithFilering
                         wave.Spectrum = raw_wave.Spectrum.Zip(omega, (a, b) => a / b);
                     }
                 }
-                source = wave.Wave.Take(num_disp);
                 xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt);
-
+                source = wave.Wave.Take(num_disp).ToArray(); // calc
                 return true;
             }
             return false;
         }
 
 
-        private bool update_factors()
+        private bool update_factors(bool force = false)
         {
 
-            if (filter.design()) // refresh filter if needed
+            if (force || filter.design()|| factors.wave_id == 0) // refresh filter if needed
             {
                 factors[0] = filter.factor[0];
                 for (int i = 1; i <= filter.tap; i++)
@@ -324,79 +382,27 @@ namespace WaveViewerWithFilering
             return false;
         }
 
-        private bool apply_filter()
+        private void apply_filter(bool force = false)
         {
-            if (update_wave() || update_factors())
+            if (wave.wave_id < raw_wave.wave_id)
+            {
+                update_wave();
+            }
+
+            update_factors();
+
+            if (force ||
+                ans.wave_id < wave.wave_id ||
+                ans.wave_id < factors.wave_id)
             {
                 // convolution in Frequency domain
-                ans = wave * factors;
-
+                ans.Spectrum = wave.Spectrum.Zip(factors.Spectrum, (a, b) => a * b);
                 // copy result to filtered_
-                filtered_ = ans.Wave.Take(num_disp);
-
-                return true;
-            }
-            return false;
-        }
-
-        private void update_over_sampled()
-        {
-            if (ans == null)
-                return;
-
-            if (apply_filter() || current_over_sample != over_sample)
-            {
-                // noneed to upsampling;
-                if (over_sample == 1)
-                {
-                    over.Wave = ans.Wave;
-                }
-                else
-                {
-                    over.clear_sp();
-                    over.Spectrum = ans.Spectrum;
-                    over_sampled_ = over.Wave.Take(num_disp * over_sample);
-                }
-                current_over_sample = over_sample;
+                filtered = ans.Wave.Take(num_disp).ToArray(); // calc
             }
         }
 
-        private void take_raw_wave_with_baseline()
-        {
-            int tap = filter.tap;
-            int n_start = data_start - tap * 2;
-            int n_end = data_start + num_disp;
 
-            raw_wave.clear_wave();
-
-            // copy pre_data with filter
-            for (int i = 0; i < tap; i++)
-            {
-                raw_wave[nfft - 2 * tap + i] = (data[Math.Abs(i + n_start)] - base_line) * hann[tap-i];
-                raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
-            }
-            // copy main_data
-            int last_index = data.Length - 1;
-            for (int i = 0; i < num_disp; i++)
-            {
-                int k = last_index - Math.Abs(last_index - (data_start + i));
-                raw_wave[i] = data[k] - base_line;
-            }
-            // copy postdata
-            for (int i = 0; i < tap; i++)
-            {
-                int k = last_index - Math.Abs(last_index - (n_end + i));
-                raw_wave[num_disp + i] = data[k] - base_line;
-            }
-            // copy with filter
-            for (int i = 0; i < tap; i++)
-            {
-                int j = i + 3 * tap + num_disp;
-                int k = last_index - Math.Abs(last_index - (n_end + tap + i));
-                raw_wave[num_disp + tap + i] = (data[k] - base_line) * hann[i];
-            }
-
-        }
 
         // for debug
         public IEnumerable<double>[] debug_waves()
