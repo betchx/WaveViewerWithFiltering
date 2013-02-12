@@ -267,7 +267,7 @@ namespace WaveViewerWithFilering
                 }
 
                 // update freqs
-                freqs = Enumerable.Range(0, nfft / 2).Select(i => df * i).ToArray();
+                freqs = Enumerable.Range(0, nfft / 2 + 1).Select(i => df * i).ToArray();
             }
         }
 
