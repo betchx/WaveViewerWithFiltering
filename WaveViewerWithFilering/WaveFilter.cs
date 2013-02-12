@@ -857,19 +857,25 @@ namespace WaveViewerWithFilering
         private void hide_over_CheckedChanged(object sender, EventArgs e)
         {
             hide_flag[HIDE_OVER] = hide_over.Checked;
-            CheckUpdate();
+            over_id = 0;
+            update_wave_chart_oversampled();
+            wave_chart.Invalidate();
         }
 
         private void hide_result_CheckedChanged(object sender, EventArgs e)
         {
             hide_flag[HIDE_ANS] = hide_result.Checked;
-            CheckUpdate();
+            filtered_id = 0;
+            update_wave_chart_filtered();
+            wave_chart.Invalidate();
         }
 
         private void hide_source_CheckedChanged(object sender, EventArgs e)
         {
             hide_flag[HIDE_WAVE] = hide_source.Checked;
-            CheckUpdate();
+            source_id = 0;
+            update_wave_chart_source();
+            wave_chart.Invalidate();
         }
 
         private void show_fft_data_CheckedChanged(object sender, EventArgs e)
