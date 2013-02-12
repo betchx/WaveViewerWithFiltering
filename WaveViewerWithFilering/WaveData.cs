@@ -226,6 +226,7 @@ namespace WaveViewerWithFilering
         private int current_over_sample;
         private int raw_wave_num_disp;
         private double[] extracted_raw_wave;
+        private ComplexArray omega2;
 
         //---Private methods
 
@@ -253,14 +254,16 @@ namespace WaveViewerWithFilering
                 // update Omega
                 double fs = 1.0 / dt;
                 double df = fs / nfft;
-                omega = new ComplexArray(nfft/2+1);
+                omega = new ComplexArray(nfft / 2 + 1);
+                omega2 = new ComplexArray(nfft / 2 + 1);
 
                 double df0 = -1.0 / (df*2*Math.PI);
                 double v;
                 for (int i = 1; i < nfft/2; i++)
                 {
                     v = df0 / i;
-                    omega[i].Real = v;
+                    omega[i].Imag = v;
+                    omega2[i].Real = - v * v;
                 }
 
                 // update freqs
@@ -352,14 +355,11 @@ namespace WaveViewerWithFilering
                 else
                 {
                     // VEL and DISP need integration.
+                    ComplexArray w = integral == 1 ? omega : omega2;
 
                     // Integrate in frequency domain.
-                    for (int i = 0; i < integral; i++)
-                    {
-                        wave.Spectrum = raw_wave.Spectrum.Zip(omega, (a, b) => a / b);
-                    }
+                    wave.Spectrum = raw_wave.Spectrum.Zip(w, (a, b) => a * b);
                 }
-                xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt);
                 source = wave.Wave.Take(num_disp).ToArray(); // calc
                 return true;
             }
