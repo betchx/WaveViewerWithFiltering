@@ -283,6 +283,7 @@ namespace WaveViewerWithFilering
                 raw_wave_num_disp == num_disp)
                 return false;
 
+            xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
             int n_start = data_start_ - tap * 2;
             var base_wave = data.Skip(n_start).Take(num_disp);
             base_line = base_wave.Average();
