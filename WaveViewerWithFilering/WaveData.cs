@@ -248,11 +248,11 @@ namespace WaveViewerWithFilering
                 // update
                 nfft_ = val;
 
-                raw_wave = new WaveData(nfft_);
-                wave = new WaveData(nfft_);
+                over = new WaveData(nfft * over_sample_);
                 ans = new WaveData(nfft_);
                 factors = new WaveData(nfft_);
-                over = new WaveData(nfft * over_sample_);
+                wave = new WaveData(nfft_);
+                raw_wave = new WaveData(nfft_);
                 extracted_raw_wave = new double[nfft_];
 
                 // update Omega
