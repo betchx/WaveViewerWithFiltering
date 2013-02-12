@@ -284,18 +284,20 @@ namespace WaveViewerWithFilering
                 return false;
 
             xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
+
             int n_start = data_start_ - tap * 2;
             var base_wave = data.Skip(n_start).Take(num_disp);
             base_line = base_wave.Average();
             var range = base_wave.Max() - base_wave.Min();
             var delta = range / 1e6;
+
             for (int i = 0; i < 20; i++)
             {
                 take_raw_wave_with_baseline();
                 var error = extracted_raw_wave.Average();
                 if (Math.Abs(error) < delta)
                     break;
-                base_line += error / 2; //update
+                base_line += error * 0.75; //update
             }
             raw_wave.Wave = extracted_raw_wave;
 
