@@ -50,10 +50,11 @@ namespace WaveViewerWithFilering
                 if (over_sampling_ != value)
                 {
                     over_sampling_ = value;
-                    foreach (var item in data)
-                    {
-                        item.over_sample = value;
-                    }
+                    if(data != null)
+                        foreach (var item in data)
+                        {
+                            item.over_sample = value;
+                        }
                 }
             }
         }
@@ -79,18 +80,31 @@ namespace WaveViewerWithFilering
         const int HIDE_OVER = 2;
 
 
+        private void CheckUpdate()
+        {
+            if (auto_update.Checked)
+            {
+                data_update();
+            }
+        }
+
+
         private void data_update()
         {
             if (famos == null)
                 return;
 
-            update_wave_chart_source();
-            update_wave_chart_filtered();
+            foreach (var d in data)
+            {
+                d.update();
+            }
+
+            update_wave_chart();
+
             update_filter_chart();
-            update_wave_chart_oversampled();
-            wave_chart.ChartAreas[0].RecalculateAxesScale();
-            update_sp_wave();
+
             update_freq_chart();
+
             if (show_fft_data.Checked)
             {
                 update_wave_fft_chart();
@@ -101,45 +115,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private void update_wave_chart_oversampled()
-        {
-            // skip update if id does not changed
-            if (over_id == data[ch].over_id)
-                return;
-
-            over_id = data[ch].over_id;
-
-            var s = wave_chart.Series[2].Points;
-
-            if (hide_over.Checked || data[ch].over_sampled == null || step > 1)
-            {
-                s.Clear();
-                return;
-            }
-
-            var val = data[ch].over_sampled.ToList();
-            double x0 = data[ch].xvalues.First();
-            double dx = dt / over_sampling;
-            if (num_disp  == s.Count)
-            {
-                // overwrite
-                for (int i = 0; i < num_disp; i++)
-                {
-                    s[i].XValue = x0 + dx * i;
-                    s[i].YValues[0] = val[i];
-                }
-            }
-            else
-            {
-                // renew
-                s.Clear();
-                for (int i = 0; i < num_disp; i++)
-                {
-                    double x = x0 + dx * i;
-                    s.AddXY(x, val[i]);
-                }
-            }
-        }
 
         private void update_wave_fft_chart()
         {
@@ -151,7 +126,10 @@ namespace WaveViewerWithFilering
                 s.Clear();
                 if (hide_flag[i])
                     continue;
-                s.DataBindY(waves[i]);
+                foreach (var v in waves[i])
+                {
+                    s.AddY(v);
+                }
             }
         }
 
@@ -176,7 +154,7 @@ namespace WaveViewerWithFilering
                     var finder = new PeakFinder(threshold, required_length);
                     wave.over_sample = over_sampling;
                     var peaks = finder.apply(wave.over_sampled.ToArray());
-                    var x0 = wave.xvalues.First();
+                    var x0 = wave.x0;
                     var dx = wave.dt / over_sampling;
                     var s = peak_chart.Series[i].Points;
                     s.Clear();
@@ -200,6 +178,35 @@ namespace WaveViewerWithFilering
             peak_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
+        private void update_wave_chart()
+        {
+            update_wave_chart_source();
+            update_wave_chart_filtered();
+            update_wave_chart_oversampled();
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
+            wave_chart.Invalidate();
+        }
+
+        private void update_wave_chart_source()
+        {
+            if (source_id == data[ch].source_id)
+                return;
+
+            var s = wave_chart.Series[0].Points;
+            source_id = data[ch].source_id;
+
+            int pos = data_start.Value;
+            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
+
+            s.Clear();
+            if (hide_source.Checked) return;
+
+            for (int i = 0; i < num_disp; i+=step)
+            {
+                s.AddXY(data[ch].xvalues[i], data[ch].source[i]);
+            }
+        }
+
         private void update_wave_chart_filtered()
         {
             if (filtered_id == data[ch].filtered_id)
@@ -207,39 +214,39 @@ namespace WaveViewerWithFilering
             filtered_id = data[ch].filtered_id;
 
             var s = wave_chart.Series[1].Points;
-            if (hide_result.Checked)
-                s.Clear();
-            else
+            s.Clear();
+            if (hide_result.Checked || data[ch].xvalues == null)
+                return;
+            var val = data[ch].filtered;
+            var x = data[ch].xvalues;
+            for (int i = 0; i < num_disp; i += step)
             {
-                if (step > 1)
-                    s.DataBindXY(data[ch].xvalues.Where((x, i) => i % step == 0).ToList(),
-                           data[ch].filtered.Where((x, i) => i % step == 0).ToList());
-                else
-                    s.DataBindXY(data[ch].xvalues, data[ch].filtered);
+                s.AddXY(x[i], val[i]);
             }
-            wave_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
-        private void update_freq_chart()
+        private void update_wave_chart_oversampled()
         {
-            if (gain_id == data[ch].gain_id)
+            // skip update if id does not changed
+            if (over_id == data[ch].over_id)
                 return;
-            gain_id = data[ch].gain_id;
 
-            var s = this.freq_chart.Series[0].Points;
-            double df = fs / tap / 2;
-            var gains = data[ch].gains.ToList();
+            over_id = data[ch].over_id;
 
-            if (s.Count == tap + 1)
+            var s = wave_chart.Series[2].Points;
+
+            s.Clear();
+            if (hide_over.Checked || data[ch].over_sampled == null || step > 1)
+                return;
+
+            double x0 = data[ch].x0;
+            double dx = dt / over_sampling;
+            var val = data[ch].over_sampled;
+            var x = Enumerable.Range(0, val.Length).Select(i => x0 + dx * i).ToArray();
+
+            for (int i = 0; i < val.Length; i++)
             {
-                for (int i = 0; i < s.Count; i++)
-                {
-                    s[i].YValues[0] = gains[i];
-                }
-            }
-            else
-            {
-                s.DataBindXY(data[ch].freqs, gains);
+                s.AddXY(x[i], val[i]);
             }
         }
 
@@ -260,17 +267,12 @@ namespace WaveViewerWithFilering
             }
         }
 
-        private void CheckUpdate()
-        {
-            if (auto_update.Checked)
-            {
-                data_update();
-            }
-        }
 
-        private void update_sp_wave()
+        private void update_freq_chart()
         {
             update_freq_chart_source();
+            update_freq_chart_gain();
+            freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         /// <summary>
@@ -286,20 +288,30 @@ namespace WaveViewerWithFilering
             {
                 n -= 1;
             }
-            if (s.Count == n)
+            s.Clear();
+            for(int i = 1; i <= n; ++i)
             {
-                int i =0;
-                foreach( var v in amps.Skip(1))
-                {
-                    s[i++].YValues[0] = v;
-                }
+                if(! Double.IsInfinity(amps[i]))
+                    s.AddXY(data[ch].freqs[i], amps[i]);
             }
-            else
-            {
-                s.DataBindXY(data[ch].freqs.Skip(1).ToArray(), amps.Skip(1).ToList());
-            }
-            freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
+
+        private void update_freq_chart_gain()
+        {
+            if (gain_id == data[ch].gain_id)
+                return;
+            gain_id = data[ch].gain_id;
+
+            var s = this.freq_chart.Series[0].Points;
+            var gains = data[ch].gains.Take(tap + 1).ToArray();
+
+            s.Clear();
+            for (int i = 0; i < tap+1; i++)
+            {
+                s.AddXY(tap_freqs[i], gains[i]);
+            }
+        }
+
 
         private int num_disp
         {
@@ -326,27 +338,6 @@ namespace WaveViewerWithFilering
                 if (data == null) return 0;
                 return data[ch].data.Length;
             }
-        }
-        private void update_wave_chart_source()
-        {
-            if (source_id == data[ch].source_id)
-                return;
-
-            source_id = data[ch].source_id;
-
-            int pos = data_start.Value;
-            num_point = Math.Min(num_disp, num_data - pos - 1) / step;
-
-            var s = wave_chart.Series[0].Points;
-            if (hide_source.Checked)// (data[ch].category == "DIS" || data[ch].category == "VEL")
-            {
-                // integrated wave should not show
-                s.Clear();
-                return;
-            }
-            s.DataBindXY(data[ch].xvalues.Where((x, i) => i % step == 0).ToList(),
-                data[ch].source.Where((x, i) => i % step == 0).ToList());
-            wave_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         private double dt { get { return data[ch].dt; } }
