@@ -404,6 +404,8 @@ namespace WaveViewerWithFilering
             channel_track.Value = 0;
             channel_track.Maximum = famos.cols - 1;
 
+            update_tap_info();
+
             //            upper_fc_track.Value = upper_fc_track.Maximum;
             channel_change();
             CheckUpdate();
@@ -495,6 +497,9 @@ namespace WaveViewerWithFilering
 
             if(data != null)
                 data[ch].tap = tap;
+
+            double df = fs / tap / 2;
+            tap_freqs = Enumerable.Range(0, tap + 1).Select(i => df * i).ToArray();
         }
 
         private void set_alpha(string text)
@@ -511,6 +516,7 @@ namespace WaveViewerWithFilering
         private uint filtered_id;
         private uint factor_id;
         private uint gain_id;
+        private double[] tap_freqs;
 
         private void update_display_data_length()
         {
