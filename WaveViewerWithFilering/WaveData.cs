@@ -84,6 +84,7 @@ namespace WaveViewerWithFilering
             {
                 num_disp_ = value;
                 update_nfft();
+                setup_raw_wave();
             }
         }
 
