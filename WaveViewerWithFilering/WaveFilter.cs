@@ -50,11 +50,11 @@ namespace WaveViewerWithFilering
                 if (over_sampling_ != value)
                 {
                     over_sampling_ = value;
-                    if(data != null)
-                        foreach (var item in data)
+                    if (data != null)
+                        System.Threading.Tasks.Parallel.ForEach(data, (wd) =>
                         {
-                            item.over_sample = value;
-                        }
+                            wd.over_sample = value;
+                        });
                 }
             }
         }
@@ -94,10 +94,11 @@ namespace WaveViewerWithFilering
             if (famos == null)
                 return;
 
-            foreach (var d in data)
-            {
-                d.update();
-            }
+            //foreach (var d in data)
+            //{
+            //    d.update();
+            //}
+            System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
 
             update_wave_chart();
 
@@ -324,10 +325,11 @@ namespace WaveViewerWithFilering
             {
                 if (data != null)
                 {
-                    foreach (var item in data)
-                    {
-                        item.num_disp = value;
-                    }
+                    System.Threading.Tasks.Parallel.ForEach(data, (d)=>d.num_disp = value);
+                    //foreach (var item in data)
+                    //{
+                    //    item.num_disp = value;
+                    //}
                 }
             }
         }
