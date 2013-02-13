@@ -38,7 +38,7 @@ namespace WaveViewerWithFilering
 
         private int nfft {  get { return data[ch].nfft; } }
         private int tap {  get { return tap_track.Value; } }
-        private WaveDataSet fir { get { return data[ch]; } }
+        private WaveDataSet fir { get { return data[ch]; } }// fir setting affects only active data set.
         ComboBox[] targets;
         TextBox[] thresholds;
         TextBox[] required_lengths;
@@ -499,7 +499,7 @@ namespace WaveViewerWithFilering
             double val;
             if (double.TryParse(text, out val))
             {
-                data[ch].alpha = val;
+                fir.alpha = val;
             }
         }
         const int MAX_DISP_SIZE = 100000;
