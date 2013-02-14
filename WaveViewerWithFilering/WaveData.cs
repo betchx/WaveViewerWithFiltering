@@ -165,7 +165,10 @@ namespace WaveViewerWithFilering
                         if (over_sample != value)
                         {
                             over_sample_ = value;
-                            over = new WaveData(nfft * over_sample);
+                            lock (fftw)
+                            {
+                                over = new WaveData(nfft * over_sample);
+                            }
                             update();
                         }
                         break;
@@ -193,7 +196,10 @@ namespace WaveViewerWithFilering
             {
                 if (over.Length != ans.Length * over_sample)
                 {
-                    over = new WaveData(ans.Length * over_sample);
+                    lock (fftw)
+                    {
+                        over = new WaveData(ans.Length * over_sample);
+                    }
                 }
 
                 if (over_sample == 1)
@@ -232,6 +238,10 @@ namespace WaveViewerWithFilering
         private double[] extracted_raw_wave;
         private ComplexArray omega2;
 
+        private static object fftw = 1;
+
+
+
         //---Private methods
 
         /// <summary>
@@ -248,18 +258,24 @@ namespace WaveViewerWithFilering
                 // update
                 nfft_ = val;
 
-                over = new WaveData(nfft * over_sample_);
-                ans = new WaveData(nfft_);
-                factors = new WaveData(nfft_);
-                wave = new WaveData(nfft_);
-                raw_wave = new WaveData(nfft_);
+                lock (fftw)
+                {
+                    over = new WaveData(nfft * over_sample_);
+                    ans = new WaveData(nfft_);
+                    factors = new WaveData(nfft_);
+                    wave = new WaveData(nfft_);
+                    raw_wave = new WaveData(nfft_);
+                }
                 extracted_raw_wave = new double[nfft_];
 
                 // update Omega
                 double fs = 1.0 / dt;
                 double df = fs / nfft;
-                omega = new ComplexArray(nfft / 2 + 1);
-                omega2 = new ComplexArray(nfft / 2 + 1);
+                lock (fftw)
+                {
+                    omega = new ComplexArray(nfft / 2 + 1);
+                    omega2 = new ComplexArray(nfft / 2 + 1);
+                }
 
                 double df0 = -1.0 / (df*2*Math.PI);
                 double v;
