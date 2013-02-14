@@ -56,7 +56,7 @@
     <Compile Include="Famos.cs" />
     <Compile Include="FIRFilter.cs" />
     <Compile Include="PeakFinder.cs" />
-    <Compile Include="WaveData.cs" />
+    <Compile Include="WaveDataSet.cs" />
     <Compile Include="WaveFilter.cs">
       <SubType>Form</SubType>
     </Compile>
