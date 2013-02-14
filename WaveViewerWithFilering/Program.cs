@@ -15,7 +15,7 @@ namespace WaveViewerWithFilering
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new wave_filter());
+            Application.Run(new WaveFilter());
         }
     }
 }

@@ -11,9 +11,9 @@ using fftwlib;
 
 namespace WaveViewerWithFilering
 {
-    public partial class wave_filter : Form
+    public partial class WaveFilter : Form
     {
-        public wave_filter()
+        public WaveFilter()
         {
             InitializeComponent();
             data = null;

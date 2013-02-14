@@ -1,6 +1,6 @@
 ﻿namespace WaveViewerWithFilering
 {
-    partial class wave_filter
+    partial class WaveFilter
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -1334,7 +1334,7 @@
             this.Controls.Add(this.wave_chart);
             this.Controls.Add(this.show_fft_data);
             this.Controls.Add(this.wave_fft_chart);
-            this.Name = "wave_filter";
+            this.Name = "WaveFilter";
             this.Text = "WaveFilter";
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).EndInit();
