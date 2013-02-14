@@ -860,7 +860,7 @@
             this.rl_Za.Size = new System.Drawing.Size(44, 19);
             this.rl_Za.TabIndex = 19;
             this.rl_Za.Text = "5";
-            this.rl_Za.TextChanged += new System.EventHandler(this.rl_Za_TextChanged);
+            this.rl_Za.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // rl_Ya
             // 
@@ -869,7 +869,7 @@
             this.rl_Ya.Size = new System.Drawing.Size(44, 19);
             this.rl_Ya.TabIndex = 19;
             this.rl_Ya.Text = "5";
-            this.rl_Ya.TextChanged += new System.EventHandler(this.rl_Ya_TextChanged);
+            this.rl_Ya.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // th_Za
             // 
@@ -878,7 +878,7 @@
             this.th_Za.Size = new System.Drawing.Size(44, 19);
             this.th_Za.TabIndex = 19;
             this.th_Za.Text = "5";
-            this.th_Za.TextChanged += new System.EventHandler(this.th_Za_TextChanged);
+            this.th_Za.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // rl_P2
             // 
@@ -887,7 +887,7 @@
             this.rl_P2.Size = new System.Drawing.Size(44, 19);
             this.rl_P2.TabIndex = 19;
             this.rl_P2.Text = "20";
-            this.rl_P2.TextChanged += new System.EventHandler(this.rl_P2_TextChanged);
+            this.rl_P2.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // th_Ya
             // 
@@ -896,7 +896,7 @@
             this.th_Ya.Size = new System.Drawing.Size(44, 19);
             this.th_Ya.TabIndex = 19;
             this.th_Ya.Text = "5";
-            this.th_Ya.TextChanged += new System.EventHandler(this.th_Ya_TextChanged);
+            this.th_Ya.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // rl_P1
             // 
@@ -905,7 +905,7 @@
             this.rl_P1.Size = new System.Drawing.Size(44, 19);
             this.rl_P1.TabIndex = 19;
             this.rl_P1.Text = "20";
-            this.rl_P1.TextChanged += new System.EventHandler(this.rl_P1_TextChanged);
+            this.rl_P1.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // th_P2
             // 
@@ -914,7 +914,7 @@
             this.th_P2.Size = new System.Drawing.Size(44, 19);
             this.th_P2.TabIndex = 19;
             this.th_P2.Text = "10";
-            this.th_P2.TextChanged += new System.EventHandler(this.th_P2_TextChanged);
+            this.th_P2.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // th_P1
             // 
@@ -923,7 +923,7 @@
             this.th_P1.Size = new System.Drawing.Size(44, 19);
             this.th_P1.TabIndex = 19;
             this.th_P1.Text = "10";
-            this.th_P1.TextChanged += new System.EventHandler(this.th_P1_TextChanged);
+            this.th_P1.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // yama
             // 
@@ -955,7 +955,7 @@
             this.ch_Za.Name = "ch_Za";
             this.ch_Za.Size = new System.Drawing.Size(45, 20);
             this.ch_Za.TabIndex = 17;
-            this.ch_Za.SelectedIndexChanged += new System.EventHandler(this.ch_Za_SelectedIndexChanged);
+            this.ch_Za.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // ch_Ya
             // 
@@ -965,7 +965,7 @@
             this.ch_Ya.Name = "ch_Ya";
             this.ch_Ya.Size = new System.Drawing.Size(45, 20);
             this.ch_Ya.TabIndex = 17;
-            this.ch_Ya.SelectedIndexChanged += new System.EventHandler(this.ch_Ya_SelectedIndexChanged);
+            this.ch_Ya.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // ch_P2
             // 
@@ -975,7 +975,7 @@
             this.ch_P2.Name = "ch_P2";
             this.ch_P2.Size = new System.Drawing.Size(45, 20);
             this.ch_P2.TabIndex = 17;
-            this.ch_P2.SelectedIndexChanged += new System.EventHandler(this.ch_P2_SelectedIndexChanged);
+            this.ch_P2.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // ch_P1
             // 
@@ -985,7 +985,7 @@
             this.ch_P1.Name = "ch_P1";
             this.ch_P1.Size = new System.Drawing.Size(45, 20);
             this.ch_P1.TabIndex = 17;
-            this.ch_P1.SelectedIndexChanged += new System.EventHandler(this.ch_P1_SelectedIndexChanged);
+            this.ch_P1.TextChanged += new System.EventHandler(this.CheckUpdateHandler);
             // 
             // label26
             // 

@@ -794,65 +794,11 @@ namespace WaveViewerWithFilering
             CheckUpdate();
         }
 
-        private void ch_P1_SelectedIndexChanged(object sender, EventArgs e)
+        private void CheckUpdateHandler(object sende, EventArgs e)
         {
             CheckUpdate();
         }
 
-        private void ch_P2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void ch_Ya_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void ch_Za_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void th_P1_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void th_P2_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void th_Ya_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void th_Za_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void rl_P1_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void rl_P2_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void rl_Ya_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
-
-        private void rl_Za_TextChanged(object sender, EventArgs e)
-        {
-            CheckUpdate();
-        }
 
         private void integ_SelectedIndexChanged(object sender, EventArgs e)
         {
