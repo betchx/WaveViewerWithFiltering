@@ -434,9 +434,18 @@ namespace WaveViewerWithFilering
             // change data_start
             data[ch].data_start = data_start.Value;
 
+            // update filter information
             var window_type = data[ch].window_type; // save
+            tap_track.Value = data[ch].tap;
+            update_tap_info();
 
             alpha.Text = data[ch].alpha.ToString(); // filter's window type is chened to Kaiser automatically.
+            
+            lower_fc_track.Value = data[ch].lower;
+            update_lower_fc();
+            upper_fc_track.Value = data[ch].upper;
+            update_upper_fc();
+
             
             // switch to actual window_type
             switch (window_type)
@@ -466,6 +475,9 @@ namespace WaveViewerWithFilering
             upper_fc_track.Value = data[ch].upper;
             update_upper_fc();
 
+            tap_track.Value = data[ch].tap;
+            update_tap_info();
+
             update_display_data_length();
 
             CheckUpdate();
@@ -488,7 +500,7 @@ namespace WaveViewerWithFilering
             filter_length.Text = filter_size.ToString();
 
             if(data != null)
-                data[ch].tap = tap;
+                fir.tap = tap;
 
             double df = fs / tap / 2;
             tap_freqs = Enumerable.Range(0, tap + 1).Select(i => df * i).ToArray();
