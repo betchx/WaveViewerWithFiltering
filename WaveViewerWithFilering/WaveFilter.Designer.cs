@@ -148,6 +148,8 @@
             this.hide_over = new System.Windows.Forms.CheckBox();
             this.show_fft_data = new System.Windows.Forms.CheckBox();
             this.wave_fft_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label28 = new System.Windows.Forms.Label();
+            this.DataStart = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
@@ -1274,11 +1276,31 @@
             this.wave_fft_chart.TabStop = false;
             this.wave_fft_chart.Text = "chart1";
             // 
-            // wave_filter
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(11, 287);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(30, 12);
+            this.label28.TabIndex = 20;
+            this.label28.Text = "Start";
+            // 
+            // DataStart
+            // 
+            this.DataStart.Location = new System.Drawing.Point(47, 284);
+            this.DataStart.Name = "DataStart";
+            this.DataStart.Size = new System.Drawing.Size(55, 19);
+            this.DataStart.TabIndex = 21;
+            this.DataStart.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.DataStart.Validating += new System.ComponentModel.CancelEventHandler(this.DataStart_Validating);
+            this.DataStart.Validated += new System.EventHandler(this.DataStart_Validated);
+            // WaveFilter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 923);
+            this.Controls.Add(this.DataStart);
+            this.Controls.Add(this.label28);
             this.Controls.Add(this.hide_over);
             this.Controls.Add(this.hide_result);
             this.Controls.Add(this.hide_source);
@@ -1448,6 +1470,8 @@
         private System.Windows.Forms.CheckBox hide_over;
         private System.Windows.Forms.CheckBox show_fft_data;
         private System.Windows.Forms.DataVisualization.Charting.Chart wave_fft_chart;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.TextBox DataStart;
     }
 }
 

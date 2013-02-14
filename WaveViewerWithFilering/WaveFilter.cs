@@ -693,7 +693,9 @@ namespace WaveViewerWithFilering
 
         private void data_start_ValueChanged(object sender, EventArgs e)
         {
-            data[ch].data_start = data_start.Value;
+            DataStart.Text = data_start.Value.ToString();
+            if(data != null)
+                data[ch].data_start = data_start.Value;
             foreach (var item in targets)
             {
                 int i;
@@ -900,6 +902,21 @@ namespace WaveViewerWithFilering
             peak_chart.Visible = !show_fft_data.Checked;
         }
 
+        private void DataStart_Validated(object sender, EventArgs e)
+        {
+            data_start.Value = int.Parse(DataStart.Text);
+        }
 
+        private void DataStart_Validating(object sender, CancelEventArgs e)
+        {
+            int val;
+            if (!int.TryParse(DataStart.Text, out val))
+            {
+                e.Cancel = true;
+                return;
+            }
+            if (val < 0) DataStart.Text = "0";
+            if (val > data_start.Maximum) DataStart.Text = data_start.Maximum.ToString();
+        }
     }
 }
