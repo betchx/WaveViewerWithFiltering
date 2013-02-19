@@ -11,7 +11,7 @@ namespace WaveViewerWithFilering
 {
     class WaveDataSet
     {
-
+        #region Construction
         public WaveDataSet(double[] wave, double delta_t, bool acc_data = false)
         {
             data = wave;
@@ -27,7 +27,6 @@ namespace WaveViewerWithFilering
                 wavefile.name(ch).Contains("_Za_");
             init();
         }
-
         private void init()
         {
             data_start_ = 0;
@@ -38,46 +37,24 @@ namespace WaveViewerWithFilering
                 integral = 0;
             else
                 integral = -1;
-            nfft_ = 0;
+            nfft = 0;
             update_nfft();
         }
+        #endregion
 
-        private int integral;
+        #region Properties
 
-        static readonly string[] CATEGORY = new string[] { "ACC", "VEL", "DIS", "NONE" };
-
-        public string category
+        // with Setter
+        public int lower { get { return filter.lower; } set { filter.lower = value; update_factors(); } }
+        public int upper { get { return filter.upper; } set { filter.upper = value; update_factors(); } }
+        public double gain { get { return filter.gain; } set { filter.gain = value; update_factors(); } }
+        public double alpha { get { return filter.alpha; } set { filter.alpha = value; update_factors(); } }
+        public FIRFilter.WindowType window_type
         {
-            get
-            {
-                if (integral < 0)
-                    return CATEGORY.Last();
-                return CATEGORY[integral];
-            }
-            set
-            {
-                if (is_acc)
-                {
-                    var val = Array.FindIndex(CATEGORY, s => s == value);
-                    if (val != integral)
-                    {
-                        integral = val;
-                        update_wave(true);
-                    }
-                }
-            }
+            get { return filter.window_type; }
+            set { filter.window_type = value; update_factors(); }
         }
 
-        // properties
-        public double[] data { get; private set; }
-        public IEnumerable<double> Data { get { return data; } }
-        public bool is_acc { get; private set; }
-
-        public double dt { get; private set; }
-
-        private FIRFilter filter;
-
-        private int num_disp_;
         public int num_disp
         {
             get { return num_disp_; }
@@ -89,10 +66,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-        // number of FFT
-        private int nfft_; public int nfft { get { return nfft_; } }
-
-        private int data_start_;
         public int data_start
         {
             get { return data_start_; }
@@ -103,23 +76,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-        public bool is_valid
-        {
-            get
-            {
-                if (data == null) return false;
-                if (filter == null) return false;
-                if (num_disp_ == 0) return false;
-                if (nfft_ == 0) return false;
-                if (dt == 0.0) return false;
-
-                return true;
-            }
-        }
-
-
-
-        public int length { get { return data.Length; } }
         public int tap
         {
             get { return filter.tap; }
@@ -130,28 +86,7 @@ namespace WaveViewerWithFilering
                 update_nfft();
             }
         }
-        public int lower { get { return filter.lower; } set { filter.lower = value; update_factors(); } }
-        public int upper { get { return filter.upper; } set { filter.upper = value; update_factors(); } }
-        public double gain { get { return filter.gain; } set { filter.gain = value; update_factors(); } }
-        public double[] factor { get { return filter.factor; }}
-        public double x0 { get { return data_start_ * dt; } }
-        public WindowFunction window { get { return filter.window; } }
-        public double alpha { get { return filter.alpha; } set { filter.alpha = value; } }
-        public FIRFilter.WindowType  window_type { get { return filter.window_type; } set { filter.window_type = value; } }
-        public double[] source { get; private set; }
-        public double[] xvalues { get; private set; }
-        public double[] gains { get { return filter.gains; } }
-        public double[] over_sampled { get; private set; }
-        public double[] filtered { get; private set; }
 
-        public uint over_id { get { return over.wave_id; } }
-        public uint filtered_id { get { return ans.wave_id; } }
-        public uint factor_id { get { return factors.wave_id; } }
-        public uint gain_id { get { return factors.sp_id; } }
-        public uint source_id { get { return wave.wave_id; } }
-
-
-        private int over_sample_;
         public int over_sample
         {
             get { return over_sample_; }
@@ -178,10 +113,70 @@ namespace WaveViewerWithFilering
                 }
             }
         }
+
+        public string category
+        {
+            get
+            {
+                if (integral < 0)
+                    return CATEGORY.Last();
+                return CATEGORY[integral];
+            }
+            set
+            {
+                if (is_acc)
+                {
+                    var val = Array.FindIndex(CATEGORY, s => s == value);
+                    if (val != integral)
+                    {
+                        integral = val;
+                        update_wave(true);
+                    }
+                }
+            }
+        }
+
+        // Read only properties
+        public IEnumerable<double> Data { get { return data; } }
+        public WindowFunction window { get { return filter.window; } }
+        public bool is_acc { get; private set; }
+        public int length { get { return data.Length; } }
+        public int nfft { get; private set; }
+        public double dt { get; private set; }
+        public double x0 { get { return data_start_ * dt; } }
+        public double[] factor { get { return filter.factor; } }
+        public double[] gains { get { return filter.gains; } }
+        public double[] data { get; private set; }
         public double[] freqs { get; private set; }
+        public double[] source { get; private set; }
+        public double[] xvalues { get; private set; }
+        public double[] over_sampled { get; private set; }
+        public double[] filtered { get; private set; }
+
+        public uint over_id { get { return over.wave_id; } }
+        public uint filtered_id { get { return ans.wave_id; } }
+        public uint factor_id { get { return factors.wave_id; } }
+        public uint gain_id { get { return factors.sp_id; } }
+        public uint source_id { get { return wave.wave_id; } }
 
 
-        //---Public Methods--------------------------------//
+        public bool is_valid
+        {
+            get
+            {
+                if (data == null) return false;
+                if (filter == null) return false;
+                if (num_disp_ == 0) return false;
+                if (nfft == 0) return false;
+                if (dt == 0.0) return false;
+
+                return true;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods
 
         public double[] wave_spectrum_amplitude_in_dB()
         {
@@ -216,14 +211,34 @@ namespace WaveViewerWithFilering
                 over_sampled = over.Wave.Take(num_disp * over_sample).ToArray();
                 current_over_sample = over_sample; //calc
             }
-
         }
 
+        // for debug
+        public IEnumerable<double>[] debug_waves()
+        {
+            int zeros = Math.Max(2 * tap - data_start, 0);
+            return new IEnumerable<double>[]{
+                wave.Wave,
+                ans.Wave,
+                over.Wave,
+                raw_wave.Wave,
+                Enumerable.Repeat(0.0,zeros).Concat(data.Skip(data_start - 2*tap).Take(num_disp + 4*tap-zeros))
+            };
+        }
 
+        public IEnumerable<double>[] debug_spectrums()
+        {
+            return new IEnumerable<double>[]{
+                wave.Abs,
+                ans.Abs,
+                over.Abs,
+                raw_wave.Abs,
+            };
+        }
+        #endregion
 
-        //---Inernal Use--------------------------------//
-
-
+        #region Internal Use
+        #region Private Fields
         //--Private members
         private WaveData raw_wave;    // raw wave. this is partial copy of data. 
         private WaveData wave;        // wave data (it can be disp or vel wave)
@@ -238,12 +253,21 @@ namespace WaveViewerWithFilering
         private int raw_wave_num_disp;
         private double[] extracted_raw_wave;
         private ComplexArray omega2;
+        private FIRFilter filter;
+        private int integral;
 
+        private int data_start_;
+        private int num_disp_;
+        private int over_sample_;
+
+        // Used for lock
         private static object fftw = 1;
 
+        private static readonly string[] CATEGORY = new string[] { "ACC", "VEL", "DIS", "NONE" };
 
+        #endregion
 
-        //---Private methods
+        #region Private methods
 
         /// <summary>
         /// NFFT： Number of data for FFT (= 2^n > 4tap + num_disp, >1024)
@@ -257,17 +281,17 @@ namespace WaveViewerWithFilering
             if (nfft != val)
             {
                 // update
-                nfft_ = val;
+                nfft = val;
 
                 lock (fftw)
                 {
                     over = new WaveData(nfft * over_sample_);
-                    ans = new WaveData(nfft_);
-                    factors = new WaveData(nfft_);
-                    wave = new WaveData(nfft_);
-                    raw_wave = new WaveData(nfft_);
+                    ans = new WaveData(nfft);
+                    factors = new WaveData(nfft);
+                    wave = new WaveData(nfft);
+                    raw_wave = new WaveData(nfft);
                 }
-                extracted_raw_wave = new double[nfft_];
+                extracted_raw_wave = new double[nfft];
 
                 // update Omega
                 double fs = 1.0 / dt;
@@ -297,7 +321,6 @@ namespace WaveViewerWithFilering
         {
             if (num_disp == 0)
                 return false;
-
 
             if (! force &&
                 raw_wave_start == data_start &&
@@ -335,7 +358,7 @@ namespace WaveViewerWithFilering
             int n_end = data_start + num_disp;
 
             //raw_wave.clear_wave();
-            Array.Clear(extracted_raw_wave, 0, nfft_);
+            Array.Clear(extracted_raw_wave, 0, nfft);
 
             // copy pre_data with filter
             for (int i = 0; i < tap; i++)
@@ -363,7 +386,6 @@ namespace WaveViewerWithFilering
                 int k = last_index - Math.Abs(last_index - (n_end + tap + i));
                 extracted_raw_wave[num_disp + tap + i] = (data[k] - base_line) * hann[i];
             }
-
         }
 
         private bool update_wave(bool force = false)
@@ -389,7 +411,6 @@ namespace WaveViewerWithFilering
             }
             return false;
         }
-
 
         private bool update_factors(bool force = false)
         {
@@ -425,33 +446,7 @@ namespace WaveViewerWithFilering
                 filtered = ans.Wave.Take(num_disp).ToArray(); // calc
             }
         }
-
-
-
-        // for debug
-        public IEnumerable<double>[] debug_waves()
-        {
-            int zeros = Math.Max(2 * tap - data_start,0);
-            return new IEnumerable<double>[]{
-                wave.Wave,
-                ans.Wave,
-                over.Wave,
-                raw_wave.Wave,
-                Enumerable.Repeat(0.0,zeros).Concat(data.Skip(data_start - 2*tap).Take(num_disp + 4*tap-zeros))
-            };
-        }
-
-
-        public IEnumerable<double>[] debug_spectrums()
-        {
-            return new IEnumerable<double>[]{
-                wave.Abs,
-                ans.Abs,
-                over.Abs,
-                raw_wave.Abs,
-            };
-        }
-
-
+        #endregion // Private Methods
+        #endregion // Internal Use
     }
 }
