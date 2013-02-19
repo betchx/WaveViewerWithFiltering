@@ -11,9 +11,13 @@ namespace WaveFilterTool
 {
     public partial class WaveFilterView : Form
     {
+        private Data data;
         public WaveFilterView()
         {
             InitializeComponent();
+            data = new Data();
+            this.dataBindingSource.Add(data);
+
         }
 
         private void WaveFilterView_Resize(object sender, EventArgs e)
