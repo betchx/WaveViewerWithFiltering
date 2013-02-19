@@ -470,8 +470,6 @@ namespace WaveFile
         #region Methods
         private static double get_double(string arg) { return double.Parse(arg); }
         private static int get_int(string arg) { return int.Parse(arg); }
-        private static double to_f(this string arg) { return double.Parse(arg); }
-        private static int to_i(this string arg) { return int.Parse(arg); }
 
         private void parse_tags()
         {
