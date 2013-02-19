@@ -14,6 +14,42 @@ namespace WaveViewerWithFilering
 {
     public partial class WaveFilter : Form
     {
+
+        #region Field
+
+        List<WaveDataSet> data;
+
+        int ch;
+
+        int num_point;
+        int step;
+        const int max_points = 5000;
+
+        private double fs;
+        private double fn;
+        private IWaveFile wavefile;
+
+        bool[] hide_flag;
+        const int HIDE_WAVE = 0;
+        const int HIDE_ANS = 1;
+        const int HIDE_OVER = 2;
+
+        ComboBox[] targets;
+        TextBox[] thresholds;
+        TextBox[] required_lengths;
+
+        private int over_sampling_;
+
+        const int MAX_DISP_SIZE = 100000;
+        private uint over_id;
+        private uint source_id;
+        private uint filtered_id;
+        private uint factor_id;
+        private uint gain_id;
+        private double[] tap_freqs;
+
+        #endregion
+
         public WaveFilter()
         {
             InitializeComponent();
@@ -37,14 +73,12 @@ namespace WaveViewerWithFilering
             over_id = 0u;
         }
 
-        private int nfft {  get { return data[ch].nfft; } }
+        #region Properties
+
+        private int nfft { get { return data[ch].nfft; } }
         private int tap {  get { return tap_track.Value; } }
         private WaveDataSet fir { get { return data[ch]; } }// fir setting affects only active data set.
-        ComboBox[] targets;
-        TextBox[] thresholds;
-        TextBox[] required_lengths;
 
-        private int over_sampling_; 
         public int over_sampling {
             get { return over_sampling_; }
             set {
@@ -60,26 +94,36 @@ namespace WaveViewerWithFilering
             }
         }
 
+        private int num_disp
+        {
+            get
+            {
+                if (data == null) return 0;
+                return data[ch].num_disp;
+            }
+            set
+            {
+                if (data != null)
+                    System.Threading.Tasks.Parallel.ForEach(data, (d) => d.num_disp = value);
+            }
+        }
+        private int num_data
+        {
+            get
+            {
+                if (data == null) return 0;
+                return data[ch].data.Length;
+            }
+        }
 
-        //-----------------------------------------------------------------//
+        private double dt { get { return data[ch].dt; } }
 
-        List<WaveDataSet> data;
+        #endregion
 
-        int ch;
 
-        int num_point;
-        int step;
-        const int max_points = 5000;
+        #region PrivateMethods
 
-        private double fs;
-        private double fn;
-        private IWaveFile wavefile;
-
-        bool[] hide_flag;
-        const int HIDE_WAVE = 0;
-        const int HIDE_ANS = 1;
-        const int HIDE_OVER = 2;
-
+        #region UpdateMethods
 
         private void CheckUpdate()
         {
@@ -89,16 +133,11 @@ namespace WaveViewerWithFilering
             }
         }
 
-
         private void data_update()
         {
             if (wavefile == null)
                 return;
 
-            //foreach (var d in data)
-            //{
-            //    d.update();
-            //}
             System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
 
             update_wave_chart();
@@ -117,7 +156,7 @@ namespace WaveViewerWithFilering
             }
         }
 
-
+        #region ChartUpdaters
         private void update_wave_fft_chart()
         {
             var waves = data[ch].debug_waves();
@@ -134,7 +173,6 @@ namespace WaveViewerWithFilering
                 }
             }
         }
-
 
         private void update_peak_chart()
         {
@@ -269,7 +307,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-
         private void update_freq_chart()
         {
             update_freq_chart_source();
@@ -309,124 +346,16 @@ namespace WaveViewerWithFilering
 
             s.Clear();
             for (int i = 0; i < tap+1; i++)
-            {
                 s.AddXY(tap_freqs[i], gains[i]);
-            }
         }
 
-
-        private int num_disp
+        private void update_chart_visible()
         {
-            get
-            {
-                if (data == null) return 0;
-                return data[ch].num_disp;
-            }
-            set
-            {
-                if (data != null)
-                {
-                    System.Threading.Tasks.Parallel.ForEach(data, (d)=>d.num_disp = value);
-                    //foreach (var item in data)
-                    //{
-                    //    item.num_disp = value;
-                    //}
-                }
-            }
-        }
-        private int num_data
-        {
-            get
-            {
-                if (data == null) return 0;
-                return data[ch].data.Length;
-            }
+            wave_fft_chart.Visible = show_fft_data.Checked;
+            peak_chart.Visible = !show_fft_data.Checked;
         }
 
-        private double dt { get { return data[ch].dt; } }
-
-        private void open_file(string file_name)
-        {
-            file_path.Text = file_name;
-            var ext = System.IO.Path.GetExtension(file_name).ToUpper();
-           if(ext == ".DAT"){
-                if (Famos.is_famos(file_name))
-                    wavefile = new Famos(file_name);
-                else
-                    throw new NotImplementedException("Only famos format file is supported.");
-            }
-            if(ext ==  ".CSV"){
-                if (DelimFile.IsKyowaCsv(file_name))
-                    wavefile = DelimFile.KyowaCsv(file_name);
-                else
-                    wavefile = DelimFile.GeneralCsv(file_name);
-            }
-
-            if (wavefile == null)
-                throw new NotImplementedException("DAT and CSV are supported format");
-
-            progressBar1.Value = 0;
-            progressBar1.Visible = true;
-            if (!wavefile.opened)
-                return;
-            progressBar1.Maximum = wavefile.cols + 2;
-            progressBar1.Value = 1;
-
-            var default_window_type = FIRFilter.WindowType.None;
-            double a = 1.5;
-            double.TryParse(alpha.Text,out a);
-            if (rectangle_window.Checked) default_window_type = FIRFilter.WindowType.Rectangle;
-            if (hann_window.Checked) default_window_type = FIRFilter.WindowType.Han;
-            if (hamming_widow.Checked) default_window_type = FIRFilter.WindowType.Hamming;
-            if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
-            if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
-
-            data = new List<WaveDataSet>(wavefile.cols);
-
-            for (int i = 0; i < wavefile.cols; i++)
-            {
-                progressBar1.Value = i + 2;
-                var wave = new WaveDataSet(wavefile, i);
-                data.Add(wave);
-                wave.tap = tap_track.Value;
-                wave.lower = lower_fc_track.Value;
-                wave.upper = upper_fc_track.Value;
-                wave.alpha = a;
-                wave.window_type = default_window_type;
-
-                wave.gain = -80.0;
-            }
-            progressBar1.Value = progressBar1.Maximum;
-
-            // reset combobox
-            foreach (var item in targets)
-            {
-                item.Text = "";
-                item.Items.Clear();
-                for (int i = 0; i < wavefile.cols; i++)
-                {
-                    item.Items.Add(i.ToString());
-                }
-            }
-
-            channel_track.Value = 0;
-            channel_track.Maximum = wavefile.cols - 1;
-
-            update_tap_info();
-
-            //            upper_fc_track.Value = upper_fc_track.Maximum;
-            channel_change();
-
-            progressBar1.Visible = false;
-
-            umi.Enabled = true;
-            yama.Enabled = true;
-            len_0_1sec.Enabled = true;
-            len_0_5sec.Enabled = true;
-            len_1sec.Enabled = true;
-            len_5sec.Enabled = true;
-
-        }
+        #endregion
 
         private void channel_change()
         {
@@ -521,21 +450,7 @@ namespace WaveViewerWithFilering
             tap_freqs = Enumerable.Range(0, tap + 1).Select(i => df * i).ToArray();
         }
 
-        private void set_alpha(string text)
-        {
-            double val;
-            if (double.TryParse(text, out val))
-            {
-                fir.alpha = val;
-            }
-        }
-        const int MAX_DISP_SIZE = 100000;
-        private uint over_id;
-        private uint source_id;
-        private uint filtered_id;
-        private uint factor_id;
-        private uint gain_id;
-        private double[] tap_freqs;
+
 
         private void update_display_data_length()
         {
@@ -595,6 +510,104 @@ namespace WaveViewerWithFilering
             }
         }
 
+
+        #endregion
+
+        #region Operations
+
+        private void open_file(string file_name)
+        {
+            file_path.Text = file_name;
+            var ext = System.IO.Path.GetExtension(file_name).ToUpper();
+            if (ext == ".DAT")
+            {
+                if (Famos.is_famos(file_name))
+                    wavefile = new Famos(file_name);
+                else
+                    throw new NotImplementedException("Only famos format file is supported.");
+            }
+            if (ext == ".CSV")
+            {
+                if (DelimFile.IsKyowaCsv(file_name))
+                    wavefile = DelimFile.KyowaCsv(file_name);
+                else
+                    wavefile = DelimFile.GeneralCsv(file_name);
+            }
+
+            if (wavefile == null)
+                throw new NotImplementedException("DAT and CSV are supported format");
+
+            progressBar1.Value = 0;
+            progressBar1.Visible = true;
+            if (!wavefile.opened)
+                return;
+            progressBar1.Maximum = wavefile.cols + 2;
+            progressBar1.Value = 1;
+
+            var default_window_type = FIRFilter.WindowType.None;
+            double a = 1.5;
+            double.TryParse(alpha.Text, out a);
+            if (rectangle_window.Checked) default_window_type = FIRFilter.WindowType.Rectangle;
+            if (hann_window.Checked) default_window_type = FIRFilter.WindowType.Han;
+            if (hamming_widow.Checked) default_window_type = FIRFilter.WindowType.Hamming;
+            if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
+            if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
+
+            data = new List<WaveDataSet>(wavefile.cols);
+
+            for (int i = 0; i < wavefile.cols; i++)
+            {
+                progressBar1.Value = i + 2;
+                var wave = new WaveDataSet(wavefile, i);
+                data.Add(wave);
+                wave.tap = tap_track.Value;
+                wave.lower = lower_fc_track.Value;
+                wave.upper = upper_fc_track.Value;
+                wave.alpha = a;
+                wave.window_type = default_window_type;
+
+                wave.gain = -80.0;
+            }
+            progressBar1.Value = progressBar1.Maximum;
+
+            // reset combobox
+            foreach (var item in targets)
+            {
+                item.Text = "";
+                item.Items.Clear();
+                for (int i = 0; i < wavefile.cols; i++)
+                {
+                    item.Items.Add(i.ToString());
+                }
+            }
+
+            channel_track.Value = 0;
+            channel_track.Maximum = wavefile.cols - 1;
+
+            update_tap_info();
+
+            channel_change();
+
+            progressBar1.Visible = false;
+
+            umi.Enabled = true;
+            yama.Enabled = true;
+            len_0_1sec.Enabled = true;
+            len_0_5sec.Enabled = true;
+            len_1sec.Enabled = true;
+            len_5sec.Enabled = true;
+
+        }
+
+        private void set_alpha(string text)
+        {
+            double val;
+            if (double.TryParse(text, out val))
+            {
+                fir.alpha = val;
+            }
+        }
+
         private string find_channel(string in_name)
         {
             for (int i = 0; i < wavefile.cols; i++)
@@ -604,7 +617,6 @@ namespace WaveViewerWithFilering
             }
             return "";
         }
-
 
         void search_channels(string side)
         {
@@ -620,7 +632,11 @@ namespace WaveViewerWithFilering
             display_data_length.Text = count.ToString();
         }
 
-        //-----------------------------------------------------------------//
+        #endregion // Operations
+
+        #endregion // PrivateMethods
+
+        #region EventHandler
 
         private void tap_track_Scroll(object sender, EventArgs e)
         {
@@ -857,11 +873,6 @@ namespace WaveViewerWithFilering
             CheckUpdate();
         }
 
-        private void update_chart_visible()
-        {
-            wave_fft_chart.Visible = show_fft_data.Checked;
-            peak_chart.Visible = !show_fft_data.Checked;
-        }
 
         private void DataStart_Validated(object sender, EventArgs e)
         {
@@ -879,5 +890,6 @@ namespace WaveViewerWithFilering
             if (val < 0) DataStart.Text = "0";
             if (val > data_start.Maximum) DataStart.Text = data_start.Maximum.ToString();
         }
+        #endregion
     }
 }
