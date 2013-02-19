@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace WaveViewerWithFilering
+namespace WaveFile
 {
-    class Famos
+    public class Famos : IWaveFile
     {
         public readonly static char[] comma_seprator = {','}; 
         public readonly static char[] blank_seprator = {' ', '\t', '\n'};
 
 
+        #region Parsing
         public class Event
         {
             private int len_; public int len { get { return len_; } }
@@ -25,8 +26,6 @@ namespace WaveViewerWithFilering
 
         private List<Event> events_;
         public List<Event> events { get { return events_; } }
-
-
 
         private class Tag
         {
@@ -613,6 +612,8 @@ namespace WaveViewerWithFilering
             }
         }
 
+        #endregion
+
         private Dictionary<int, double[]> column_cache;
 
         public double[] this[int ch]
@@ -628,16 +629,18 @@ namespace WaveViewerWithFilering
         }
 
         public int cols { get { return channel_info.Count; } }
+        public int rows { get { return this.Length(0); } }
 
         public double dt(int ch = 0)
         {
             return data_types[ch].dx;
         }
 
-        public int len(int ch)
+        private int Length(int ch)
         {
             return buffer_refs[ch].size / packet_info[ch].bytes;
         }
+
 
         public class FamosReader
         {
@@ -646,7 +649,7 @@ namespace WaveViewerWithFilering
             public FamosReader(Famos parent, int ch)
             {
                 parent_ = parent;
-                length_ = parent_.len(ch);
+                length_ = parent_.Length(ch);
             }
         }
 
@@ -719,6 +722,8 @@ namespace WaveViewerWithFilering
         Dictionary<string, ITag> tag_parsers;
 
         protected  DateTime  time_;
+
+        public DateTime Time { get { return time(); } }
 
         public DateTime time(int ch = -1, int event_id = 0)
         {
@@ -889,7 +894,14 @@ namespace WaveViewerWithFilering
             }
         }
 
+        public string name(int ch)
+        {
+            return channel_info[ch].name;
+        }
 
-
+        public string comment(int ch)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
