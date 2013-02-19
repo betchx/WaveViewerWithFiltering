@@ -225,6 +225,8 @@ namespace WaveViewerWithFilering
             update_wave_chart_oversampled();
             wave_chart.ChartAreas[0].RecalculateAxesScale();
             wave_chart.Invalidate();
+            WaveChartMenu.Enabled = true;
+            saveDisplayedMenu.Enabled = true;
         }
 
         private void update_wave_chart_source()
@@ -632,6 +634,33 @@ namespace WaveViewerWithFilering
             display_data_length.Text = count.ToString();
         }
 
+        private void save_wave(int idx)
+        {
+            if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                return;
+
+            using (var stream = saveFileDialogCSV.OpenFile())
+            {
+                using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
+                {
+                    writer.WriteLine("Original File, {0}", file_path.Text);
+                    writer.WriteLine("Data Start, {0}", data_start.Value);
+                    writer.WriteLine("Data Length, {0}", data_length.Text);
+                    writer.WriteLine("Sampling Rate, {0}", fs);
+                    writer.WriteLine("Ch, {0}", ch);
+                    writer.WriteLine("Channel name, {0}", channel_name.Text);
+                    writer.WriteLine("Comment of channel, {0}", channel_comment.Text);
+                    writer.WriteLine("");
+                    writer.WriteLine("time, {0} Wave", wave_chart.Series[idx].Name);
+                    foreach (var pnt in wave_chart.Series[idx].Points)
+                    {
+                        writer.WriteLine("{0},{1}", pnt.XValue, pnt.YValues[0]);
+                    }
+                }
+            }
+        }
+
+
         #endregion // Operations
 
         #endregion // PrivateMethods
@@ -891,5 +920,26 @@ namespace WaveViewerWithFilering
             if (val > data_start.Maximum) DataStart.Text = data_start.Maximum.ToString();
         }
         #endregion
+
+
+        //#region saveWaveHandlers
+        private void sourceWaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            save_wave(0);
+        }
+        private void SaveDisplayedFilteredWave_Click(object sender, EventArgs e)
+        {
+            save_wave(1);
+        }
+
+        private void SaveDisplayedOverWave_Click(object sender, EventArgs e)
+        {
+            save_wave(2);
+        }
+
+        private void peakWaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            save_wave(3);
+        }
     }
 }

@@ -152,7 +152,7 @@
             this.label28 = new System.Windows.Forms.Label();
             this.DataStart = new System.Windows.Forms.TextBox();
             this.WaveChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveDisplayedMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveDisplayedFilteredWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveDisplayedOverWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveWholeCurrent = new System.Windows.Forms.ToolStripMenuItem();
@@ -161,6 +161,9 @@
             this.SaveAllFilteredWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveAllOversampledWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveWholeCurrentOversampledWave = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialogCSV = new System.Windows.Forms.SaveFileDialog();
+            this.peakWaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sourceWaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
@@ -205,6 +208,9 @@
             chartArea1.Position.Y = 3F;
             this.wave_chart.ChartAreas.Add(chartArea1);
             this.wave_chart.ContextMenuStrip = this.WaveChartMenu;
+            legend1.DockedToChartArea = "ChartArea1";
+            legend1.IsDockedInsideChartArea = false;
+            legend1.IsEquallySpacedItems = true;
             legend1.Name = "Legend1";
             this.wave_chart.Legends.Add(legend1);
             this.wave_chart.Location = new System.Drawing.Point(12, 310);
@@ -213,19 +219,19 @@
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.Legend = "Legend1";
-            series1.Name = "source";
+            series1.Name = "Source";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series2.Legend = "Legend1";
-            series2.Name = "result";
+            series2.Name = "Filtered";
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series3.Legend = "Legend1";
-            series3.Name = "over";
+            series3.Name = "Oversampled";
             series4.ChartArea = "ChartArea1";
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastPoint;
             series4.Legend = "Legend1";
-            series4.Name = "peaks";
+            series4.Name = "Peak";
             this.wave_chart.Series.Add(series1);
             this.wave_chart.Series.Add(series2);
             this.wave_chart.Series.Add(series3);
@@ -1311,39 +1317,46 @@
             // 
             // WaveChartMenu
             // 
+            this.WaveChartMenu.Enabled = false;
             this.WaveChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
+            this.saveDisplayedMenu,
             this.SaveWholeCurrent,
             this.SaveAllWave});
             this.WaveChartMenu.Name = "WaveChartMenu";
-            this.WaveChartMenu.Size = new System.Drawing.Size(229, 70);
+            this.WaveChartMenu.Size = new System.Drawing.Size(229, 92);
             // 
-            // saveToolStripMenuItem
+            // saveDisplayedMenu
             // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveDisplayedMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sourceWaveToolStripMenuItem,
             this.SaveDisplayedFilteredWave,
-            this.SaveDisplayedOverWave});
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
-            this.saveToolStripMenuItem.Text = "Save Displayed";
+            this.SaveDisplayedOverWave,
+            this.peakWaveToolStripMenuItem});
+            this.saveDisplayedMenu.Enabled = false;
+            this.saveDisplayedMenu.Name = "saveDisplayedMenu";
+            this.saveDisplayedMenu.Size = new System.Drawing.Size(228, 22);
+            this.saveDisplayedMenu.Text = "Save Displayed";
             // 
             // SaveDisplayedFilteredWave
             // 
             this.SaveDisplayedFilteredWave.Name = "SaveDisplayedFilteredWave";
             this.SaveDisplayedFilteredWave.Size = new System.Drawing.Size(167, 22);
             this.SaveDisplayedFilteredWave.Text = "Filtered Wave";
+            this.SaveDisplayedFilteredWave.Click += new System.EventHandler(this.SaveDisplayedFilteredWave_Click);
             // 
             // SaveDisplayedOverWave
             // 
             this.SaveDisplayedOverWave.Name = "SaveDisplayedOverWave";
             this.SaveDisplayedOverWave.Size = new System.Drawing.Size(167, 22);
             this.SaveDisplayedOverWave.Text = "Oversampled Wave";
+            this.SaveDisplayedOverWave.Click += new System.EventHandler(this.SaveDisplayedOverWave_Click);
             // 
             // SaveWholeCurrent
             // 
             this.SaveWholeCurrent.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SaveWholeCurrentFilteredWave,
             this.SaveWholeCurrentOversampledWave});
+            this.SaveWholeCurrent.Enabled = false;
             this.SaveWholeCurrent.Name = "SaveWholeCurrent";
             this.SaveWholeCurrent.Size = new System.Drawing.Size(228, 22);
             this.SaveWholeCurrent.Text = "Save Whole Wave (Current Ch)";
@@ -1359,6 +1372,7 @@
             this.SaveAllWave.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SaveAllFilteredWave,
             this.SaveAllOversampledWave});
+            this.SaveAllWave.Enabled = false;
             this.SaveAllWave.Name = "SaveAllWave";
             this.SaveAllWave.Size = new System.Drawing.Size(228, 22);
             this.SaveAllWave.Text = "Save Whole Wave(All Ch)";
@@ -1380,6 +1394,24 @@
             this.SaveWholeCurrentOversampledWave.Name = "SaveWholeCurrentOversampledWave";
             this.SaveWholeCurrentOversampledWave.Size = new System.Drawing.Size(167, 22);
             this.SaveWholeCurrentOversampledWave.Text = "Oversampled Wave";
+            // 
+            // saveFileDialogCSV
+            // 
+            this.saveFileDialogCSV.Filter = "CSV files (*.csv)|*.CSV|All files (*.*)|*.*";
+            // 
+            // peakWaveToolStripMenuItem
+            // 
+            this.peakWaveToolStripMenuItem.Name = "peakWaveToolStripMenuItem";
+            this.peakWaveToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.peakWaveToolStripMenuItem.Text = "Peak Wave";
+            this.peakWaveToolStripMenuItem.Click += new System.EventHandler(this.peakWaveToolStripMenuItem_Click);
+            // 
+            // sourceWaveToolStripMenuItem
+            // 
+            this.sourceWaveToolStripMenuItem.Name = "sourceWaveToolStripMenuItem";
+            this.sourceWaveToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.sourceWaveToolStripMenuItem.Text = "Source Wave";
+            this.sourceWaveToolStripMenuItem.Click += new System.EventHandler(this.sourceWaveToolStripMenuItem_Click);
             // 
             // WaveFilter
             // 
@@ -1561,7 +1593,7 @@
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.TextBox DataStart;
         private System.Windows.Forms.ContextMenuStrip WaveChartMenu;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveDisplayedMenu;
         private System.Windows.Forms.ToolStripMenuItem SaveDisplayedFilteredWave;
         private System.Windows.Forms.ToolStripMenuItem SaveDisplayedOverWave;
         private System.Windows.Forms.ToolStripMenuItem SaveWholeCurrent;
@@ -1570,6 +1602,9 @@
         private System.Windows.Forms.ToolStripMenuItem SaveAllWave;
         private System.Windows.Forms.ToolStripMenuItem SaveAllFilteredWave;
         private System.Windows.Forms.ToolStripMenuItem SaveAllOversampledWave;
+        private System.Windows.Forms.SaveFileDialog saveFileDialogCSV;
+        private System.Windows.Forms.ToolStripMenuItem sourceWaveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem peakWaveToolStripMenuItem;
     }
 }
 
