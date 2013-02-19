@@ -503,7 +503,7 @@
             // openFamosDialog
             // 
             this.openFamosDialog.DefaultExt = "DAT";
-            this.openFamosDialog.Filter = "Famos File|*.DAT|All Files|*.*";
+            this.openFamosDialog.Filter = "Famos File|*.DAT|CSV file| *.CSV|All Files|*.*";
             this.openFamosDialog.Title = "Data File Selection";
             this.openFamosDialog.ValidateNames = false;
             // 

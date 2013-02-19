@@ -92,6 +92,12 @@
   <ItemGroup>
     <Content Include="WavePair.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WaveFile\WaveFile.csproj">
+      <Project>{ADE4FEFE-E617-4051-976C-AD4F0668863D}</Project>
+      <Name>WaveFile</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

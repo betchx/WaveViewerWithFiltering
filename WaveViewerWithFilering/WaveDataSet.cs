@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using fftwlib;
 using ComplexArrayLib;
+using WaveFile;
 
 namespace WaveViewerWithFilering
 {
@@ -18,12 +19,12 @@ namespace WaveViewerWithFilering
             is_acc = acc_data;
             init();
         }
-        public WaveDataSet(Famos famos, int ch)
+        public WaveDataSet(IWaveFile wavefile, int ch)
         {
-            data = famos[ch];
-            dt = famos.dt(ch);
-            is_acc = famos.channel_info[ch].name.Contains("_Ya_") ||
-                famos.channel_info[ch].name.Contains("_Za_");
+            data = wavefile[ch];
+            dt = wavefile.dt(ch);
+            is_acc = wavefile.name(ch).Contains("_Ya_") ||
+                wavefile.name(ch).Contains("_Za_");
             init();
         }
 

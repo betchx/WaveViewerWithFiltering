@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using fftwlib;
+using WaveFile;
 
 namespace WaveViewerWithFilering
 {
@@ -72,7 +73,7 @@ namespace WaveViewerWithFilering
 
         private double fs;
         private double fn;
-        private Famos famos;
+        private IWaveFile wavefile;
 
         bool[] hide_flag;
         const int HIDE_WAVE = 0;
@@ -91,7 +92,7 @@ namespace WaveViewerWithFilering
 
         private void data_update()
         {
-            if (famos == null)
+            if (wavefile == null)
                 return;
 
             //foreach (var d in data)
@@ -347,14 +348,28 @@ namespace WaveViewerWithFilering
         private void open_file(string file_name)
         {
             file_path.Text = file_name;
+            var ext = System.IO.Path.GetExtension(file_name).ToUpper();
+           if(ext == ".DAT"){
+                if (Famos.is_famos(file_name))
+                    wavefile = new Famos(file_name);
+                else
+                    throw new NotImplementedException("Only famos format file is supported.");
+            }
+            if(ext ==  ".CSV"){
+                if (DelimFile.IsKyowaCsv(file_name))
+                    wavefile = DelimFile.KyowaCsv(file_name);
+                else
+                    wavefile = DelimFile.GeneralCsv(file_name);
+            }
 
-            famos = new Famos(file_name);
+            if (wavefile == null)
+                throw new NotImplementedException("DAT and CSV are supported format");
 
             progressBar1.Value = 0;
             progressBar1.Visible = true;
-            if (!famos.opened)
+            if (!wavefile.opened)
                 return;
-            progressBar1.Maximum = famos.cols + 2;
+            progressBar1.Maximum = wavefile.cols + 2;
             progressBar1.Value = 1;
 
             var default_window_type = FIRFilter.WindowType.None;
@@ -366,12 +381,12 @@ namespace WaveViewerWithFilering
             if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
             if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
 
-            data = new List<WaveDataSet>(famos.cols);
+            data = new List<WaveDataSet>(wavefile.cols);
 
-            for (int i = 0; i < famos.cols; i++)
+            for (int i = 0; i < wavefile.cols; i++)
             {
                 progressBar1.Value = i + 2;
-                var wave = new WaveDataSet(famos, i);
+                var wave = new WaveDataSet(wavefile, i);
                 data.Add(wave);
                 wave.tap = tap_track.Value;
                 wave.lower = lower_fc_track.Value;
@@ -388,14 +403,14 @@ namespace WaveViewerWithFilering
             {
                 item.Text = "";
                 item.Items.Clear();
-                for (int i = 0; i < famos.cols; i++)
+                for (int i = 0; i < wavefile.cols; i++)
                 {
                     item.Items.Add(i.ToString());
                 }
             }
 
             channel_track.Value = 0;
-            channel_track.Maximum = famos.cols - 1;
+            channel_track.Maximum = wavefile.cols - 1;
 
             update_tap_info();
 
@@ -418,8 +433,8 @@ namespace WaveViewerWithFilering
             ch = channel_track.Value;
 
             channel.Text = ch.ToString();
-            channel_name.Text = famos.channel_info[ch].name;
-            channel_comment.Text = famos.channel_info[ch].comment;
+            channel_name.Text = wavefile.name(ch);
+            channel_comment.Text = wavefile.comment(ch);
             data_length.Text = data[ch].length.ToString();
 
             fs = 1.0 / dt;
@@ -582,9 +597,9 @@ namespace WaveViewerWithFilering
 
         private string find_channel(string in_name)
         {
-            for (int i = 0; i < famos.cols; i++)
+            for (int i = 0; i < wavefile.cols; i++)
             {
-                if (famos.channel_info[i].name.Contains(in_name))
+                if (wavefile.name(i).Contains(in_name))
                     return i.ToString();
             }
             return "";
