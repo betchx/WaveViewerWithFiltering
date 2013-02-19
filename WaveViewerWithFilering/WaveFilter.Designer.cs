@@ -224,9 +224,9 @@
             // 
             // data_start
             // 
-            this.data_start.Location = new System.Drawing.Point(12, 283);
+            this.data_start.Location = new System.Drawing.Point(106, 283);
             this.data_start.Name = "data_start";
-            this.data_start.Size = new System.Drawing.Size(774, 24);
+            this.data_start.Size = new System.Drawing.Size(680, 24);
             this.data_start.TabIndex = 2;
             this.data_start.ValueChanged += new System.EventHandler(this.data_start_ValueChanged);
             // 
@@ -1291,9 +1291,11 @@
             this.DataStart.Name = "DataStart";
             this.DataStart.Size = new System.Drawing.Size(55, 19);
             this.DataStart.TabIndex = 21;
+            this.DataStart.Text = "0";
             this.DataStart.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.DataStart.Validating += new System.ComponentModel.CancelEventHandler(this.DataStart_Validating);
             this.DataStart.Validated += new System.EventHandler(this.DataStart_Validated);
+            // 
             // WaveFilter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
