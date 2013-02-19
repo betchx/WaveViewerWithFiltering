@@ -14,42 +14,6 @@ namespace WaveViewerWithFilering
 {
     public partial class WaveFilter : Form
     {
-
-        #region Field
-
-        List<WaveDataSet> data;
-
-        int ch;
-
-        int num_point;
-        int step;
-        const int max_points = 5000;
-
-        private double fs;
-        private double fn;
-        private IWaveFile wavefile;
-
-        bool[] hide_flag;
-        const int HIDE_WAVE = 0;
-        const int HIDE_ANS = 1;
-        const int HIDE_OVER = 2;
-
-        ComboBox[] targets;
-        TextBox[] thresholds;
-        TextBox[] required_lengths;
-
-        private int over_sampling_;
-
-        const int MAX_DISP_SIZE = 100000;
-        private uint over_id;
-        private uint source_id;
-        private uint filtered_id;
-        private uint factor_id;
-        private uint gain_id;
-        private double[] tap_freqs;
-
-        #endregion
-
         public WaveFilter()
         {
             InitializeComponent();
@@ -73,15 +37,43 @@ namespace WaveViewerWithFilering
             over_id = 0u;
         }
 
-        #region Properties
 
+        #region Internal Use
+        #region Field
+        List<WaveDataSet> data;
+        int ch;
+        int num_point;
+        int step;
+        const int max_points = 5000;
+        private double fs;
+        private double fn;
+        private IWaveFile wavefile;
+        bool[] hide_flag;
+        const int HIDE_WAVE = 0;
+        const int HIDE_ANS = 1;
+        const int HIDE_OVER = 2;
+        ComboBox[] targets;
+        TextBox[] thresholds;
+        TextBox[] required_lengths;
+        private int over_sampling_;
+        const int MAX_DISP_SIZE = 100000;
+        private uint over_id;
+        private uint source_id;
+        private uint filtered_id;
+        private uint factor_id;
+        private uint gain_id;
+        private double[] tap_freqs;
+        #endregion
+        #region Properties
         private int nfft { get { return data[ch].nfft; } }
-        private int tap {  get { return tap_track.Value; } }
+        private int tap { get { return tap_track.Value; } }
         private WaveDataSet fir { get { return data[ch]; } }// fir setting affects only active data set.
 
-        public int over_sampling {
+        private int over_sampling
+        {
             get { return over_sampling_; }
-            set {
+            set
+            {
                 if (over_sampling_ != value)
                 {
                     over_sampling_ = value;
@@ -117,20 +109,14 @@ namespace WaveViewerWithFilering
         }
 
         private double dt { get { return data[ch].dt; } }
-
         #endregion
-
-
         #region PrivateMethods
-
         #region UpdateMethods
 
         private void CheckUpdate()
         {
             if (auto_update.Checked)
-            {
                 data_update();
-            }
         }
 
         private void data_update()
@@ -141,19 +127,12 @@ namespace WaveViewerWithFilering
             System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
 
             update_wave_chart();
-
             update_filter_chart();
-
             update_freq_chart();
-
             if (show_fft_data.Checked)
-            {
                 update_wave_fft_chart();
-            }
             else
-            {
                 update_peak_chart();
-            }
         }
 
         #region ChartUpdaters
@@ -356,7 +335,6 @@ namespace WaveViewerWithFilering
             wave_fft_chart.Visible = show_fft_data.Checked;
             peak_chart.Visible = !show_fft_data.Checked;
         }
-
         #endregion
 
         private void channel_change()
@@ -415,19 +393,14 @@ namespace WaveViewerWithFilering
                 default:
                     throw new ApplicationException("Error in Window type");
             }
-
             lower_fc_track.Value = data[ch].lower;
             update_lower_fc();
             upper_fc_track.Value = data[ch].upper;
             update_upper_fc();
-
             tap_track.Value = data[ch].tap;
             update_tap_info();
-
             update_display_data_length();
-
             CheckUpdate();
-
         }
 
         private void update_tap_info()
@@ -452,8 +425,6 @@ namespace WaveViewerWithFilering
             tap_freqs = Enumerable.Range(0, tap + 1).Select(i => df * i).ToArray();
         }
 
-
-
         private void update_display_data_length()
         {
             int val;
@@ -464,19 +435,15 @@ namespace WaveViewerWithFilering
                     display_data_length.Text = Math.Min(num_data, MAX_DISP_SIZE).ToString();
                     return;
                 }
-                
                 num_disp = val;
-
                 step = 1 + ((num_disp - 1) / max_points);
                 data_start.LargeChange = num_disp / 5;
                 int largest = num_data - num_disp;
                 //if (data_start.Value > largest)
                 //    data_start.Value = largest;
                 data_start.Maximum = largest;
-
             }
         }
-
 
         private void update_upper_fc()
         {
@@ -502,7 +469,6 @@ namespace WaveViewerWithFilering
                 fir.lower = lower_fc_track.Value;
         }
 
-        
         private void update_gain()
         {
             double val;
@@ -511,10 +477,7 @@ namespace WaveViewerWithFilering
                 fir.gain = val;
             }
         }
-
-
         #endregion
-
         #region Operations
 
         private void open_file(string file_name)
@@ -660,10 +623,9 @@ namespace WaveViewerWithFilering
             }
         }
 
-
         #endregion // Operations
-
         #endregion // PrivateMethods
+        #endregion // Internal Use
 
         #region EventHandler
 
@@ -920,7 +882,6 @@ namespace WaveViewerWithFilering
             if (val > data_start.Maximum) DataStart.Text = data_start.Maximum.ToString();
         }
         #endregion
-
 
         //#region saveWaveHandlers
         private void sourceWaveToolStripMenuItem_Click(object sender, EventArgs e)
