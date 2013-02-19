@@ -49,7 +49,6 @@ namespace WaveViewerWithFilering
             }
         }
 
-
         private void setup_window()
         {
             if (tap == 0)
@@ -74,7 +73,6 @@ namespace WaveViewerWithFilering
                     break;
             }
             dirty = true;
-            design();
         }
 
         // attributes
@@ -142,9 +140,7 @@ namespace WaveViewerWithFilering
             // DFT
             fftw.execute(plan_b);
 
-
-             // copy with window
-            
+            // copy with window
             double[] wk = new double[size * 2];
             Marshal.Copy(pout, wk, 0, size * 2);
             for (int i = 0; i < size; i++)
