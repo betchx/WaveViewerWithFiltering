@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label tapLabel1;
+            System.Windows.Forms.Label lowerFcLabel;
+            System.Windows.Forms.Label upperFcLabel;
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -39,8 +41,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.Label lowerFcLabel;
-            System.Windows.Forms.Label upperFcLabel;
+            System.Windows.Forms.Label currentChannelLabel;
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +51,6 @@
             this.書き出しToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.sp_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.wave_info = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tapTrackBar = new System.Windows.Forms.TrackBar();
@@ -59,10 +59,17 @@
             this.lowerFcTrackBar = new System.Windows.Forms.TrackBar();
             this.upperFcNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.upperFcTrackBar = new System.Windows.Forms.TrackBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lowerFcTextBox = new System.Windows.Forms.TextBox();
+            this.upperFcTextBox = new System.Windows.Forms.TextBox();
+            this.openFamosFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.openCsvFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.wave_info = new System.Windows.Forms.TextBox();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             tapLabel1 = new System.Windows.Forms.Label();
             lowerFcLabel = new System.Windows.Forms.Label();
             upperFcLabel = new System.Windows.Forms.Label();
+            currentChannelLabel = new System.Windows.Forms.Label();
             this.MainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sp_chart)).BeginInit();
@@ -72,17 +79,36 @@
             ((System.ComponentModel.ISupportInitialize)(this.lowerFcTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upperFcNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upperFcTrackBar)).BeginInit();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tapLabel1
             // 
             tapLabel1.AutoSize = true;
-            tapLabel1.Location = new System.Drawing.Point(29, 200);
+            tapLabel1.Location = new System.Drawing.Point(43, 25);
             tapLabel1.Name = "tapLabel1";
             tapLabel1.Size = new System.Drawing.Size(26, 12);
             tapLabel1.TabIndex = 9;
             tapLabel1.Text = "Tap:";
+            // 
+            // lowerFcLabel
+            // 
+            lowerFcLabel.AutoSize = true;
+            lowerFcLabel.Location = new System.Drawing.Point(15, 75);
+            lowerFcLabel.Name = "lowerFcLabel";
+            lowerFcLabel.Size = new System.Drawing.Size(54, 12);
+            lowerFcLabel.TabIndex = 10;
+            lowerFcLabel.Text = "Lower Fc:";
+            // 
+            // upperFcLabel
+            // 
+            upperFcLabel.AutoSize = true;
+            upperFcLabel.Location = new System.Drawing.Point(15, 50);
+            upperFcLabel.Name = "upperFcLabel";
+            upperFcLabel.Size = new System.Drawing.Size(54, 12);
+            upperFcLabel.TabIndex = 12;
+            upperFcLabel.Text = "Upper Fc:";
             // 
             // MainMenu
             // 
@@ -109,6 +135,7 @@
             this.famosファイルToolStripMenuItem.Name = "famosファイルToolStripMenuItem";
             this.famosファイルToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.famosファイルToolStripMenuItem.Text = "Famos ファイル";
+            this.famosファイルToolStripMenuItem.Click += new System.EventHandler(this.famosファイルToolStripMenuItem_Click);
             // 
             // cSVファイルToolStripMenuItem
             // 
@@ -124,12 +151,14 @@
             this.共和電業形式ToolStripMenuItem.Name = "共和電業形式ToolStripMenuItem";
             this.共和電業形式ToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.共和電業形式ToolStripMenuItem.Text = "共和電業形式";
+            this.共和電業形式ToolStripMenuItem.Click += new System.EventHandler(this.共和電業形式ToolStripMenuItem_Click);
             // 
             // 一般ToolStripMenuItem
             // 
             this.一般ToolStripMenuItem.Name = "一般ToolStripMenuItem";
             this.一般ToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.一般ToolStripMenuItem.Text = "一般";
+            this.一般ToolStripMenuItem.Click += new System.EventHandler(this.一般ToolStripMenuItem_Click);
             // 
             // 書き出しToolStripMenuItem
             // 
@@ -191,17 +220,6 @@
             title1.Text = "パワースペクトル";
             this.sp_chart.Titles.Add(title1);
             // 
-            // wave_info
-            // 
-            this.wave_info.Location = new System.Drawing.Point(0, 50);
-            this.wave_info.MinimumSize = new System.Drawing.Size(100, 4);
-            this.wave_info.Multiline = true;
-            this.wave_info.Name = "wave_info";
-            this.wave_info.ReadOnly = true;
-            this.wave_info.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.wave_info.Size = new System.Drawing.Size(435, 147);
-            this.wave_info.TabIndex = 3;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -221,69 +239,129 @@
             // 
             // tapTrackBar
             // 
+            this.tapTrackBar.AutoSize = false;
             this.tapTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "Tap", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.tapTrackBar.Location = new System.Drawing.Point(128, 200);
+            this.tapTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "100"));
+            this.tapTrackBar.Location = new System.Drawing.Point(198, 18);
+            this.tapTrackBar.Maximum = 1000;
+            this.tapTrackBar.Minimum = 1;
             this.tapTrackBar.Name = "tapTrackBar";
-            this.tapTrackBar.Size = new System.Drawing.Size(104, 42);
+            this.tapTrackBar.Size = new System.Drawing.Size(104, 19);
             this.tapTrackBar.TabIndex = 8;
+            this.tapTrackBar.TickFrequency = 100;
+            this.tapTrackBar.Value = 1;
             // 
             // tapNumericUpDown
             // 
             this.tapNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "Tap", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.tapNumericUpDown.Location = new System.Drawing.Point(61, 200);
+            this.tapNumericUpDown.Location = new System.Drawing.Point(138, 18);
             this.tapNumericUpDown.Name = "tapNumericUpDown";
-            this.tapNumericUpDown.Size = new System.Drawing.Size(61, 19);
+            this.tapNumericUpDown.Size = new System.Drawing.Size(54, 19);
             this.tapNumericUpDown.TabIndex = 10;
-            // 
-            // lowerFcLabel
-            // 
-            lowerFcLabel.AutoSize = true;
-            lowerFcLabel.Location = new System.Drawing.Point(1, 291);
-            lowerFcLabel.Name = "lowerFcLabel";
-            lowerFcLabel.Size = new System.Drawing.Size(54, 12);
-            lowerFcLabel.TabIndex = 10;
-            lowerFcLabel.Text = "Lower Fc:";
+            this.tapNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.tapNumericUpDown_Validating);
             // 
             // lowerFcNumericUpDown
             // 
-            this.lowerFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.lowerFcNumericUpDown.Location = new System.Drawing.Point(61, 291);
+            this.lowerFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.lowerFcNumericUpDown.Location = new System.Drawing.Point(138, 68);
             this.lowerFcNumericUpDown.Name = "lowerFcNumericUpDown";
-            this.lowerFcNumericUpDown.Size = new System.Drawing.Size(61, 19);
+            this.lowerFcNumericUpDown.Size = new System.Drawing.Size(54, 19);
             this.lowerFcNumericUpDown.TabIndex = 11;
             // 
             // lowerFcTrackBar
             // 
-            this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.lowerFcTrackBar.Location = new System.Drawing.Point(128, 291);
+            this.lowerFcTrackBar.AutoSize = false;
+            this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "100"));
+            this.lowerFcTrackBar.Location = new System.Drawing.Point(198, 68);
             this.lowerFcTrackBar.Name = "lowerFcTrackBar";
-            this.lowerFcTrackBar.Size = new System.Drawing.Size(104, 42);
+            this.lowerFcTrackBar.Size = new System.Drawing.Size(104, 19);
             this.lowerFcTrackBar.TabIndex = 12;
-            // 
-            // upperFcLabel
-            // 
-            upperFcLabel.AutoSize = true;
-            upperFcLabel.Location = new System.Drawing.Point(1, 248);
-            upperFcLabel.Name = "upperFcLabel";
-            upperFcLabel.Size = new System.Drawing.Size(54, 12);
-            upperFcLabel.TabIndex = 12;
-            upperFcLabel.Text = "Upper Fc:";
             // 
             // upperFcNumericUpDown
             // 
-            this.upperFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.upperFcNumericUpDown.Location = new System.Drawing.Point(61, 248);
+            this.upperFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.upperFcNumericUpDown.Location = new System.Drawing.Point(138, 43);
             this.upperFcNumericUpDown.Name = "upperFcNumericUpDown";
-            this.upperFcNumericUpDown.Size = new System.Drawing.Size(61, 19);
+            this.upperFcNumericUpDown.Size = new System.Drawing.Size(54, 19);
             this.upperFcNumericUpDown.TabIndex = 13;
             // 
             // upperFcTrackBar
             // 
-            this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.upperFcTrackBar.Location = new System.Drawing.Point(128, 248);
+            this.upperFcTrackBar.AutoSize = false;
+            this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "100"));
+            this.upperFcTrackBar.Location = new System.Drawing.Point(198, 43);
             this.upperFcTrackBar.Name = "upperFcTrackBar";
-            this.upperFcTrackBar.Size = new System.Drawing.Size(104, 42);
+            this.upperFcTrackBar.Size = new System.Drawing.Size(104, 19);
             this.upperFcTrackBar.TabIndex = 15;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.upperFcTrackBar);
+            this.groupBox1.Controls.Add(this.lowerFcTextBox);
+            this.groupBox1.Controls.Add(this.upperFcTextBox);
+            this.groupBox1.Controls.Add(upperFcLabel);
+            this.groupBox1.Controls.Add(this.upperFcNumericUpDown);
+            this.groupBox1.Controls.Add(this.lowerFcTrackBar);
+            this.groupBox1.Controls.Add(lowerFcLabel);
+            this.groupBox1.Controls.Add(this.lowerFcNumericUpDown);
+            this.groupBox1.Controls.Add(tapLabel1);
+            this.groupBox1.Controls.Add(this.tapNumericUpDown);
+            this.groupBox1.Controls.Add(this.tapTrackBar);
+            this.groupBox1.Location = new System.Drawing.Point(2, 302);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(310, 99);
+            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "フィルタ設定";
+            // 
+            // lowerFcTextBox
+            // 
+            this.lowerFcTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "LowerFc", true));
+            this.lowerFcTextBox.Location = new System.Drawing.Point(75, 68);
+            this.lowerFcTextBox.Name = "lowerFcTextBox";
+            this.lowerFcTextBox.ReadOnly = true;
+            this.lowerFcTextBox.Size = new System.Drawing.Size(57, 19);
+            this.lowerFcTextBox.TabIndex = 17;
+            // 
+            // upperFcTextBox
+            // 
+            this.upperFcTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "UpperFc", true));
+            this.upperFcTextBox.Location = new System.Drawing.Point(75, 47);
+            this.upperFcTextBox.Name = "upperFcTextBox";
+            this.upperFcTextBox.ReadOnly = true;
+            this.upperFcTextBox.Size = new System.Drawing.Size(57, 19);
+            this.upperFcTextBox.TabIndex = 18;
+            // 
+            // currentChannelLabel
+            // 
+            currentChannelLabel.AutoSize = true;
+            currentChannelLabel.Location = new System.Drawing.Point(2, 206);
+            currentChannelLabel.Name = "currentChannelLabel";
+            currentChannelLabel.Size = new System.Drawing.Size(51, 12);
+            currentChannelLabel.TabIndex = 16;
+            currentChannelLabel.Text = "チャンネル";
+            // 
+            // openFamosFileDialog
+            // 
+            this.openFamosFileDialog.Filter = "Famosファイル (*.DAT)|*.DAT|全てのファイル (*.*)|*.*";
+            // 
+            // openCsvFileDialog
+            // 
+            this.openCsvFileDialog.FileName = "openFileDialog1";
+            this.openCsvFileDialog.Filter = "CSVファイル (*.CSV)|*.CSV|全てのファイル (*.*)|*.*";
+            // 
+            // wave_info
+            // 
+            this.wave_info.Location = new System.Drawing.Point(0, 50);
+            this.wave_info.MinimumSize = new System.Drawing.Size(100, 4);
+            this.wave_info.Multiline = true;
+            this.wave_info.Name = "wave_info";
+            this.wave_info.ReadOnly = true;
+            this.wave_info.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.wave_info.Size = new System.Drawing.Size(435, 147);
+            this.wave_info.TabIndex = 3;
             // 
             // dataBindingSource
             // 
@@ -294,15 +372,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(891, 710);
-            this.Controls.Add(this.upperFcTrackBar);
-            this.Controls.Add(upperFcLabel);
-            this.Controls.Add(this.upperFcNumericUpDown);
-            this.Controls.Add(this.lowerFcTrackBar);
-            this.Controls.Add(lowerFcLabel);
-            this.Controls.Add(this.lowerFcNumericUpDown);
-            this.Controls.Add(tapLabel1);
-            this.Controls.Add(this.tapNumericUpDown);
-            this.Controls.Add(this.tapTrackBar);
+            this.Controls.Add(currentChannelLabel);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.wave_info);
@@ -323,6 +394,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.lowerFcTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.upperFcNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.upperFcTrackBar)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -340,7 +413,6 @@
         private System.Windows.Forms.ToolStripMenuItem 書き出しToolStripMenuItem;
         private System.Windows.Forms.DataVisualization.Charting.Chart wave_chart;
         private System.Windows.Forms.DataVisualization.Charting.Chart sp_chart;
-        private System.Windows.Forms.TextBox wave_info;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.BindingSource dataBindingSource;
@@ -350,6 +422,12 @@
         private System.Windows.Forms.TrackBar lowerFcTrackBar;
         private System.Windows.Forms.NumericUpDown upperFcNumericUpDown;
         private System.Windows.Forms.TrackBar upperFcTrackBar;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TextBox lowerFcTextBox;
+        private System.Windows.Forms.TextBox upperFcTextBox;
+        private System.Windows.Forms.OpenFileDialog openFamosFileDialog;
+        private System.Windows.Forms.OpenFileDialog openCsvFileDialog;
+        private System.Windows.Forms.TextBox wave_info;
     }
 }
 
