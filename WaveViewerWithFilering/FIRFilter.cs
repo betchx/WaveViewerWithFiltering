@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;  // for IntPtr
 
 namespace WaveViewerWithFilering
 {
-    class FIRFilter
+    public class FIRFilter
     {
         private bool dirty;
 

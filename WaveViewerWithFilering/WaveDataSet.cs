@@ -9,7 +9,7 @@ using WaveFile;
 
 namespace WaveViewerWithFilering
 {
-    class WaveDataSet
+    public class WaveDataSet
     {
         #region Construction
         public WaveDataSet(double[] wave, double delta_t, bool acc_data = false)

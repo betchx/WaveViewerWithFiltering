@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WaveViewerWithFilering
 {
-    class WindowFunction
+    public class WindowFunction
     {
         private double[] factor_; public double[] factor { get { return factor_; } }
         private int n_; public int n { get { return n_; } }
