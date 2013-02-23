@@ -70,6 +70,10 @@ namespace WaveFilterTool
             set { waves = value; }
         }
 
+        public IEnumerable<double> SourceWave { get { dataSet.update(); return dataSet.source; } }
+        public IEnumerable<double> FilterdWave { get { dataSet.update(); return dataSet.filtered; } }
+
+
         private double[][] spectrums;
 
         public double[][] Spectrums
@@ -77,6 +81,9 @@ namespace WaveFilterTool
             get { return spectrums; }
             set { spectrums = value; }
         }
+        public double[] Frequencies { get { return dataSet.freqs; } }
+        public double[] PowerOfSource { get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Source); } }
+        public double[] PowerOfFiltered { get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Filtered); } }
 
         private void NotifyPropertyChanged(string property_name)
         {

@@ -226,6 +226,46 @@ namespace WaveViewerWithFilering
             };
         }
 
+        public enum State{
+            Raw,
+            Source,
+            Filtered,
+            Oversampled,
+        }
+
+        public double[] Wave(State target)
+        {
+            switch (target)
+            {
+                case State.Raw:
+                    return raw_wave.Wave.ToArray();
+                case State.Source:
+                    return source;
+                case State.Filtered:
+                    return filtered;
+                case State.Oversampled:
+                    return over_sampled;
+                default:
+                    throw new ArgumentException();
+           }
+        }
+        public double[] Power(State target)
+        {
+            switch (target)
+            {
+                case State.Raw:
+                    return raw_wave.Power.ToArray();
+                case State.Source:
+                    return wave.Power.ToArray();
+                case State.Filtered:
+                    return ans.Power.ToArray();
+                case State.Oversampled:
+                    return over.Power.ToArray();
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
         public IEnumerable<double>[] debug_spectrums()
         {
             return new IEnumerable<double>[]{
