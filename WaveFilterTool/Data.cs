@@ -46,7 +46,14 @@ namespace WaveFilterTool
         public int UpperFcNum
         {
             get { return upperFcNum; }
-            set { upperFcNum = value;
+            set
+            {
+                upperFcNum = value;
+                if (dataSet != null)
+                {
+                    dataSet.upper = value;
+                    dataSet.update();
+                }
                 NotifyPropertyChanged("UpperFcNum");
                 if (dt != 0.0)
                 {
@@ -64,7 +71,13 @@ namespace WaveFilterTool
             get { return lowerFcNum; }
             set
             {
-                lowerFcNum = value; NotifyPropertyChanged("LowerFcNum");
+                lowerFcNum = value;
+                if (dataSet != null)
+                {
+                    dataSet.lower = value;
+                    dataSet.update();
+                }
+                NotifyPropertyChanged("LowerFcNum");
                 if (dt != 0.0)
                 {
                     LowerFc = lowerFcNum / (2 * tap * dt);
