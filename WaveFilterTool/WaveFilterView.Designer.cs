@@ -70,6 +70,8 @@
             this.channelNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.channelListBox = new System.Windows.Forms.ListBox();
             this.currentChannelLabel2 = new System.Windows.Forms.Label();
+            this.終了ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.numberOfDisplayedDataComboBox = new System.Windows.Forms.ComboBox();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.gainComboBox = new System.Windows.Forms.ComboBox();
@@ -133,7 +135,9 @@
             // 
             this.MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ファイルToolStripMenuItem,
-            this.書き出しToolStripMenuItem});
+            this.書き出しToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.終了ToolStripMenuItem});
             this.MainMenu.Location = new System.Drawing.Point(0, 0);
             this.MainMenu.Name = "MainMenu";
             this.MainMenu.Size = new System.Drawing.Size(891, 24);
@@ -402,6 +406,18 @@
             this.currentChannelLabel2.Size = new System.Drawing.Size(87, 12);
             this.currentChannelLabel2.TabIndex = 18;
             // 
+            // 終了ToolStripMenuItem
+            // 
+            this.終了ToolStripMenuItem.Name = "終了ToolStripMenuItem";
+            this.終了ToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.終了ToolStripMenuItem.Text = "終了";
+            this.終了ToolStripMenuItem.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(45, 20);
+            this.toolStripMenuItem1.Text = "       ";
             // 
             // numberOfDisplayedDataLabel
             // 
@@ -534,6 +550,8 @@
         private System.Windows.Forms.BindingSource channelNamesBindingSource;
         private System.Windows.Forms.ListBox channelListBox;
         private System.Windows.Forms.Label currentChannelLabel2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem 終了ToolStripMenuItem;
         private System.Windows.Forms.ComboBox numberOfDisplayedDataComboBox;
         private System.Windows.Forms.ComboBox gainComboBox;
     }

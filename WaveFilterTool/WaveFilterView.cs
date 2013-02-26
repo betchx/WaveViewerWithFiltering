@@ -84,5 +84,10 @@ namespace WaveFilterTool
         {
             data.CurrentChannel = channelListBox.SelectedIndex;
         }
+
+        private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
