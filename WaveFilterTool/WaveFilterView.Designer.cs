@@ -42,6 +42,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.Label numberOfDisplayedDataLabel;
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -68,11 +69,13 @@
             this.channelNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.channelListBox = new System.Windows.Forms.ListBox();
             this.currentChannelLabel2 = new System.Windows.Forms.Label();
+            this.numberOfDisplayedDataComboBox = new System.Windows.Forms.ComboBox();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             tapLabel1 = new System.Windows.Forms.Label();
             lowerFcLabel = new System.Windows.Forms.Label();
             upperFcLabel = new System.Windows.Forms.Label();
             currentChannelLabel = new System.Windows.Forms.Label();
+            numberOfDisplayedDataLabel = new System.Windows.Forms.Label();
             this.MainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sp_chart)).BeginInit();
@@ -389,6 +392,36 @@
             this.currentChannelLabel2.Name = "currentChannelLabel2";
             this.currentChannelLabel2.Size = new System.Drawing.Size(87, 12);
             this.currentChannelLabel2.TabIndex = 18;
+            // 
+            // 
+            // numberOfDisplayedDataLabel
+            // 
+            numberOfDisplayedDataLabel.AutoSize = true;
+            numberOfDisplayedDataLabel.Location = new System.Drawing.Point(171, 206);
+            numberOfDisplayedDataLabel.Name = "numberOfDisplayedDataLabel";
+            numberOfDisplayedDataLabel.Size = new System.Drawing.Size(88, 12);
+            numberOfDisplayedDataLabel.TabIndex = 18;
+            numberOfDisplayedDataLabel.Text = "表示するデータ数";
+            // 
+            // numberOfDisplayedDataComboBox
+            // 
+            this.numberOfDisplayedDataComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "NumberOfDisplayedData", true));
+            this.numberOfDisplayedDataComboBox.FormattingEnabled = true;
+            this.numberOfDisplayedDataComboBox.Items.AddRange(new object[] {
+            "100",
+            "200",
+            "500",
+            "1000",
+            "2000",
+            "5000",
+            "10000",
+            "20000",
+            "50000"});
+            this.numberOfDisplayedDataComboBox.Location = new System.Drawing.Point(265, 203);
+            this.numberOfDisplayedDataComboBox.Name = "numberOfDisplayedDataComboBox";
+            this.numberOfDisplayedDataComboBox.Size = new System.Drawing.Size(121, 20);
+            this.numberOfDisplayedDataComboBox.TabIndex = 19;
+            // 
             // dataBindingSource
             // 
             this.dataBindingSource.DataSource = typeof(WaveFilterTool.Data);
@@ -398,6 +431,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(891, 710);
+            this.Controls.Add(numberOfDisplayedDataLabel);
+            this.Controls.Add(this.numberOfDisplayedDataComboBox);
             this.Controls.Add(this.currentChannelLabel2);
             this.Controls.Add(this.channelListBox);
             this.Controls.Add(currentChannelLabel);
@@ -460,6 +495,7 @@
         private System.Windows.Forms.BindingSource channelNamesBindingSource;
         private System.Windows.Forms.ListBox channelListBox;
         private System.Windows.Forms.Label currentChannelLabel2;
+        private System.Windows.Forms.ComboBox numberOfDisplayedDataComboBox;
     }
 }
 

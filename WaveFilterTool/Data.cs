@@ -18,6 +18,7 @@ namespace WaveFilterTool
             Tap = 150;
             UpperFcNum = tap;
             LowerFcNum = 0;
+            NumberOfDisplayedData = 1000;
         }
 
         private double dt;
@@ -162,6 +163,7 @@ namespace WaveFilterTool
                 waveFile = value;
                 Dt = waveFile.dt(0);
                 CurrentChannel = currentChannel;
+                dataSet.num_disp = dataSet.length;
                 UpdateChannelNames();
             }
         }
@@ -176,7 +178,15 @@ namespace WaveFilterTool
             NotifyPropertyChanged("ChannelNames");
         }
 
+        private int numberOfDisplayedData;
+
+        public int NumberOfDisplayedData
+        {
+            get { return numberOfDisplayedData; }
+            set { numberOfDisplayedData = value; NotifyPropertyChanged("NumberOfDisplayedData");}
+        }
+
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
     }
-}
+}
