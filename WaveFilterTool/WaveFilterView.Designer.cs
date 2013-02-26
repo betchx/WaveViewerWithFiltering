@@ -273,6 +273,7 @@
             // tapNumericUpDown
             // 
             this.tapNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "Tap", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tapNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true));
             this.tapNumericUpDown.Location = new System.Drawing.Point(138, 18);
             this.tapNumericUpDown.Name = "tapNumericUpDown";
             this.tapNumericUpDown.Size = new System.Drawing.Size(54, 19);
@@ -282,6 +283,7 @@
             // lowerFcNumericUpDown
             // 
             this.lowerFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.lowerFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "Tap", true));
             this.lowerFcNumericUpDown.Location = new System.Drawing.Point(138, 68);
             this.lowerFcNumericUpDown.Name = "lowerFcNumericUpDown";
             this.lowerFcNumericUpDown.Size = new System.Drawing.Size(54, 19);
@@ -291,7 +293,7 @@
             // 
             this.lowerFcTrackBar.AutoSize = false;
             this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "LowerFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "100"));
+            this.lowerFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "Tap", true));
             this.lowerFcTrackBar.Location = new System.Drawing.Point(198, 68);
             this.lowerFcTrackBar.Name = "lowerFcTrackBar";
             this.lowerFcTrackBar.Size = new System.Drawing.Size(104, 19);
@@ -300,6 +302,7 @@
             // upperFcNumericUpDown
             // 
             this.upperFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.upperFcNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "Tap", true));
             this.upperFcNumericUpDown.Location = new System.Drawing.Point(138, 43);
             this.upperFcNumericUpDown.Name = "upperFcNumericUpDown";
             this.upperFcNumericUpDown.Size = new System.Drawing.Size(54, 19);
@@ -309,7 +312,7 @@
             // 
             this.upperFcTrackBar.AutoSize = false;
             this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.dataBindingSource, "UpperFcNum", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "TapMax", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "100"));
+            this.upperFcTrackBar.DataBindings.Add(new System.Windows.Forms.Binding("Maximum", this.dataBindingSource, "Tap", true));
             this.upperFcTrackBar.Location = new System.Drawing.Point(198, 43);
             this.upperFcTrackBar.Name = "upperFcTrackBar";
             this.upperFcTrackBar.Size = new System.Drawing.Size(104, 19);
