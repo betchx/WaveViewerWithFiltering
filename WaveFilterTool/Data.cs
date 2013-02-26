@@ -45,7 +45,7 @@ namespace WaveFilterTool
                 NotifyPropertyChanged("UpperFcNum");
                 if (dt != 0.0)
                 {
-                    UpperFc = upperFcNum / (tap * dt);
+                    UpperFc = upperFcNum / (2 * tap * dt);
                     NotifyPropertyChanged("UpperFc");
                 }
             }
@@ -62,7 +62,7 @@ namespace WaveFilterTool
                 lowerFcNum = value; NotifyPropertyChanged("LowerFcNum");
                 if (dt != 0.0)
                 {
-                    UpperFc = lowerFcNum / (tap * dt);
+                    LowerFc = lowerFcNum / (2 * tap * dt);
                     NotifyPropertyChanged("LowerFc");
                 }
             }
