@@ -19,6 +19,9 @@ namespace WaveFilterTool
             data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
             this.dataBindingSource.Add(data);
             AdjustSizeAndLocationOfControls();
+            data.TapMax = 300;
+            data.Tap = 150;
+        }
         void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
