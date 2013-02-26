@@ -9,7 +9,7 @@ using WaveFile;
 
 namespace WaveViewerWithFilering
 {
-    public class WaveDataSet
+    public class WaveDataSet : System.ComponentModel.INotifyPropertyChanged
     {
         #region Construction
         public WaveDataSet(double[] wave, double delta_t, bool acc_data = false)
@@ -73,6 +73,7 @@ namespace WaveViewerWithFilering
             {
                 data_start_ = value;
                 setup_raw_wave();
+                NotifyPropertyChanged("data_start");
             }
         }
 
@@ -84,6 +85,7 @@ namespace WaveViewerWithFilering
                 filter.tap = value;
                 hann = new HannWindow(value);
                 update_nfft();
+                NotifyPropertyChanged("tap");
             }
         }
 
@@ -111,6 +113,7 @@ namespace WaveViewerWithFilering
                     default:
                         throw new ArgumentException("over_sample can be 1, 2, 4 or 8");
                 }
+                NotifyPropertyChanged("over_sample");
             }
         }
 
@@ -131,6 +134,7 @@ namespace WaveViewerWithFilering
                     {
                         integral = val;
                         update_wave(true);
+                        NotifyPropertyChanged("category");
                     }
                 }
             }
@@ -210,6 +214,7 @@ namespace WaveViewerWithFilering
                 }
                 over_sampled = over.Wave.Take(num_disp * over_sample).ToArray();
                 current_over_sample = over_sample; //calc
+                NotifyPropertyChanged("over_sampled");
             }
         }
 
@@ -447,6 +452,7 @@ namespace WaveViewerWithFilering
                     wave.Spectrum = raw_wave.Spectrum.Zip(w, (a, b) => a * b);
                 }
                 source = wave.Wave.Take(num_disp).ToArray(); // calc
+                NotifyPropertyChanged("source");
                 return true;
             }
             return false;
@@ -462,6 +468,7 @@ namespace WaveViewerWithFilering
                 {
                     factors[nfft - i] = factors[i] = filter.factor[i];
                 }
+                NotifyPropertyChanged("factors");
                 return true;
             }
             return false;
@@ -484,9 +491,20 @@ namespace WaveViewerWithFilering
                 ans.Spectrum = wave.Spectrum.Zip(factors.Spectrum, (a, b) => a * b);
                 // copy result to filtered_
                 filtered = ans.Wave.Take(num_disp).ToArray(); // calc
+                NotifyPropertyChanged("filtered");
+            }
+        }
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
             }
         }
         #endregion // Private Methods
         #endregion // Internal Use
+
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
     }
 }

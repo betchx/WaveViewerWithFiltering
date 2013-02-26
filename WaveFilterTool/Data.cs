@@ -224,8 +224,21 @@ namespace WaveFilterTool
             set { numberOfDisplayedData = value; NotifyPropertyChanged("NumberOfDisplayedData");}
         }
 
+        System.ComponentModel.PropertyChangedEventHandler datasetHandler;
+        public void AddPropetryChangedHandlerToDataSet(System.ComponentModel.PropertyChangedEventHandler handler)
+        {
+            datasetHandler = handler;
+            if (dataSet != null)
+                dataSet.PropertyChanged += datasetHandler;
+        }
+
         public string Description { get; set; }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public IEnumerable<double> XValues
+        {
+            get { return dataSet.xvalues; }
+
+        }
     }
-}
+}
