@@ -6,7 +6,7 @@ using System.Text;
 
 namespace WaveFilterTool
 {
-    class Data : System.ComponentModel.INotifyPropertyChanged 
+    public class Data : System.ComponentModel.INotifyPropertyChanged
     {
         private WaveViewerWithFilering.WaveDataSet dataSet;
 
