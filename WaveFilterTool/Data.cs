@@ -12,7 +12,7 @@ namespace WaveFilterTool
 
         public Data()
         {
-            channelNames = new List<string>();
+            channelNames = new System.Collections.ObjectModel.ObservableCollection<string>();
             TapMax = 300;
             Gain = -80;
             Tap = 150;
@@ -143,8 +143,13 @@ namespace WaveFilterTool
             }
         }
 
-        private List<string> channelNames;
+        private System.Collections.ObjectModel.ObservableCollection<string> channelNames;
 
+        public System.Collections.ObjectModel.ObservableCollection<string> ChannelNames
+        {
+            get { return channelNames; }
+            private set { channelNames = value; }
+        }
 
         
         private WaveFile.IWaveFile waveFile;
@@ -156,15 +161,21 @@ namespace WaveFilterTool
             {
                 waveFile = value;
                 Dt = waveFile.dt(0);
-                channelNames.Clear();
-                for (int i = 0; i < waveFile.cols; i++)
-                {
-                    channelNames.Add(waveFile.name(i));                    
-                }
-                NotifyPropertyChanged("ChannelNames");
                 CurrentChannel = currentChannel;
+                UpdateChannelNames();
             }
         }
+
+        private void UpdateChannelNames()
+        {
+            channelNames.Clear();
+            for (int i = 0; i < waveFile.cols; i++)
+            {
+                channelNames.Add(waveFile.name(i));
+            }
+            NotifyPropertyChanged("ChannelNames");
+        }
+
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
     }

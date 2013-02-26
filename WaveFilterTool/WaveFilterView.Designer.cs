@@ -32,6 +32,7 @@
             System.Windows.Forms.Label tapLabel1;
             System.Windows.Forms.Label lowerFcLabel;
             System.Windows.Forms.Label upperFcLabel;
+            System.Windows.Forms.Label currentChannelLabel;
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -41,7 +42,6 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.Label currentChannelLabel;
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +65,9 @@
             this.openFamosFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.openCsvFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.wave_info = new System.Windows.Forms.TextBox();
+            this.channelNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.channelListBox = new System.Windows.Forms.ListBox();
+            this.currentChannelLabel2 = new System.Windows.Forms.Label();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             tapLabel1 = new System.Windows.Forms.Label();
             lowerFcLabel = new System.Windows.Forms.Label();
@@ -80,6 +83,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.upperFcNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upperFcTrackBar)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.channelNamesBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,6 +113,15 @@
             upperFcLabel.Size = new System.Drawing.Size(54, 12);
             upperFcLabel.TabIndex = 12;
             upperFcLabel.Text = "Upper Fc:";
+            // 
+            // currentChannelLabel
+            // 
+            currentChannelLabel.AutoSize = true;
+            currentChannelLabel.Location = new System.Drawing.Point(2, 206);
+            currentChannelLabel.Name = "currentChannelLabel";
+            currentChannelLabel.Size = new System.Drawing.Size(51, 12);
+            currentChannelLabel.TabIndex = 16;
+            currentChannelLabel.Text = "チャンネル";
             // 
             // MainMenu
             // 
@@ -334,15 +347,6 @@
             this.upperFcTextBox.Size = new System.Drawing.Size(57, 19);
             this.upperFcTextBox.TabIndex = 18;
             // 
-            // currentChannelLabel
-            // 
-            currentChannelLabel.AutoSize = true;
-            currentChannelLabel.Location = new System.Drawing.Point(2, 206);
-            currentChannelLabel.Name = "currentChannelLabel";
-            currentChannelLabel.Size = new System.Drawing.Size(51, 12);
-            currentChannelLabel.TabIndex = 16;
-            currentChannelLabel.Text = "チャンネル";
-            // 
             // openFamosFileDialog
             // 
             this.openFamosFileDialog.Filter = "Famosファイル (*.DAT)|*.DAT|全てのファイル (*.*)|*.*";
@@ -363,6 +367,28 @@
             this.wave_info.Size = new System.Drawing.Size(435, 147);
             this.wave_info.TabIndex = 3;
             // 
+            // channelNamesBindingSource
+            // 
+            this.channelNamesBindingSource.DataMember = "ChannelNames";
+            this.channelNamesBindingSource.DataSource = this.dataBindingSource;
+            // 
+            // channelListBox
+            // 
+            this.channelListBox.FormattingEnabled = true;
+            this.channelListBox.ItemHeight = 12;
+            this.channelListBox.Location = new System.Drawing.Point(2, 221);
+            this.channelListBox.Name = "channelListBox";
+            this.channelListBox.Size = new System.Drawing.Size(144, 76);
+            this.channelListBox.TabIndex = 17;
+            this.channelListBox.SelectedIndexChanged += new System.EventHandler(this.currentChannelListBox_SelectedIndexChanged);
+            // 
+            // currentChannelLabel2
+            // 
+            this.currentChannelLabel2.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "CurrentChannel", true));
+            this.currentChannelLabel2.Location = new System.Drawing.Point(59, 206);
+            this.currentChannelLabel2.Name = "currentChannelLabel2";
+            this.currentChannelLabel2.Size = new System.Drawing.Size(87, 12);
+            this.currentChannelLabel2.TabIndex = 18;
             // dataBindingSource
             // 
             this.dataBindingSource.DataSource = typeof(WaveFilterTool.Data);
@@ -372,6 +398,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(891, 710);
+            this.Controls.Add(this.currentChannelLabel2);
+            this.Controls.Add(this.channelListBox);
             this.Controls.Add(currentChannelLabel);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
@@ -396,6 +424,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.upperFcTrackBar)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.channelNamesBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -428,6 +457,9 @@
         private System.Windows.Forms.OpenFileDialog openFamosFileDialog;
         private System.Windows.Forms.OpenFileDialog openCsvFileDialog;
         private System.Windows.Forms.TextBox wave_info;
+        private System.Windows.Forms.BindingSource channelNamesBindingSource;
+        private System.Windows.Forms.ListBox channelListBox;
+        private System.Windows.Forms.Label currentChannelLabel2;
     }
 }
 

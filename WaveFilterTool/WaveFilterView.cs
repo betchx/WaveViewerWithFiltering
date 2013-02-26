@@ -16,8 +16,20 @@ namespace WaveFilterTool
         {
             InitializeComponent();
             data = new Data();
+            data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
             this.dataBindingSource.Add(data);
             AdjustSizeAndLocationOfControls();
+        void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
+        }
+        void UpdateChannelListBox()
+        {
+            this.channelListBox.Items.Clear();
+            foreach (var name in data.ChannelNames)
+            {
+                this.channelListBox.Items.Add(name);
+            }
         }
 
         private void AdjustSizeAndLocationOfControls()
@@ -63,6 +75,11 @@ namespace WaveFilterTool
             if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                 return;
             data.WaveFile = WaveFile.DelimFile.GeneralCsv(openCsvFileDialog.FileName);
+        }
+
+        private void currentChannelListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            data.CurrentChannel = channelListBox.SelectedIndex;
         }
     }
 }
