@@ -13,6 +13,11 @@ namespace WaveFilterTool
         public Data()
         {
             channelNames = new List<string>();
+            TapMax = 300;
+            Gain = -80;
+            Tap = 150;
+            UpperFcNum = tap;
+            LowerFcNum = 0;
         }
 
         private double dt;
