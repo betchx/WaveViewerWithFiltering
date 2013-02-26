@@ -28,7 +28,12 @@ namespace WaveFilterTool
         public int Tap
         {
             get { return tap; }
-            set { tap = value; NotifyPropertyChanged("Tap"); }
+            set
+            {
+                tap = value;
+                if (dataSet != null) dataSet.tap = value;
+                NotifyPropertyChanged("Tap");
+            }
         }
         public double UpperFc { get; private set; }
         private int upperFcNum;
