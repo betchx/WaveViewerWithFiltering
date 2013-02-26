@@ -25,7 +25,18 @@ namespace WaveFilterTool
         void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
+            if (e.PropertyName == "Tap") UpdateTap();
         }
+
+        private void UpdateTap()
+        {
+            int tap = data.Tap;
+            int tick = (tap+1) / 5;
+            upperFcTrackBar.TickFrequency = tick;
+            lowerFcTrackBar.TickFrequency = tick;
+        }
+
+
         void UpdateChannelListBox()
         {
             this.channelListBox.Items.Clear();

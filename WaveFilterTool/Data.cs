@@ -117,7 +117,13 @@ namespace WaveFilterTool
             }
         }
 
-        public int TapMax { get; set; }
+        private int tapMax;
+
+        public int TapMax
+        {
+            get { return tapMax; }
+            set { tapMax = value; NotifyPropertyChanged("TapMax"); }
+        }
 
         private int currentChannel;
 
