@@ -29,6 +29,7 @@ namespace WaveViewerWithFilering
         }
         private void init()
         {
+            initialized = false;
             data_start_ = 0;
             filter = new FIRFilter();
             over_sample_ = 1;
@@ -216,6 +217,7 @@ namespace WaveViewerWithFilering
                 current_over_sample = over_sample; //calc
                 NotifyPropertyChanged("over_sampled");
             }
+            initialized = true;
         }
 
         // for debug
@@ -309,6 +311,7 @@ namespace WaveViewerWithFilering
         private static object fftw = 1;
 
         private static readonly string[] CATEGORY = new string[] { "ACC", "VEL", "DIS", "NONE" };
+        private bool initialized;
 
         #endregion
 
@@ -367,7 +370,7 @@ namespace WaveViewerWithFilering
             if (num_disp == 0)
                 return false;
 
-            if (! force &&
+            if (initialized && ! force &&
                 raw_wave_start == data_start &&
                 raw_wave_num_disp == num_disp)
                 return false;
