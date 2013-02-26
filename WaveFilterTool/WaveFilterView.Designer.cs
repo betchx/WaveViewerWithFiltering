@@ -369,6 +369,7 @@
             // 
             // wave_info
             // 
+            this.wave_info.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "Description", true));
             this.wave_info.Location = new System.Drawing.Point(0, 50);
             this.wave_info.MinimumSize = new System.Drawing.Size(100, 4);
             this.wave_info.Multiline = true;

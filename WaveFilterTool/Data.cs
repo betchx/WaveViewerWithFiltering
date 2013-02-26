@@ -186,7 +186,18 @@ namespace WaveFilterTool
                 CurrentChannel = currentChannel;
                 dataSet.num_disp = dataSet.length;
                 UpdateChannelNames();
+                UpdateDescription();
             }
+        }
+
+        private void UpdateDescription()
+        {
+            StringBuilder b = new StringBuilder(100);
+            b.AppendFormat("時間刻み：{0}\r\n", dt);
+            b.AppendFormat("チャンネル数：{0}\r\n", waveFile.cols);
+            b.AppendFormat("データ長：{0} ({1}秒間)\r\n", waveFile.rows, waveFile.rows * dt);
+            Description = b.ToString();
+            NotifyPropertyChanged("Description");
         }
 
         private void UpdateChannelNames()
@@ -207,6 +218,7 @@ namespace WaveFilterTool
             set { numberOfDisplayedData = value; NotifyPropertyChanged("NumberOfDisplayedData");}
         }
 
+        public string Description { get; set; }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
     }
