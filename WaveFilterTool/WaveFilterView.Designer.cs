@@ -43,6 +43,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             System.Windows.Forms.Label numberOfDisplayedDataLabel;
+            System.Windows.Forms.Label gainLabel;
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,11 +72,13 @@
             this.currentChannelLabel2 = new System.Windows.Forms.Label();
             this.numberOfDisplayedDataComboBox = new System.Windows.Forms.ComboBox();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.gainComboBox = new System.Windows.Forms.ComboBox();
             tapLabel1 = new System.Windows.Forms.Label();
             lowerFcLabel = new System.Windows.Forms.Label();
             upperFcLabel = new System.Windows.Forms.Label();
             currentChannelLabel = new System.Windows.Forms.Label();
             numberOfDisplayedDataLabel = new System.Windows.Forms.Label();
+            gainLabel = new System.Windows.Forms.Label();
             this.MainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sp_chart)).BeginInit();
@@ -314,6 +317,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(gainLabel);
+            this.groupBox1.Controls.Add(this.gainComboBox);
             this.groupBox1.Controls.Add(this.upperFcTrackBar);
             this.groupBox1.Controls.Add(this.lowerFcTextBox);
             this.groupBox1.Controls.Add(this.upperFcTextBox);
@@ -327,7 +332,7 @@
             this.groupBox1.Controls.Add(this.tapTrackBar);
             this.groupBox1.Location = new System.Drawing.Point(2, 302);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(310, 99);
+            this.groupBox1.Size = new System.Drawing.Size(433, 107);
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "フィルタ設定";
@@ -426,6 +431,36 @@
             // 
             this.dataBindingSource.DataSource = typeof(WaveFilterTool.Data);
             // 
+            // gainLabel
+            // 
+            gainLabel.AutoSize = true;
+            gainLabel.Location = new System.Drawing.Point(307, 21);
+            gainLabel.Name = "gainLabel";
+            gainLabel.Size = new System.Drawing.Size(30, 12);
+            gainLabel.TabIndex = 18;
+            gainLabel.Text = "Gain:";
+            // 
+            // gainComboBox
+            // 
+            this.gainComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "Gain", true));
+            this.gainComboBox.FormattingEnabled = true;
+            this.gainComboBox.Items.AddRange(new object[] {
+            "0",
+            "-20",
+            "-40",
+            "-60",
+            "-80",
+            "-100",
+            "-120",
+            "-140",
+            "-160",
+            "-180",
+            "-200"});
+            this.gainComboBox.Location = new System.Drawing.Point(343, 18);
+            this.gainComboBox.Name = "gainComboBox";
+            this.gainComboBox.Size = new System.Drawing.Size(84, 20);
+            this.gainComboBox.TabIndex = 19;
+            // 
             // WaveFilterView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -496,6 +531,7 @@
         private System.Windows.Forms.ListBox channelListBox;
         private System.Windows.Forms.Label currentChannelLabel2;
         private System.Windows.Forms.ComboBox numberOfDisplayedDataComboBox;
+        private System.Windows.Forms.ComboBox gainComboBox;
     }
 }
 

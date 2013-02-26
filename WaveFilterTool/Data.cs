@@ -152,7 +152,28 @@ namespace WaveFilterTool
             private set { channelNames = value; }
         }
 
-        
+        private double gain;
+
+        public double Gain
+        {
+            get
+            {
+                if (dataSet != null)
+                    return dataSet.gain;
+                return gain;
+            }
+            set
+            {
+                gain = value;
+                if (dataSet != null)
+                {
+                    dataSet.gain = value;
+                    dataSet.update();
+                }
+                NotifyPropertyChanged("Gain");
+            }
+        }
+
         private WaveFile.IWaveFile waveFile;
 
         public WaveFile.IWaveFile WaveFile
