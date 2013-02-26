@@ -17,11 +17,29 @@ namespace WaveFilterTool
             InitializeComponent();
             data = new Data();
             data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
+            data.AddPropetryChangedHandlerToDataSet(new PropertyChangedEventHandler(dataset_PropertyChanged));
             this.dataBindingSource.Add(data);
             AdjustSizeAndLocationOfControls();
+
             data.TapMax = 300;
             data.Tap = 150;
         }
+
+
+        void dataset_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "source")
+            {
+                wave_chart.Series[0].Points.DataBindXY(data.XValues, data.SourceWave);
+                sp_chart.Series[0].Points.DataBindXY(data.Frequencies, data.PowerOfSource);
+            }
+            if (e.PropertyName == "filtered")
+            {
+                wave_chart.Series[1].Points.DataBindXY(data.XValues, data.FilterdWave);
+                sp_chart.Series[1].Points.DataBindXY(data.Frequencies, data.PowerOfFiltered);
+            }
+        }
+
         void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
