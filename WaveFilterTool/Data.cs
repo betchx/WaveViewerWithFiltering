@@ -130,9 +130,14 @@ namespace WaveFilterTool
                 {
                     if (waveFile.cols <= currentChannel) currentChannel = waveFile.cols - 1;
                     dataSet = new WaveViewerWithFilering.WaveDataSet(waveFile, currentChannel);
-
-                    NotifyPropertyChanged("Waves");
-                    NotifyPropertyChanged("Spectrums");
+                    dataSet.PropertyChanged += datasetHandler;
+                    dt = dataSet.dt;
+                    dataSet.tap = Tap;
+                    dataSet.upper = upperFcNum;
+                    dataSet.lower = lowerFcNum;
+                    dataSet.num_disp = numberOfDisplayedData;
+                    dataSet.gain = gain;
+                    dataSet.update();
                 }
                 NotifyPropertyChanged("CurrentChannel");
             }
