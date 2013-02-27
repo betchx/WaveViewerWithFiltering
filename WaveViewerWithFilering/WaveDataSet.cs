@@ -190,6 +190,9 @@ namespace WaveViewerWithFilering
 
         public void update()
         {
+            if (now_updating) return;  // To avoid stack overflow
+            now_updating = true;
+
             setup_raw_wave();
             apply_filter();
 
@@ -218,6 +221,7 @@ namespace WaveViewerWithFilering
                 NotifyPropertyChanged("over_sampled");
             }
             initialized = true;
+            now_updating = false;
         }
 
         // for debug
@@ -509,5 +513,6 @@ namespace WaveViewerWithFilering
         #endregion // Internal Use
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        private bool now_updating;
     }
 }
