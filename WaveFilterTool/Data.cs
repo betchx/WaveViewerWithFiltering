@@ -188,11 +188,12 @@ namespace WaveFilterTool
             set
             {
                 waveFile = value;
-                Dt = waveFile.dt(0);
-                CurrentChannel = currentChannel;
+                CurrentChannel = 0; // ここでdataSetが確保される．
+                dataSet.data_start = 0;
                 dataSet.num_disp = dataSet.length;
                 UpdateChannelNames();
                 UpdateDescription();
+                NotifyPropertyChanged("WaveFile");
             }
         }
 
