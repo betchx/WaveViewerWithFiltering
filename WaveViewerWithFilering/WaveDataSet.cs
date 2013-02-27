@@ -190,8 +190,11 @@ namespace WaveViewerWithFilering
 
         public void update()
         {
-            if (now_updating) return;  // To avoid stack overflow
-            now_updating = true;
+            lock (this)
+            {
+                if (now_updating) return;  // To avoid stack overflow
+                now_updating = true;
+            }
 
             setup_raw_wave();
             apply_filter();
@@ -221,7 +224,10 @@ namespace WaveViewerWithFilering
                 NotifyPropertyChanged("over_sampled");
             }
             initialized = true;
-            now_updating = false;
+            lock (this)
+            {
+                now_updating = false;
+            }
         }
 
         // for debug
