@@ -402,7 +402,7 @@ namespace WaveViewerWithFilering
                 base_line += error * 0.75; //update
             }
             raw_wave.Wave = extracted_raw_wave;
-
+            NotifyPropertyChanged("raw_wave");
             raw_wave_start = data_start;
             raw_wave_num_disp = num_disp;
 
