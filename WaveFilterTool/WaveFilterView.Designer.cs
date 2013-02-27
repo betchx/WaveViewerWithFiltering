@@ -33,6 +33,8 @@
             System.Windows.Forms.Label lowerFcLabel;
             System.Windows.Forms.Label upperFcLabel;
             System.Windows.Forms.Label currentChannelLabel;
+            System.Windows.Forms.Label numberOfDisplayedDataLabel;
+            System.Windows.Forms.Label gainLabel;
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -42,8 +44,6 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
-            System.Windows.Forms.Label numberOfDisplayedDataLabel;
-            System.Windows.Forms.Label gainLabel;
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,6 +51,8 @@
             this.共和電業形式ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.一般ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.書き出しToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.終了ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.sp_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label1 = new System.Windows.Forms.Label();
@@ -62,6 +64,7 @@
             this.upperFcNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.upperFcTrackBar = new System.Windows.Forms.TrackBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gainComboBox = new System.Windows.Forms.ComboBox();
             this.lowerFcTextBox = new System.Windows.Forms.TextBox();
             this.upperFcTextBox = new System.Windows.Forms.TextBox();
             this.openFamosFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -70,11 +73,8 @@
             this.channelNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.channelListBox = new System.Windows.Forms.ListBox();
             this.currentChannelLabel2 = new System.Windows.Forms.Label();
-            this.終了ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.numberOfDisplayedDataComboBox = new System.Windows.Forms.ComboBox();
             this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.gainComboBox = new System.Windows.Forms.ComboBox();
             tapLabel1 = new System.Windows.Forms.Label();
             lowerFcLabel = new System.Windows.Forms.Label();
             upperFcLabel = new System.Windows.Forms.Label();
@@ -130,6 +130,24 @@
             currentChannelLabel.Size = new System.Drawing.Size(51, 12);
             currentChannelLabel.TabIndex = 16;
             currentChannelLabel.Text = "チャンネル";
+            // 
+            // numberOfDisplayedDataLabel
+            // 
+            numberOfDisplayedDataLabel.AutoSize = true;
+            numberOfDisplayedDataLabel.Location = new System.Drawing.Point(171, 206);
+            numberOfDisplayedDataLabel.Name = "numberOfDisplayedDataLabel";
+            numberOfDisplayedDataLabel.Size = new System.Drawing.Size(88, 12);
+            numberOfDisplayedDataLabel.TabIndex = 18;
+            numberOfDisplayedDataLabel.Text = "表示するデータ数";
+            // 
+            // gainLabel
+            // 
+            gainLabel.AutoSize = true;
+            gainLabel.Location = new System.Drawing.Point(307, 21);
+            gainLabel.Name = "gainLabel";
+            gainLabel.Size = new System.Drawing.Size(30, 12);
+            gainLabel.TabIndex = 18;
+            gainLabel.Text = "Gain:";
             // 
             // MainMenu
             // 
@@ -188,6 +206,19 @@
             this.書き出しToolStripMenuItem.Name = "書き出しToolStripMenuItem";
             this.書き出しToolStripMenuItem.Size = new System.Drawing.Size(107, 20);
             this.書き出しToolStripMenuItem.Text = "CSVで書き出し(&E)";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(45, 20);
+            this.toolStripMenuItem1.Text = "       ";
+            // 
+            // 終了ToolStripMenuItem
+            // 
+            this.終了ToolStripMenuItem.Name = "終了ToolStripMenuItem";
+            this.終了ToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.終了ToolStripMenuItem.Text = "終了";
+            this.終了ToolStripMenuItem.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
             // wave_chart
             // 
@@ -344,6 +375,27 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "フィルタ設定";
             // 
+            // gainComboBox
+            // 
+            this.gainComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "Gain", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.gainComboBox.FormattingEnabled = true;
+            this.gainComboBox.Items.AddRange(new object[] {
+            "0",
+            "-20",
+            "-40",
+            "-60",
+            "-80",
+            "-100",
+            "-120",
+            "-140",
+            "-160",
+            "-180",
+            "-200"});
+            this.gainComboBox.Location = new System.Drawing.Point(343, 18);
+            this.gainComboBox.Name = "gainComboBox";
+            this.gainComboBox.Size = new System.Drawing.Size(84, 20);
+            this.gainComboBox.TabIndex = 19;
+            // 
             // lowerFcTextBox
             // 
             this.lowerFcTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "LowerFc", true));
@@ -406,28 +458,6 @@
             this.currentChannelLabel2.Size = new System.Drawing.Size(87, 12);
             this.currentChannelLabel2.TabIndex = 18;
             // 
-            // 終了ToolStripMenuItem
-            // 
-            this.終了ToolStripMenuItem.Name = "終了ToolStripMenuItem";
-            this.終了ToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
-            this.終了ToolStripMenuItem.Text = "終了";
-            this.終了ToolStripMenuItem.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(45, 20);
-            this.toolStripMenuItem1.Text = "       ";
-            // 
-            // numberOfDisplayedDataLabel
-            // 
-            numberOfDisplayedDataLabel.AutoSize = true;
-            numberOfDisplayedDataLabel.Location = new System.Drawing.Point(171, 206);
-            numberOfDisplayedDataLabel.Name = "numberOfDisplayedDataLabel";
-            numberOfDisplayedDataLabel.Size = new System.Drawing.Size(88, 12);
-            numberOfDisplayedDataLabel.TabIndex = 18;
-            numberOfDisplayedDataLabel.Text = "表示するデータ数";
-            // 
             // numberOfDisplayedDataComboBox
             // 
             this.numberOfDisplayedDataComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "NumberOfDisplayedData", true));
@@ -450,36 +480,6 @@
             // dataBindingSource
             // 
             this.dataBindingSource.DataSource = typeof(WaveFilterTool.Data);
-            // 
-            // gainLabel
-            // 
-            gainLabel.AutoSize = true;
-            gainLabel.Location = new System.Drawing.Point(307, 21);
-            gainLabel.Name = "gainLabel";
-            gainLabel.Size = new System.Drawing.Size(30, 12);
-            gainLabel.TabIndex = 18;
-            gainLabel.Text = "Gain:";
-            // 
-            // gainComboBox
-            // 
-            this.gainComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.dataBindingSource, "Gain", true));
-            this.gainComboBox.FormattingEnabled = true;
-            this.gainComboBox.Items.AddRange(new object[] {
-            "0",
-            "-20",
-            "-40",
-            "-60",
-            "-80",
-            "-100",
-            "-120",
-            "-140",
-            "-160",
-            "-180",
-            "-200"});
-            this.gainComboBox.Location = new System.Drawing.Point(343, 18);
-            this.gainComboBox.Name = "gainComboBox";
-            this.gainComboBox.Size = new System.Drawing.Size(84, 20);
-            this.gainComboBox.TabIndex = 19;
             // 
             // WaveFilterView
             // 
