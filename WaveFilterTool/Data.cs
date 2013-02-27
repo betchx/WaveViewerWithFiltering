@@ -196,6 +196,8 @@ namespace WaveFilterTool
             }
         }
 
+        public bool IsValid { get { dataSet.update(); return dataSet.is_valid; } }
+
         private void UpdateDescription()
         {
             StringBuilder b = new StringBuilder(100);
