@@ -641,6 +641,52 @@ namespace WaveViewerWithFilering
             }
         }
 
+        private void save_all_waves(int idx)
+        {
+            if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                return;
+
+            using (var stream = saveFileDialogCSV.OpenFile())
+            {
+                using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
+                {
+                    writer.WriteLine("Original File, {0}", file_path.Text);
+                    writer.WriteLine("Data Start, {0}", data_start.Value);
+                    writer.WriteLine("Data Length, {0}", data_length.Text);
+                    writer.WriteLine("Sampling Rate, {0}", fs);
+                    var chs = Enumerable.Range(0, data.Count);
+                    writer.WriteLine("Ch, {0}", string.Join(",", chs));
+                    writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i=>wavefile.name(i))));
+                    writer.WriteLine("Comment of channel, {0}", string.Join(",",chs.Select(i=>wavefile.comment(i))));
+                    writer.WriteLine("Wave Type, {0}", wave_chart.Series[idx].Name);
+                    writer.WriteLine("");
+                    writer.WriteLine("time, ", string.Join(",",chs.Select(i=>string.Format("Ch {0}",i))));
+
+                    // Setup wave data
+                    double[] x = data[0].xvalues;
+                    IEnumerable<double[]> y;
+                    switch (idx)
+                    {
+                        case 0:
+                            y = data.Select(v=>v.source);
+                            break;
+                        case 1:
+                            y = data.Select(v => v.filtered);
+                            break;
+                        case 2:
+                            y = data.Select(v => v.over_sampled);
+                            break;
+                        default:
+                            throw new ArgumentException("index must be in 0 to 2");
+                    }
+                    for (int i = 0; i < x.Length; i++)
+                    {
+                        writer.WriteLine("{0},{1}", x[i], string.Join(",",y.Select(v=>v[i])));
+                    }
+                }
+            }
+        }
+
         #endregion // Operations
         #endregion // PrivateMethods
         #endregion // Internal Use
