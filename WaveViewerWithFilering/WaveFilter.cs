@@ -1007,5 +1007,24 @@ namespace WaveViewerWithFilering
             update_freq_chart();
         }
 
+        private void btnExpandFilterSettings_Click(object sender, EventArgs e)
+        {
+            var curr = data[ch];
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (i == ch) continue;
+                var tgt = data[i];
+                tgt.tap = curr.tap;
+                tgt.upper = curr.upper;
+                tgt.lower = curr.lower;
+                tgt.alpha = curr.alpha;
+                tgt.window_type = curr.window_type;
+                tgt.gain = curr.gain;
+                tgt.data_start += 1;
+                tgt.data_start = curr.data_start;
+                tgt.update();
+            }
+        }
+
     }
 }

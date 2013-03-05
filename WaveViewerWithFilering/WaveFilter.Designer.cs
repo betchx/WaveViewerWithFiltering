@@ -169,6 +169,7 @@
             this.saveAllDisplayedFilteredWaves = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllDisplayedOversampledWaves = new System.Windows.Forms.ToolStripMenuItem();
             this.chkShowPassBandOnly = new System.Windows.Forms.CheckBox();
+            this.btnExpandFilterSettings = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             this.WaveChartMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
@@ -255,7 +256,7 @@
             this.SaveWholeCurrent,
             this.SaveAllWave});
             this.WaveChartMenu.Name = "WaveChartMenu";
-            this.WaveChartMenu.Size = new System.Drawing.Size(229, 114);
+            this.WaveChartMenu.Size = new System.Drawing.Size(229, 92);
             // 
             // saveDisplayedMenu
             // 
@@ -1462,12 +1463,23 @@
             this.chkShowPassBandOnly.UseVisualStyleBackColor = true;
             this.chkShowPassBandOnly.CheckedChanged += new System.EventHandler(this.chkShowPassBandOnly_CheckedChanged);
             // 
+            // btnExpandFilterSettings
+            // 
+            this.btnExpandFilterSettings.Location = new System.Drawing.Point(854, 616);
+            this.btnExpandFilterSettings.Name = "btnExpandFilterSettings";
+            this.btnExpandFilterSettings.Size = new System.Drawing.Size(117, 46);
+            this.btnExpandFilterSettings.TabIndex = 23;
+            this.btnExpandFilterSettings.Text = "Copy Filter Setting to other chs";
+            this.btnExpandFilterSettings.UseVisualStyleBackColor = true;
+            this.btnExpandFilterSettings.Click += new System.EventHandler(this.btnExpandFilterSettings_Click);
+            // 
             // WaveFilter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 923);
             this.Controls.Add(this.DataStart);
+            this.Controls.Add(this.btnExpandFilterSettings);
             this.Controls.Add(this.chkShowPassBandOnly);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.hide_over);
@@ -1660,6 +1672,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAllDisplayedFilteredWaves;
         private System.Windows.Forms.ToolStripMenuItem saveAllDisplayedOversampledWaves;
         private System.Windows.Forms.CheckBox chkShowPassBandOnly;
+        private System.Windows.Forms.Button btnExpandFilterSettings;
     }
 }
 
