@@ -681,7 +681,7 @@ namespace WaveViewerWithFilering
                     writer.WriteLine("Comment of channel, {0}", string.Join(",",chs.Select(i=>wavefile.comment(i))));
                     writer.WriteLine("Wave Type, {0}", wave_chart.Series[idx].Name);
                     writer.WriteLine("");
-                    writer.WriteLine("time, ", string.Join(",",chs.Select(i=>string.Format("Ch {0}",i))));
+                    writer.WriteLine("time, {0}", string.Join(",",chs.Select(i=>"Ch"+i.ToString())));
 
                     // Setup wave data
                     double[] x = data[0].xvalues;
