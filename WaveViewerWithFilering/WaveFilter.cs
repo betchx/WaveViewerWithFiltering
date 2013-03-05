@@ -970,5 +970,20 @@ namespace WaveViewerWithFilering
         {
             save_wave(3);
         }
+
+        private void saveAllDisplayedSourceWaves_Click(object sender, EventArgs e)
+        {
+            save_all_waves(0);
+        }
+
+        private void saveAllDisplayedFilteredWaves_Click(object sender, EventArgs e)
+        {
+            save_all_waves(1);
+        }
+
+        private void saveAllDisplayedOversampledWaves_Click(object sender, EventArgs e)
+        {
+            save_all_waves(2);
+        }
     }
 }
