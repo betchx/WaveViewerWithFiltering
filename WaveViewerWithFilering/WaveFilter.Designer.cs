@@ -168,6 +168,7 @@
             this.saveAllDisplayedSourceWaves = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllDisplayedFilteredWaves = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllDisplayedOversampledWaves = new System.Windows.Forms.ToolStripMenuItem();
+            this.chkShowPassBandOnly = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             this.WaveChartMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
@@ -1389,7 +1390,7 @@
             this.wave_fft_chart.Series.Add(series15);
             this.wave_fft_chart.Series.Add(series16);
             this.wave_fft_chart.Series.Add(series17);
-            this.wave_fft_chart.Size = new System.Drawing.Size(1129, 300);
+            this.wave_fft_chart.Size = new System.Drawing.Size(817, 300);
             this.wave_fft_chart.TabIndex = 1;
             this.wave_fft_chart.TabStop = false;
             this.wave_fft_chart.Text = "chart1";
@@ -1450,12 +1451,24 @@
             this.saveAllDisplayedOversampledWaves.Text = "Oversampled Waves";
             this.saveAllDisplayedOversampledWaves.Click += new System.EventHandler(this.saveAllDisplayedOversampledWaves_Click);
             // 
+            // chkShowPassBandOnly
+            // 
+            this.chkShowPassBandOnly.AutoSize = true;
+            this.chkShowPassBandOnly.Location = new System.Drawing.Point(1023, 616);
+            this.chkShowPassBandOnly.Name = "chkShowPassBandOnly";
+            this.chkShowPassBandOnly.Size = new System.Drawing.Size(137, 16);
+            this.chkShowPassBandOnly.TabIndex = 22;
+            this.chkShowPassBandOnly.Text = "Show Pass Band Only";
+            this.chkShowPassBandOnly.UseVisualStyleBackColor = true;
+            this.chkShowPassBandOnly.CheckedChanged += new System.EventHandler(this.chkShowPassBandOnly_CheckedChanged);
+            // 
             // WaveFilter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 923);
             this.Controls.Add(this.DataStart);
+            this.Controls.Add(this.chkShowPassBandOnly);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.hide_over);
             this.Controls.Add(this.hide_result);
@@ -1646,6 +1659,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAllDisplayedSourceWaves;
         private System.Windows.Forms.ToolStripMenuItem saveAllDisplayedFilteredWaves;
         private System.Windows.Forms.ToolStripMenuItem saveAllDisplayedOversampledWaves;
+        private System.Windows.Forms.CheckBox chkShowPassBandOnly;
     }
 }
 

@@ -292,6 +292,22 @@ namespace WaveViewerWithFilering
         {
             update_freq_chart_source();
             update_freq_chart_gain();
+            if (chkShowPassBandOnly.Checked)
+            {
+                foreach (var ca in freq_chart.ChartAreas)
+                {
+                    ca.AxisX.Maximum = Math.Ceiling(double.Parse(upper_fc.Text));
+                    ca.AxisX.Minimum = Math.Floor(double.Parse(lower_fc.Text));
+                }
+            }
+            else
+            {
+                foreach (var ca in freq_chart.ChartAreas)
+                {
+                    ca.AxisX.Maximum = double.Parse(nyquist_frequency.Text);
+                    ca.AxisX.Minimum = 0.0;
+                }
+            }
             freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
@@ -985,5 +1001,11 @@ namespace WaveViewerWithFilering
         {
             save_all_waves(2);
         }
+
+        private void chkShowPassBandOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            update_freq_chart();
+        }
+
     }
 }
