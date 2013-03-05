@@ -630,8 +630,12 @@ namespace WaveViewerWithFilering
                         case 2:
                             y = data[ch].over_sampled;
                             break;
+                        case 3:
+                            y = wave_chart.Series[3].Points.Select(v => v.YValues[0]).ToArray();
+                            x = wave_chart.Series[3].Points.Select(v => v.XValue).ToArray();
+                            break;
                         default:
-                            throw new ArgumentException("index must be in 0 to 2");
+                            throw new ArgumentException("index must be in 0 to 3");
                     }
                     for (int i = 0; i < x.Length; i++)
                     {
