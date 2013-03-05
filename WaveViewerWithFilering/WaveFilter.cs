@@ -615,9 +615,27 @@ namespace WaveViewerWithFilering
                     writer.WriteLine("Comment of channel, {0}", channel_comment.Text);
                     writer.WriteLine("");
                     writer.WriteLine("time, {0} Wave", wave_chart.Series[idx].Name);
-                    foreach (var pnt in wave_chart.Series[idx].Points)
+
+                    // Setup wave data
+                    double[] x = data[ch].xvalues;
+                    double[] y;
+                    switch (idx)
                     {
-                        writer.WriteLine("{0},{1}", pnt.XValue, pnt.YValues[0]);
+                        case 0:
+                            y = data[ch].source;
+                            break;
+                        case 1:
+                            y = data[ch].filtered;
+                            break;
+                        case 2:
+                            y = data[ch].over_sampled;
+                            break;
+                        default:
+                            throw new ArgumentException("index must be in 0 to 2");
+                    }
+                    for (int i = 0; i < x.Length; i++)
+                    {
+                        writer.WriteLine("{0},{1}", x[i], y[i]);
                     }
                 }
             }
