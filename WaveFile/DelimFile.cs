@@ -122,9 +122,15 @@ namespace WaveFile
             bool res;
             using (var sr = new StreamReader(path, Encoding.Default))
             {
-                var tag = sr.ReadLine().Split(',').FirstOrDefault();
-                // format check
-                res = tag == "ID番号" || tag == "\"ID番号\"";
+                var line = sr.ReadLine();
+                if (line == null)
+                    res = false;
+                else
+                {
+                    var tag = line.Split(',').FirstOrDefault();
+                    // format check
+                    res = tag == "ID番号" || tag == "\"ID番号\"";
+                }
             }
             return res;
         }
