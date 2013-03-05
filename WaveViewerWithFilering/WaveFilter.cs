@@ -206,6 +206,7 @@ namespace WaveViewerWithFilering
             wave_chart.Invalidate();
             WaveChartMenu.Enabled = true;
             saveDisplayedMenu.Enabled = true;
+            SaveAllDisplayedMenu.Enabled = true;
         }
 
         private void update_wave_chart_source()
