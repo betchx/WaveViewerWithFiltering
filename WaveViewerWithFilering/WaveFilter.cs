@@ -517,8 +517,11 @@ namespace WaveViewerWithFilering
             }
 
             if (wavefile == null)
-                throw new NotImplementedException("DAT and CSV are supported format");
-
+            {
+                MessageBox.Show("DAT and CSV are supported format");
+                return;
+                //throw new NotImplementedException("DAT and CSV are supported format");
+            }
             progressBar1.Value = 0;
             progressBar1.Visible = true;
             if (!wavefile.opened)
