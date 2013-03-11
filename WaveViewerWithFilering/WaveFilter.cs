@@ -222,11 +222,19 @@ namespace WaveViewerWithFilering
 
             s.Clear();
             if (hide_source.Checked) return;
-
-            for (int i = 0; i < num_disp; i+=step)
+            var val = data[ch].source;
+            var x = data[ch].xvalues;
+            for (int i = 0; i < num_disp; i += step)
             {
-                s.AddXY(data[ch].xvalues[i], data[ch].source[i]);
+                s.AddXY(x[i], val[i]);
             }
+            double max = val.Max();
+            double min = val.Min();
+            double range = max - min;
+            peakdisplay.Items[1] = string.Format("     max:{0:g3}", max);
+            peakdisplay.Items[2] = string.Format("     min:{0:g3}", min);
+            peakdisplay.Items[3] = string.Format("   range:{0:g3}", range);
+            peakdisplay.Invalidate();
         }
 
         private void update_wave_chart_filtered()
@@ -245,6 +253,13 @@ namespace WaveViewerWithFilering
             {
                 s.AddXY(x[i], val[i]);
             }
+            double max = val.Max();
+            double min = val.Min();
+            double range = max - min;
+            peakdisplay.Items[5] = string.Format("     max:{0:g3}", max);
+            peakdisplay.Items[6] = string.Format("     min:{0:g3}", min);
+            peakdisplay.Items[7] = string.Format("   range:{0:g3}", range);
+            peakdisplay.Invalidate();
         }
 
         private void update_wave_chart_oversampled()
@@ -270,6 +285,13 @@ namespace WaveViewerWithFilering
             {
                 s.AddXY(x[i], val[i]);
             }
+            double max = val.Max();
+            double min = val.Min();
+            double range = max - min;
+            peakdisplay.Items[9] = string.Format("     max:{0:g3}", max);
+            peakdisplay.Items[10] = string.Format("     min:{0:g3}", min);
+            peakdisplay.Items[11] = string.Format("   range:{0:g3}", range);
+            peakdisplay.Invalidate();
         }
 
         private void update_filter_chart()
