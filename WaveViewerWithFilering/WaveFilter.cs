@@ -548,7 +548,11 @@ namespace WaveViewerWithFilering
                 if (Famos.is_famos(file_name))
                     wavefile = new Famos(file_name);
                 else
-                    throw new NotImplementedException("Only famos format file is supported.");
+                {
+                    //throw new NotImplementedException("Only famos format file is supported.");
+                    MessageBox.Show("Only famos format file is supported for .DAT files.");
+                    return;
+                }
             }
             if (ext == ".CSV")
             {
