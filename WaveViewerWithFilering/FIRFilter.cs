@@ -122,7 +122,7 @@ namespace WaveViewerWithFilering
             if (!dirty)
                 return false;
 
-            double low_amp = amp * Math.Pow(10.0, 10 * gain);
+            double low_amp = amp * Math.Pow(10.0, 20 * gain);
 
             // set value
             buf[0] = (lower == 0) ? amp : low_amp;
