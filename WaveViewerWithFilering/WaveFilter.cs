@@ -44,7 +44,7 @@ namespace WaveViewerWithFilering
         int ch;
         int num_point;
         int step;
-        const int max_points = 5000;
+        const int max_points = 10000;
         private double fs;
         private double fn;
         private IWaveFile wavefile;
