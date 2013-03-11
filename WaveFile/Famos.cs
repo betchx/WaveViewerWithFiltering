@@ -230,7 +230,7 @@ namespace WaveFile
             bool ans = false;
             if (tr.Read(buf, 0, TAG_CF.Length) == TAG_CF.Length)
             {
-                if (buf.ToString() == TAG_CF)
+                if (new string(buf) == TAG_CF)
                     ans = true;
             }
             tr.Close();
@@ -304,7 +304,7 @@ namespace WaveFile
 
         public string comment(int ch)
         {
-            throw new NotImplementedException();
+            return channel_info[ch].comment;
         }
 
         #endregion
