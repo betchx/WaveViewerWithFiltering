@@ -13,7 +13,6 @@ namespace WaveViewerWithFilering
 
         public bool is_dirty { get { return dirty; } }
 
-
         public FIRFilter()
         {
             window_type_ = WindowType.None;
@@ -48,6 +47,7 @@ namespace WaveViewerWithFilering
                 setup_window();
             }
         }
+
 
         private void setup_window()
         {
@@ -103,7 +103,11 @@ namespace WaveViewerWithFilering
         private int lower_; public int lower { get { return lower_; } set { lower_ = value; dirty = true; } }
         private int upper_; public int upper { get { return upper_; } set { upper_ = value; dirty = true; } }
         private double gain_; public double gain { get { return gain_; } set { gain_ = value; dirty = true; } }
-        
+        private NotchFilterInfo.NotchesDataTable notch_info;
+        public NotchFilterInfo.NotchesDataTable notch { get { return notch_info; } set { notch_info = value; dirty = true; } }
+
+        public double sampling_rate { get; set; }
+
         // getter only
         public int size { get; private set; }
         public double[] factor { get; private set; }
@@ -134,6 +138,29 @@ namespace WaveViewerWithFilering
                 buf[2 * (size - i)] = buf[i * 2] = (lower <= i && i <= upper) ? amp : low_amp;
                 buf[2 * (size - i) + 1] = buf[i * 2 + 1] = 0.0;
             }
+
+            // Notch filtering
+            if (sampling_rate > 0.0 && notch_info != null)
+            {
+                double df = sampling_rate / 2 / tap;
+                foreach (var set in notch_info)
+                {
+                    if (set.Enable)
+                    {
+                        for (int i = lower; i <= upper; i++)
+                        {
+                            double f = i * df;
+                            double delta = Math.Abs(f - set.Frequency);
+                            if (delta < set.Band)
+                            {
+                                double rate = Math.Pow(10.0, set.Gain / 20.0 * (1-delta / set.Band));
+                                buf[2 * (size - i)] = buf[i * 2] = buf[i * 2] * rate;
+                            }
+                        }
+                    }
+                }
+            }
+
             // copy to FFTW memory
             Marshal.Copy(buf, 0, pin, size * 2);
 

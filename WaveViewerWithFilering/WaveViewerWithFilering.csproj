@@ -54,6 +54,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FIRFilter.cs" />
+    <Compile Include="NotchFilterInfo.cs">
+      <DependentUpon>NotchFilterInfo.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NotchFilterInfo.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NotchFilterInfo.xsd</DependentUpon>
+    </Compile>
     <Compile Include="PeakFinder.cs" />
     <Compile Include="WaveDataSet.cs" />
     <Compile Include="WaveFilter.cs">
@@ -79,6 +88,17 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="NotchFilterInfo.xsc">
+      <DependentUpon>NotchFilterInfo.xsd</DependentUpon>
+    </None>
+    <None Include="NotchFilterInfo.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>NotchFilterInfo.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="NotchFilterInfo.xss">
+      <DependentUpon>NotchFilterInfo.xsd</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

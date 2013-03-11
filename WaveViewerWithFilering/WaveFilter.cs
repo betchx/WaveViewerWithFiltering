@@ -314,6 +314,7 @@ namespace WaveViewerWithFilering
         private void update_freq_chart()
         {
             update_freq_chart_source();
+            update_freq_chart_filtered();
             update_freq_chart_gain();
             if (chkShowPassBandOnly.Checked)
             {
@@ -340,8 +341,9 @@ namespace WaveViewerWithFilering
         private void update_freq_chart_source()
         {
             double df = fs / nfft;
-            var s = freq_chart.Series[1].Points;
+            var s = freq_chart.Series[0].Points;
             var amps = data[ch].wave_spectrum_amplitude_in_dB();
+            var x = data[ch].freqs;
             int n = nfft / 2;
             if (data[ch].category == "DIS" || data[ch].category == "VEL")
             {
@@ -351,7 +353,25 @@ namespace WaveViewerWithFilering
             for(int i = 1; i <= n; ++i)
             {
                 if(! Double.IsInfinity(amps[i]))
-                    s.AddXY(data[ch].freqs[i], amps[i]);
+                    s.AddXY(x[i], amps[i]);
+            }
+        }
+
+        private void update_freq_chart_filtered()
+        {
+            var s = freq_chart.Series[1].Points;
+            var amps = data[ch].Power(WaveDataSet.State.Filtered).Select(v => 20.0 * Math.Log10(v)).ToArray();
+            var x = data[ch].freqs;
+            int n = nfft / 2;
+            if (data[ch].category == "DIS" || data[ch].category == "VEL")
+            {
+                n -= 1;
+            }
+            s.Clear();
+            for (int i = 1; i <= n; ++i)
+            {
+                if (!Double.IsInfinity(amps[i]))
+                    s.AddXY(x[i], amps[i]);
             }
         }
 
@@ -361,7 +381,7 @@ namespace WaveViewerWithFilering
                 return;
             gain_id = data[ch].gain_id;
 
-            var s = this.freq_chart.Series[0].Points;
+            var s = this.freq_chart.Series[2].Points;
             var gains = data[ch].gains.Take(tap + 1).ToArray();
 
             s.Clear();
@@ -1049,6 +1069,18 @@ namespace WaveViewerWithFilering
                 tgt.data_start += 1;
                 tgt.data_start = curr.data_start;
                 tgt.update();
+            }
+        }
+
+        private void dataGridView1_Validated(object sender, EventArgs e)
+        {
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    item.notch = this.notchFilterInfo.Notches;
+                }
+                CheckUpdate();
             }
         }
 

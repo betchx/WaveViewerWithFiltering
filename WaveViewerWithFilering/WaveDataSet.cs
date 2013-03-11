@@ -32,6 +32,7 @@ namespace WaveViewerWithFilering
             initialized = false;
             data_start_ = 0;
             filter = new FIRFilter();
+            filter.sampling_rate = 1.0 / dt;
             over_sample_ = 1;
             raw_wave_start = -1;
             if (is_acc)
@@ -140,6 +141,7 @@ namespace WaveViewerWithFilering
                 }
             }
         }
+        public NotchFilterInfo.NotchesDataTable notch { get { return filter.notch; } set { filter.notch = value; } }
 
         // Read only properties
         public IEnumerable<double> Data { get { return data; } }

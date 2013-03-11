@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="NotchFilterInfo" targetNamespace="http://tempuri.org/NotchFilterInfo.xsd" xmlns:mstns="http://tempuri.org/NotchFilterInfo.xsd" xmlns="http://tempuri.org/NotchFilterInfo.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="NotchFilterInfo" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="NotchFilterInfo" msprop:Generator_UserDSName="NotchFilterInfo">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Notches" msprop:Generator_TableClassName="NotchesDataTable" msprop:Generator_TableVarName="tableNotches" msprop:Generator_TablePropName="Notches" msprop:Generator_RowDeletingName="NotchesRowDeleting" msprop:Generator_UserTableName="Notches" msprop:Generator_RowChangingName="NotchesRowChanging" msprop:Generator_RowEvHandlerName="NotchesRowChangeEventHandler" msprop:Generator_RowDeletedName="NotchesRowDeleted" msprop:Generator_RowEvArgName="NotchesRowChangeEvent" msprop:Generator_RowChangedName="NotchesRowChanged" msprop:Generator_RowClassName="NotchesRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Frequency" msprop:Generator_ColumnVarNameInTable="columnFrequency" msprop:Generator_ColumnPropNameInRow="Frequency" msprop:Generator_ColumnPropNameInTable="FrequencyColumn" msprop:Generator_UserColumnName="Frequency" type="xs:double" minOccurs="0" />
+              <xs:element name="Gain" msprop:Generator_ColumnVarNameInTable="columnGain" msprop:Generator_ColumnPropNameInRow="Gain" msprop:Generator_ColumnPropNameInTable="GainColumn" msprop:Generator_UserColumnName="Gain" type="xs:double" default="0" />
+              <xs:element name="Band" msprop:Generator_ColumnVarNameInTable="columnBand" msprop:Generator_ColumnPropNameInRow="Band" msprop:Generator_ColumnPropNameInTable="BandColumn" msprop:Generator_UserColumnName="Band" type="xs:double" default="0" minOccurs="0" />
+              <xs:element name="Enable" msprop:Generator_ColumnVarNameInTable="columnEnable" msprop:Generator_ColumnPropNameInRow="Enable" msprop:Generator_ColumnPropNameInTable="EnableColumn" msprop:Generator_UserColumnName="Enable" type="xs:boolean" default="false" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
