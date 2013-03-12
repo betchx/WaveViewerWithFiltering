@@ -313,7 +313,6 @@ namespace WaveViewerWithFilering
         private WaveData factors;     // expanded filter data
         private WaveData ans;         // filtered wave (iDFT of sp_ans)
         private WaveData over;
-        private double base_line;
         private ComplexArray omega;
         private HannWindow hann;
         private int raw_wave_start;
@@ -399,7 +398,7 @@ namespace WaveViewerWithFilering
             xvalues = Enumerable.Range(0, num_disp).Select(i => (i + data_start_) * dt).ToArray();
 
             int n_start = data_start_ - tap * 2;
-            var base_wave = data.Skip(n_start).Take(num_disp);
+            var base_wave = data.Skip(n_start).Take(num_disp+4*tap);
 
             if (DisableBaselineShift)
             {
@@ -408,14 +407,16 @@ namespace WaveViewerWithFilering
             else
             {
                 // take with basiline adjustment
-                base_line = base_wave.Average();
+                double base_line = base_wave.Take(2 * tap).Average() / 2.0 
+                    + base_wave.Skip(base_wave.Count() - 2 * tap).Take(2 * tap).Average() / 2;
                 var range = base_wave.Max() - base_wave.Min();
                 var delta = range / 1e6;
 
                 for (int i = 0; i < 20; i++)
                 {
-                    take_raw_wave_with_baseline();
-                    var error = extracted_raw_wave.Average();
+                    take_raw_wave_with_baseline(base_line);
+                    var error = extracted_raw_wave.Skip(tap).Take(tap).Average()/2+
+                        extracted_raw_wave.Skip(2*tap).Skip(num_disp).Take(tap).Average()/2;
                     if (Math.Abs(error) < delta)
                         break;
                     base_line += error * 0.75; //update
@@ -429,7 +430,7 @@ namespace WaveViewerWithFilering
             return true;
         }
 
-        private void take_raw_wave_with_baseline()
+        private void take_raw_wave_with_baseline(double base_line)
         {
             int tap = filter.tap;
             int n_start = data_start - tap * 2;
