@@ -145,7 +145,9 @@ namespace WaveViewerWithFilering
             if (wavefile == null)
                 return;
 
-            System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
+            data[ch].update(); // for debug
+            //System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
+            data.AsParallel().ForAll(d => d.update());
 
             update_wave_chart();
             update_filter_chart();
