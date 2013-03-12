@@ -35,10 +35,29 @@ namespace WaveViewerWithFilering
             gain_id = 0u;
             source_id = 0u;
             over_id = 0u;
+            peak_chart_Primary_max.Tag = peak_chart.ChartAreas[0].AxisY;
+            peak_chart_Primary_min.Tag = peak_chart.ChartAreas[0].AxisY;
+            peak_chart_Secondary_max.Tag = peak_chart.ChartAreas[0].AxisY2;
+            peak_chart_Secondary_min.Tag = peak_chart.ChartAreas[0].AxisY2;
+            wave_chart_max.Tag = wave_chart.ChartAreas[0].AxisY;
+            wave_chart_min.Tag = wave_chart.ChartAreas[0].AxisY;
         }
 
 
         #region Internal Use
+        #region InternalStruct
+        private struct RangePair
+        {
+            public double max;
+            public double min;
+        }
+        private struct AxisRanges
+        {
+            public RangePair wave;
+            public RangePair peak_P;
+            public RangePair peak_a;
+        }
+        #endregion
         #region Field
         List<WaveDataSet> data;
         int ch;
@@ -63,6 +82,7 @@ namespace WaveViewerWithFilering
         private uint factor_id;
         private uint gain_id;
         private double[] tap_freqs;
+        AxisRanges[] axes_ranges;
         #endregion
         #region Properties
         private int nfft { get { return data[ch].nfft; } }
@@ -614,6 +634,13 @@ namespace WaveViewerWithFilering
 
             channel_track.Value = 0;
             channel_track.Maximum = wavefile.cols - 1;
+            axes_ranges = new AxisRanges[wavefile.cols];
+            for(int i = 0; i < wavefile.cols; i++)
+            {
+                axes_ranges[i].wave.max = axes_ranges[i].wave.min = double.NaN;
+                axes_ranges[i].peak_P.max = axes_ranges[i].peak_P.min = double.NaN;
+                axes_ranges[i].peak_a.max = axes_ranges[i].peak_a.min = double.NaN;
+            }
 
             update_tap_info();
 
@@ -791,6 +818,12 @@ namespace WaveViewerWithFilering
         private void channel_track_Scroll(object sender, EventArgs e)
         {
             channel_change();
+            wave_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].wave.max;
+            wave_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].wave.min;
+            peak_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].peak_P.max;
+            peak_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].peak_P.min;
+            peak_chart.ChartAreas[0].AxisY2.Maximum = axes_ranges[ch].peak_a.max;
+            peak_chart.ChartAreas[0].AxisY2.Minimum = axes_ranges[ch].peak_a.min;
             CheckUpdate();
         }
 
@@ -1086,6 +1119,66 @@ namespace WaveViewerWithFilering
                 }
                 CheckUpdate();
             }
+        }
+
+        private void chart_range_enter(object o_sender, EventArgs e)
+        {
+            TextBox sender = (TextBox)o_sender;
+            sender.Width = 80;
+
+            var ax = (System.Windows.Forms.DataVisualization.Charting.Axis)sender.Tag;
+            if (sender.Name.Contains("max"))
+            {
+                sender.Text = ax.Maximum.ToString();
+            }
+            else
+            {
+                sender.Text = ax.Minimum.ToString();
+            }
+
+        }
+
+        private void chart_range_changed(object o_sender, EventArgs e)
+        {
+            TextBox sender = (TextBox)o_sender;
+            var ax = (System.Windows.Forms.DataVisualization.Charting.Axis)sender.Tag;
+            double val;
+            if (sender.Text == "")
+            {
+                if (sender.Width == 20)
+                    return;
+                if (sender.Name.Contains("max"))
+                    ax.Maximum = double.NaN;
+                else
+                    ax.Minimum = double.NaN;
+            }
+            else if (double.TryParse(sender.Text, out val))
+            {
+                if (sender.Name.Contains("max"))
+                {
+                    ax.Maximum = val;
+                }
+                else
+                {
+                    ax.Minimum = val;
+                }
+            }
+        }
+        private void chart_range_leave(object  o_sender, EventArgs e)
+        {
+            TextBox sender = (TextBox)o_sender;
+            sender.Width = 20;
+            sender.Text = "";
+        }
+
+        private void channel_track_Enter(object sender, EventArgs e)
+        {
+            axes_ranges[ch].wave.max = wave_chart.ChartAreas[0].AxisY.Maximum;
+            axes_ranges[ch].wave.min = wave_chart.ChartAreas[0].AxisY.Minimum;
+            axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
+            axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
+            axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
+            axes_ranges[ch].peak_a.min = peak_chart.ChartAreas[0].AxisY2.Minimum;
         }
 
     }
