@@ -245,7 +245,8 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_source()
         {
-            if (! force_chart_update && source_id == data[ch].source_id)
+            data[ch].update();
+            if (!force_chart_update && source_id == data[ch].source_id)
                 return;
 
             var s = wave_chart.Series[0].Points;
