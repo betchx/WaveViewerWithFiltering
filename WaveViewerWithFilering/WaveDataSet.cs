@@ -407,20 +407,27 @@ namespace WaveViewerWithFilering
             else
             {
                 // take with basiline adjustment
-                double base_line = base_wave.Take(2 * tap).Average() / 2.0 
-                    + base_wave.Skip(base_wave.Count() - 2 * tap).Take(2 * tap).Average() / 2;
-                var range = base_wave.Max() - base_wave.Min();
-                var delta = range / 1e6;
+                //double base_line = base_wave.Take(2 * tap).Average() / 2.0 
+                //    + base_wave.Skip(base_wave.Count() - 2 * tap).Take(2 * tap).Average() / 2;
 
-                for (int i = 0; i < 20; i++)
-                {
-                    take_raw_wave_with_baseline(base_line);
-                    var error = extracted_raw_wave.Skip(tap).Take(tap).Average()/2+
-                        extracted_raw_wave.Skip(2*tap).Skip(num_disp).Take(tap).Average()/2;
-                    if (Math.Abs(error) < delta)
-                        break;
-                    base_line += error * 0.75; //update
-                }
+                // determine baseline as the most frequent value
+                double base_line = base_wave.GroupBy(x => (int)Math.Round(x * 10))
+                    .Select((a) => new Tuple<int, double>(a.Count(), a.Key * 0.1))
+                    .OrderByDescending((a) => a.Item1)
+                    .First().Item2;
+                take_raw_wave_with_baseline(base_line);
+                //var range = base_wave.Max() - base_wave.Min();
+                //var delta = range / 1e6;
+
+                //for (int i = 0; i < 20; i++)
+                //{
+                //    take_raw_wave_with_baseline(base_line);
+                //    var error = extracted_raw_wave.Skip(tap).Take(tap).Average()/2+
+                //        extracted_raw_wave.Skip(2*tap).Skip(num_disp).Take(tap).Average()/2;
+                //    if (Math.Abs(error) < delta)
+                //        break;
+                //    base_line += error * 0.75; //update
+                //}
                 raw_wave.Wave = extracted_raw_wave;
             }
             NotifyPropertyChanged("raw_wave");
