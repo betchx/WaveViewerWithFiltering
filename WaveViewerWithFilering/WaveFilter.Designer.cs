@@ -60,7 +60,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.auto_update = new System.Windows.Forms.CheckBox();
             this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.WaveChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.waveChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveDisplayedMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.sourceWaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveDisplayedFilteredWave = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,16 +180,25 @@
             this.peak_chart_Primary_min = new System.Windows.Forms.TextBox();
             this.peak_chart_Secondary_max = new System.Windows.Forms.TextBox();
             this.peak_chart_Secondary_min = new System.Windows.Forms.TextBox();
+            this.wave_chart_max = new System.Windows.Forms.TextBox();
+            this.wave_chart_min = new System.Windows.Forms.TextBox();
+            this.AbsoluteTime = new System.Windows.Forms.CheckBox();
             this.frequencyDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gainDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Band = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notchesBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.notchFilterInfo = new WaveViewerWithFilering.NotchFilterInfo();
-            this.wave_chart_max = new System.Windows.Forms.TextBox();
-            this.wave_chart_min = new System.Windows.Forms.TextBox();
-            this.AbsoluteTime = new System.Windows.Forms.CheckBox();
+            this.WaveChartMiscMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyRangeToAllCh = new System.Windows.Forms.ToolStripMenuItem();
+            this.peakChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.savePeakSubMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveP1Peaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveP2Peaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveYaPeaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveZaPeaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllPeaks = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
-            this.WaveChartMenu.SuspendLayout();
+            this.waveChartMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lower_fc_track)).BeginInit();
@@ -203,6 +212,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchesBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchFilterInfo)).BeginInit();
+            this.peakChartMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // auto_update
@@ -236,7 +246,7 @@
             chartArea1.Position.X = 5F;
             chartArea1.Position.Y = 3F;
             this.wave_chart.ChartAreas.Add(chartArea1);
-            this.wave_chart.ContextMenuStrip = this.WaveChartMenu;
+            this.wave_chart.ContextMenuStrip = this.waveChartMenu;
             legend1.DockedToChartArea = "ChartArea1";
             legend1.IsDockedInsideChartArea = false;
             legend1.IsEquallySpacedItems = true;
@@ -270,16 +280,16 @@
             this.wave_chart.TabStop = false;
             this.wave_chart.Text = "chart1";
             // 
-            // WaveChartMenu
+            // waveChartMenu
             // 
-            this.WaveChartMenu.Enabled = false;
-            this.WaveChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.waveChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveDisplayedMenu,
             this.SaveAllDisplayedMenu,
             this.SaveWholeCurrent,
-            this.SaveAllWave});
-            this.WaveChartMenu.Name = "WaveChartMenu";
-            this.WaveChartMenu.Size = new System.Drawing.Size(229, 92);
+            this.SaveAllWave,
+            this.WaveChartMiscMenu});
+            this.waveChartMenu.Name = "WaveChartMenu";
+            this.waveChartMenu.Size = new System.Drawing.Size(229, 114);
             // 
             // saveDisplayedMenu
             // 
@@ -1235,6 +1245,7 @@
             chartArea4.Position.X = 5F;
             chartArea4.Position.Y = 3F;
             this.peak_chart.ChartAreas.Add(chartArea4);
+            this.peak_chart.ContextMenuStrip = this.peakChartMenu;
             legend4.Name = "Legend1";
             this.peak_chart.Legends.Add(legend4);
             this.peak_chart.Location = new System.Drawing.Point(12, 616);
@@ -1613,37 +1624,6 @@
             this.peak_chart_Secondary_min.Enter += new System.EventHandler(this.chart_range_enter);
             this.peak_chart_Secondary_min.Leave += new System.EventHandler(this.chart_range_leave);
             // 
-            // frequencyDataGridViewTextBoxColumn
-            // 
-            this.frequencyDataGridViewTextBoxColumn.DataPropertyName = "Frequency";
-            this.frequencyDataGridViewTextBoxColumn.HeaderText = "Frequency";
-            this.frequencyDataGridViewTextBoxColumn.Name = "frequencyDataGridViewTextBoxColumn";
-            this.frequencyDataGridViewTextBoxColumn.Width = 60;
-            // 
-            // gainDataGridViewTextBoxColumn
-            // 
-            this.gainDataGridViewTextBoxColumn.DataPropertyName = "Gain";
-            this.gainDataGridViewTextBoxColumn.HeaderText = "Gain";
-            this.gainDataGridViewTextBoxColumn.Name = "gainDataGridViewTextBoxColumn";
-            this.gainDataGridViewTextBoxColumn.Width = 60;
-            // 
-            // Band
-            // 
-            this.Band.DataPropertyName = "Band";
-            this.Band.HeaderText = "Band";
-            this.Band.Name = "Band";
-            this.Band.Width = 60;
-            // 
-            // notchesBindingSource1
-            // 
-            this.notchesBindingSource1.DataMember = "Notches";
-            this.notchesBindingSource1.DataSource = this.notchFilterInfo;
-            // 
-            // notchFilterInfo
-            // 
-            this.notchFilterInfo.DataSetName = "NotchFilterInfo";
-            this.notchFilterInfo.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
             // wave_chart_max
             // 
             this.wave_chart_max.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -1679,6 +1659,106 @@
             this.AbsoluteTime.Text = "Une absolute time for X axis";
             this.AbsoluteTime.UseVisualStyleBackColor = true;
             this.AbsoluteTime.CheckedChanged += new System.EventHandler(this.AbsoluteTime_CheckedChanged);
+            // 
+            // frequencyDataGridViewTextBoxColumn
+            // 
+            this.frequencyDataGridViewTextBoxColumn.DataPropertyName = "Frequency";
+            this.frequencyDataGridViewTextBoxColumn.HeaderText = "Frequency";
+            this.frequencyDataGridViewTextBoxColumn.Name = "frequencyDataGridViewTextBoxColumn";
+            this.frequencyDataGridViewTextBoxColumn.Width = 60;
+            // 
+            // gainDataGridViewTextBoxColumn
+            // 
+            this.gainDataGridViewTextBoxColumn.DataPropertyName = "Gain";
+            this.gainDataGridViewTextBoxColumn.HeaderText = "Gain";
+            this.gainDataGridViewTextBoxColumn.Name = "gainDataGridViewTextBoxColumn";
+            this.gainDataGridViewTextBoxColumn.Width = 60;
+            // 
+            // Band
+            // 
+            this.Band.DataPropertyName = "Band";
+            this.Band.HeaderText = "Band";
+            this.Band.Name = "Band";
+            this.Band.Width = 60;
+            // 
+            // notchesBindingSource1
+            // 
+            this.notchesBindingSource1.DataMember = "Notches";
+            this.notchesBindingSource1.DataSource = this.notchFilterInfo;
+            // 
+            // notchFilterInfo
+            // 
+            this.notchFilterInfo.DataSetName = "NotchFilterInfo";
+            this.notchFilterInfo.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // WaveChartMiscMenu
+            // 
+            this.WaveChartMiscMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CopyRangeToAllCh});
+            this.WaveChartMiscMenu.Name = "WaveChartMiscMenu";
+            this.WaveChartMiscMenu.Size = new System.Drawing.Size(228, 22);
+            this.WaveChartMiscMenu.Text = "Misc";
+            // 
+            // CopyRangeToAllCh
+            // 
+            this.CopyRangeToAllCh.Name = "CopyRangeToAllCh";
+            this.CopyRangeToAllCh.Size = new System.Drawing.Size(257, 22);
+            this.CopyRangeToAllCh.Text = "Copy Y axis range to other channels";
+            this.CopyRangeToAllCh.Click += new System.EventHandler(this.CopyRangeToAllCh_Click);
+            // 
+            // peakChartMenu
+            // 
+            this.peakChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.savePeakSubMenu,
+            this.saveAllPeaks});
+            this.peakChartMenu.Name = "peakChartMenu";
+            this.peakChartMenu.Size = new System.Drawing.Size(149, 48);
+            // 
+            // savePeakSubMenu
+            // 
+            this.savePeakSubMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveP1Peaks,
+            this.saveP2Peaks,
+            this.saveYaPeaks,
+            this.saveZaPeaks});
+            this.savePeakSubMenu.Name = "savePeakSubMenu";
+            this.savePeakSubMenu.Size = new System.Drawing.Size(148, 22);
+            this.savePeakSubMenu.Text = "Save peak of";
+            // 
+            // saveP1Peaks
+            // 
+            this.saveP1Peaks.Name = "saveP1Peaks";
+            this.saveP1Peaks.Size = new System.Drawing.Size(152, 22);
+            this.saveP1Peaks.Text = "P1";
+            this.saveP1Peaks.Click += new System.EventHandler(this.saveP1Peaks_Click);
+            // 
+            // saveP2Peaks
+            // 
+            this.saveP2Peaks.Name = "saveP2Peaks";
+            this.saveP2Peaks.Size = new System.Drawing.Size(152, 22);
+            this.saveP2Peaks.Text = "P2";
+            this.saveP2Peaks.Click += new System.EventHandler(this.saveP2Peaks_Click);
+            // 
+            // saveYaPeaks
+            // 
+            this.saveYaPeaks.Name = "saveYaPeaks";
+            this.saveYaPeaks.Size = new System.Drawing.Size(152, 22);
+            this.saveYaPeaks.Text = "Ya";
+            this.saveYaPeaks.Click += new System.EventHandler(this.saveYaPeaks_Click);
+            // 
+            // saveZaPeaks
+            // 
+            this.saveZaPeaks.Name = "saveZaPeaks";
+            this.saveZaPeaks.Size = new System.Drawing.Size(152, 22);
+            this.saveZaPeaks.Text = "Za";
+            this.saveZaPeaks.Click += new System.EventHandler(this.saveZaPeaks_Click);
+            // 
+            // saveAllPeaks
+            // 
+            this.saveAllPeaks.Name = "saveAllPeaks";
+            this.saveAllPeaks.Size = new System.Drawing.Size(148, 22);
+            this.saveAllPeaks.Text = "Save All Peaks";
+            this.saveAllPeaks.Click += new System.EventHandler(this.saveAllPeaks_Click);
             // 
             // WaveFilter
             // 
@@ -1757,7 +1837,7 @@
             this.Name = "WaveFilter";
             this.Text = "WaveFilter";
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).EndInit();
-            this.WaveChartMenu.ResumeLayout(false);
+            this.waveChartMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.upper_fc_track)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lower_fc_track)).EndInit();
@@ -1773,6 +1853,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchesBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchFilterInfo)).EndInit();
+            this.peakChartMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1874,7 +1955,7 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart wave_fft_chart;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.TextBox DataStart;
-        private System.Windows.Forms.ContextMenuStrip WaveChartMenu;
+        private System.Windows.Forms.ContextMenuStrip waveChartMenu;
         private System.Windows.Forms.ToolStripMenuItem saveDisplayedMenu;
         private System.Windows.Forms.ToolStripMenuItem SaveDisplayedFilteredWave;
         private System.Windows.Forms.ToolStripMenuItem SaveDisplayedOverWave;
@@ -1910,6 +1991,15 @@
         private System.Windows.Forms.TextBox wave_chart_max;
         private System.Windows.Forms.TextBox wave_chart_min;
         private System.Windows.Forms.CheckBox AbsoluteTime;
+        private System.Windows.Forms.ToolStripMenuItem WaveChartMiscMenu;
+        private System.Windows.Forms.ToolStripMenuItem CopyRangeToAllCh;
+        private System.Windows.Forms.ContextMenuStrip peakChartMenu;
+        private System.Windows.Forms.ToolStripMenuItem savePeakSubMenu;
+        private System.Windows.Forms.ToolStripMenuItem saveP1Peaks;
+        private System.Windows.Forms.ToolStripMenuItem saveP2Peaks;
+        private System.Windows.Forms.ToolStripMenuItem saveYaPeaks;
+        private System.Windows.Forms.ToolStripMenuItem saveZaPeaks;
+        private System.Windows.Forms.ToolStripMenuItem saveAllPeaks;
 
     }
 }

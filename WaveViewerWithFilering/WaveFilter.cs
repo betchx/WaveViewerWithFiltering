@@ -238,7 +238,7 @@ namespace WaveViewerWithFilering
             update_wave_chart_oversampled();
             wave_chart.ChartAreas[0].RecalculateAxesScale();
             wave_chart.Invalidate();
-            WaveChartMenu.Enabled = true;
+            waveChartMenu.Enabled = true;
             saveDisplayedMenu.Enabled = true;
             SaveAllDisplayedMenu.Enabled = true;
         }
@@ -855,6 +855,69 @@ namespace WaveViewerWithFilering
             }
         }
 
+        private void save_all_peaks()
+        {
+            if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                return;
+
+            using (var stream = saveFileDialogCSV.OpenFile())
+            {
+                using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
+                {
+                    writer.WriteLine("Original File, {0}", file_path.Text);
+                    writer.WriteLine("Source Data Start, {0}", data_start.Value);
+                    writer.WriteLine("Source Data Length, {0}", data_length.Text);
+                    writer.WriteLine("Sampling Rate of Original Data, {0}", fs);
+                    var chs = targets.Select(t => int.Parse(t.Text));
+                    writer.WriteLine("Ch, {0}", string.Join(",", chs));
+                    writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i => wavefile.name(i))));
+                    writer.WriteLine("Comment of channel, {0}", string.Join(",", chs.Select(i => wavefile.comment(i))));
+                    writer.WriteLine("Wave Type, Peaks");
+                    var peak_counts = peak_chart.Series.Select(s => s.Points.Count).ToArray();
+                    writer.WriteLine("Number of Peaks, {0}", string.Join(",",peak_counts));
+                    writer.WriteLine("");
+                    writer.WriteLine("time, P1, time, P2, time, Ya, time, Za");
+                    var len = peak_counts.Max();
+                    var res = peak_counts.Select((n, i) =>
+                        peak_chart.Series[i].Points
+                            .Select(p => string.Format("{0},{1}", p.XValue, p.YValues[0]))
+                            .Concat(Enumerable.Repeat(",", len - n)).ToArray());
+                    for (int i = 0; i < peak_counts.Max(); i++)
+                    {
+                        writer.WriteLine("{0}", string.Join(",", res.Select(a => a[i])));
+                    }
+                }
+            }
+        }
+
+        private void save_peaks(int idx)
+        {
+            if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                return;
+            using (var stream = saveFileDialogCSV.OpenFile())
+            {
+                using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
+                {
+                    writer.WriteLine("Original File, {0}", file_path.Text);
+                    writer.WriteLine("Source Data Start, {0}", data_start.Value);
+                    writer.WriteLine("Source Data Length, {0}", data_length.Text);
+                    writer.WriteLine("Sampling Rate of Original Data, {0}", fs);
+                    var target_ch = int.Parse(targets[idx].Text);
+                    writer.WriteLine("Ch, {0}", targets[idx].Text);
+                    writer.WriteLine("Channel name, {0}", wavefile.name(target_ch));
+                    writer.WriteLine("Comment of channel, {0}", wavefile.comment(target_ch));
+                    writer.WriteLine("Wave Type, Peaks");
+                    writer.WriteLine("Number of Peaks, {0}", peak_chart.Series[idx].Points.Count);
+                    writer.WriteLine("");
+                    writer.WriteLine("time, {0}", targets[idx].Name.Substring(3));
+                    foreach(var item in peak_chart.Series[idx].Points)
+                    {
+                        writer.WriteLine("{0},{1}",item.XValue, item.YValues[0]);
+                    }
+                }
+            }
+        }
+
         #endregion // Operations
         #endregion // PrivateMethods
         #endregion // Internal Use
@@ -1291,6 +1354,42 @@ namespace WaveViewerWithFilering
             wave_chart.ChartAreas[0].RecalculateAxesScale();
             peak_chart.ChartAreas[0].RecalculateAxesScale();
             force_chart_update = false;
+        }
+
+        private void CopyRangeToAllCh_Click(object sender, EventArgs e)
+        {
+            var max = wave_chart.ChartAreas[0].AxisY.Maximum;
+            var min = wave_chart.ChartAreas[0].AxisY.Minimum;
+            for (int i = 0; i < data.Count; i++)
+            {
+                axes_ranges[i].wave.max = max;
+                axes_ranges[i].wave.min = min;
+            }
+        }
+
+        private void saveAllPeaks_Click(object sender, EventArgs e)
+        {
+            save_all_peaks();
+        }
+
+        private void saveP1Peaks_Click(object sender, EventArgs e)
+        {
+            save_peaks(0);
+        }
+
+        private void saveP2Peaks_Click(object sender, EventArgs e)
+        {
+            save_peaks(1);
+        }
+
+        private void saveYaPeaks_Click(object sender, EventArgs e)
+        {
+            save_peaks(2);
+        }
+
+        private void saveZaPeaks_Click(object sender, EventArgs e)
+        {
+            save_peaks(3);
         }
 
     }
