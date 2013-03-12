@@ -1524,7 +1524,7 @@
             this.Enable,
             this.frequencyDataGridViewTextBoxColumn,
             this.gainDataGridViewTextBoxColumn,
-            this.Width});
+            this.Band});
             this.dataGridView1.DataSource = this.notchesBindingSource1;
             this.dataGridView1.Location = new System.Drawing.Point(881, 692);
             this.dataGridView1.Name = "dataGridView1";
@@ -1554,12 +1554,12 @@
             this.gainDataGridViewTextBoxColumn.Name = "gainDataGridViewTextBoxColumn";
             this.gainDataGridViewTextBoxColumn.Width = 60;
             // 
-            // Width
+            // Band
             // 
-            this.Width.DataPropertyName = "Band";
-            this.Width.HeaderText = "Band";
-            this.Width.Name = "Width";
-            this.Width.Width = 60;
+            this.Band.DataPropertyName = "Band";
+            this.Band.HeaderText = "Band";
+            this.Band.Name = "Band";
+            this.Band.Width = 60;
             // 
             // notchesBindingSource1
             // 
@@ -1802,7 +1802,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn frequencyDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn gainDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn Band;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Width;
     }
 }
 
