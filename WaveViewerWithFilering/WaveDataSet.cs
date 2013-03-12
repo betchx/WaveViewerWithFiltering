@@ -25,11 +25,19 @@ namespace WaveViewerWithFilering
             dt = wavefile.dt(ch);
             is_acc = wavefile.name(ch).Contains("_Ya_") ||
                 wavefile.name(ch).Contains("_Za_");
+            
             init();
+
+            foreach (var tag in new string[] {"速度", "キロ程" })
+            {
+                if (wavefile.name(ch).Contains(tag))
+                    DisableBaselineShift = true;
+            }
         }
         private void init()
         {
             initialized = false;
+            DisableBaselineShift = false;
             data_start_ = 0;
             filter = new FIRFilter();
             filter.sampling_rate = 1.0 / dt;
@@ -142,6 +150,7 @@ namespace WaveViewerWithFilering
             }
         }
         public NotchFilterInfo.NotchesDataTable notch { get { return filter.notch; } set { filter.notch = value; } }
+        public bool DisableBaselineShift { get; set; }
 
         // Read only properties
         public IEnumerable<double> Data { get { return data; } }
@@ -391,19 +400,28 @@ namespace WaveViewerWithFilering
 
             int n_start = data_start_ - tap * 2;
             var base_wave = data.Skip(n_start).Take(num_disp);
-            base_line = base_wave.Average();
-            var range = base_wave.Max() - base_wave.Min();
-            var delta = range / 1e6;
 
-            for (int i = 0; i < 20; i++)
+            if (DisableBaselineShift)
             {
-                take_raw_wave_with_baseline();
-                var error = extracted_raw_wave.Average();
-                if (Math.Abs(error) < delta)
-                    break;
-                base_line += error * 0.75; //update
+                raw_wave.Wave = base_wave;
             }
-            raw_wave.Wave = extracted_raw_wave;
+            else
+            {
+                // take with basiline adjustment
+                base_line = base_wave.Average();
+                var range = base_wave.Max() - base_wave.Min();
+                var delta = range / 1e6;
+
+                for (int i = 0; i < 20; i++)
+                {
+                    take_raw_wave_with_baseline();
+                    var error = extracted_raw_wave.Average();
+                    if (Math.Abs(error) < delta)
+                        break;
+                    base_line += error * 0.75; //update
+                }
+                raw_wave.Wave = extracted_raw_wave;
+            }
             NotifyPropertyChanged("raw_wave");
             raw_wave_start = data_start;
             raw_wave_num_disp = num_disp;
