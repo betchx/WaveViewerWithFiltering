@@ -811,6 +811,9 @@ namespace WaveViewerWithFilering
             if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                 return;
 
+            // need to update data start for all channnels
+            System.Threading.Tasks.Parallel.ForEach(data, (d) => { d.data_start = data_start.Value; d.update(); });
+
             using (var stream = saveFileDialogCSV.OpenFile())
             {
                 using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
