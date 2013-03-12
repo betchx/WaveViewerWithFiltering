@@ -33,7 +33,7 @@ namespace WaveFile
         public List<Value> values { get; private set; }
         public bool opened { get; private set; }
 
-        public DateTime Time { get { return time(); } }
+        public DateTime Time { get; private set; }
         public int cols { get { return channel_info.Count; } }
         public int rows { get { return this.length(0); } }
 
@@ -294,6 +294,10 @@ namespace WaveFile
 
             opened = true;
             parse_tags();
+
+            // update time
+            Time = time();
+
             return true;
         }
 
@@ -712,7 +716,8 @@ namespace WaveFile
             public void parse(Tag tag)
             {
                 int n = int.Parse(tag[1]);
-                DateTime origin = new DateTime(1980, 1, 1);
+                //DateTime origin = new DateTime(1980, 1, 1);
+                var origin = parent_.time_;
                 byte[] data = tag.raw;
                 int sz = data.Length / n;
                 for (int i = 0; i < data.Length; i += sz)
@@ -720,8 +725,10 @@ namespace WaveFile
                     int xx = BitConverter.ToInt32(data, i);
                     int len = BitConverter.ToInt32(data, i + 4);
                     double start = BitConverter.ToDouble(data, i + 8);
-                    DateTime start_time = origin.AddSeconds(start);
-                    parent_.events.Add(new Event(len, start_time));
+                    if (start == 0.0)
+                        parent_.events.Add(new Event(len, parent_.time_));
+                    else
+                        parent_.events.Add(new Event(len, origin.AddSeconds(start)));
                 }
             }
         }
