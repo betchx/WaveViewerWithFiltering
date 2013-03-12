@@ -54,8 +54,8 @@ namespace WaveViewerWithFilering
         private struct AxisRanges
         {
             public RangePair wave;
-            public RangePair peak_P;
-            public RangePair peak_a;
+            //public RangePair peak_P;
+            //public RangePair peak_a;
         }
         #endregion
         #region Field
@@ -706,8 +706,8 @@ namespace WaveViewerWithFilering
             {
                 // NaN means automatic
                 axes_ranges[i].wave.max = axes_ranges[i].wave.min = double.NaN;
-                axes_ranges[i].peak_P.max = axes_ranges[i].peak_P.min = double.NaN;
-                axes_ranges[i].peak_a.max = axes_ranges[i].peak_a.min = double.NaN;
+                //axes_ranges[i].peak_P.max = axes_ranges[i].peak_P.min = double.NaN;
+                //axes_ranges[i].peak_a.max = axes_ranges[i].peak_a.min = double.NaN;
             }
 
             update_tap_info();
@@ -891,10 +891,10 @@ namespace WaveViewerWithFilering
             channel_change();
             wave_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].wave.max;
             wave_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].wave.min;
-            peak_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].peak_P.max;
-            peak_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].peak_P.min;
-            peak_chart.ChartAreas[0].AxisY2.Maximum = axes_ranges[ch].peak_a.max;
-            peak_chart.ChartAreas[0].AxisY2.Minimum = axes_ranges[ch].peak_a.min;
+            //peak_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].peak_P.max;
+            //peak_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].peak_P.min;
+            //peak_chart.ChartAreas[0].AxisY2.Maximum = axes_ranges[ch].peak_a.max;
+            //peak_chart.ChartAreas[0].AxisY2.Minimum = axes_ranges[ch].peak_a.min;
             CheckUpdate();
         }
 
@@ -1250,10 +1250,10 @@ namespace WaveViewerWithFilering
             {
                 axes_ranges[ch].wave.max = wave_chart.ChartAreas[0].AxisY.Maximum;
                 axes_ranges[ch].wave.min = wave_chart.ChartAreas[0].AxisY.Minimum;
-                axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
-                axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
-                axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
-                axes_ranges[ch].peak_a.min = peak_chart.ChartAreas[0].AxisY2.Minimum;
+                //axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
+                //axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
+                //axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
+                //axes_ranges[ch].peak_a.min = peak_chart.ChartAreas[0].AxisY2.Minimum;
             }
         }
 
