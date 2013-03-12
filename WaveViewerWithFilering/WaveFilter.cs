@@ -83,6 +83,7 @@ namespace WaveViewerWithFilering
         private uint gain_id;
         private double[] tap_freqs;
         AxisRanges[] axes_ranges;
+        private bool force_chart_update;
         #endregion
         #region Properties
         private int nfft { get { return data[ch].nfft; } }
@@ -199,11 +200,24 @@ namespace WaveViewerWithFilering
                     s.Clear();
 
                     bool add_wave = ch == channel;
-                    foreach (var item in peaks)
+                    if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
                     {
-                        double x = x0 + dx * item.Key;
-                        s.AddXY(x, item.Value);
-                        if (add_wave) wave_peaks.AddXY(x, item.Value);
+                        var origin = wavefile.Time;
+                        foreach (var item in peaks)
+                        {
+                            var x = origin.AddSeconds(x0 + dx * item.Key);
+                            s.AddXY(x, item.Value);
+                            if (add_wave) wave_peaks.AddXY(x, item.Value);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in peaks)
+                        {
+                            double x = x0 + dx * item.Key;
+                            s.AddXY(x, item.Value);
+                            if (add_wave) wave_peaks.AddXY(x, item.Value);
+                        }
                     }
                 }
             }
@@ -231,7 +245,7 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_source()
         {
-            if (source_id == data[ch].source_id)
+            if (! force_chart_update && source_id == data[ch].source_id)
                 return;
 
             var s = wave_chart.Series[0].Points;
@@ -243,10 +257,23 @@ namespace WaveViewerWithFilering
             s.Clear();
             if (hide_source.Checked) return;
             var val = data[ch].source;
-            var x = data[ch].xvalues;
-            for (int i = 0; i < num_disp; i += step)
+            if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
             {
-                s.AddXY(x[i], val[i]);
+                var origin = wavefile.Time;
+                var x = data[ch].xvalues.Select(v => origin.AddSeconds(v)).ToArray();
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
+            }
+            else
+            {
+                var x = data[ch].xvalues;
+                
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
             }
             double max = val.Max();
             double min = val.Min();
@@ -259,7 +286,7 @@ namespace WaveViewerWithFilering
 
         private void update_wave_chart_filtered()
         {
-            if (filtered_id == data[ch].filtered_id)
+            if (!force_chart_update && filtered_id == data[ch].filtered_id)
                 return;
             filtered_id = data[ch].filtered_id;
 
@@ -268,10 +295,24 @@ namespace WaveViewerWithFilering
             if (hide_result.Checked || data[ch].xvalues == null)
                 return;
             var val = data[ch].filtered;
-            var x = data[ch].xvalues;
-            for (int i = 0; i < num_disp; i += step)
+            if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
             {
-                s.AddXY(x[i], val[i]);
+                var origin = wavefile.Time;
+                wave_chart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+                var x = data[ch].xvalues.Select(v => origin.AddSeconds(v)).ToArray();
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
+            }
+            else
+            {
+                var x = data[ch].xvalues;
+                wave_chart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
             }
             double max = val.Max();
             double min = val.Min();
@@ -285,7 +326,7 @@ namespace WaveViewerWithFilering
         private void update_wave_chart_oversampled()
         {
             // skip update if id does not changed
-            if (over_id == data[ch].over_id)
+            if (!force_chart_update && over_id == data[ch].over_id)
                 return;
 
             over_id = data[ch].over_id;
@@ -299,11 +340,25 @@ namespace WaveViewerWithFilering
             double x0 = data[ch].x0;
             double dx = dt / over_sampling;
             var val = data[ch].over_sampled;
-            var x = Enumerable.Range(0, val.Length).Select(i => x0 + dx * i).ToArray();
 
-            for (int i = 0; i < val.Length; i++)
+            if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
             {
-                s.AddXY(x[i], val[i]);
+                var origin = wavefile.Time;
+                wave_chart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+                var x = Enumerable.Range(0, val.Length).Select(i => origin.AddSeconds((x0 + dx * i))).ToArray();
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
+            }
+            else
+            {
+                var x = Enumerable.Range(0, val.Length).Select(i => x0 + dx * i).ToArray();
+                wave_chart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+                for (int i = 0; i < num_disp; i += step)
+                {
+                    s.AddXY(x[i], val[i]);
+                }
             }
             double max = val.Max();
             double min = val.Min();
@@ -566,7 +621,11 @@ namespace WaveViewerWithFilering
             if (ext == ".DAT")
             {
                 if (Famos.is_famos(file_name))
+                {
                     wavefile = new Famos(file_name);
+                    if (wavefile != null)
+                        AbsoluteTime.Enabled = true;
+                }
                 else
                 {
                     //throw new NotImplementedException("Only famos format file is supported.");
@@ -577,9 +636,17 @@ namespace WaveViewerWithFilering
             if (ext == ".CSV")
             {
                 if (DelimFile.IsKyowaCsv(file_name))
+                {
                     wavefile = DelimFile.KyowaCsv(file_name);
+                    if (wavefile != null)
+                        AbsoluteTime.Enabled = true;
+                }
                 else
+                {
                     wavefile = DelimFile.GeneralCsv(file_name);
+                    if(wavefile != null)
+                        AbsoluteTime.Enabled = false;
+                }
             }
 
             if (wavefile == null)
@@ -637,6 +704,7 @@ namespace WaveViewerWithFilering
             axes_ranges = new AxisRanges[wavefile.cols];
             for(int i = 0; i < wavefile.cols; i++)
             {
+                // NaN means automatic
                 axes_ranges[i].wave.max = axes_ranges[i].wave.min = double.NaN;
                 axes_ranges[i].peak_P.max = axes_ranges[i].peak_P.min = double.NaN;
                 axes_ranges[i].peak_a.max = axes_ranges[i].peak_a.min = double.NaN;
@@ -1156,11 +1224,13 @@ namespace WaveViewerWithFilering
             {
                 if (sender.Name.Contains("max"))
                 {
-                    ax.Maximum = val;
+                    if(val > ax.Minimum )
+                        ax.Maximum = val;
                 }
                 else
                 {
-                    ax.Minimum = val;
+                    if( val < ax.Maximum)
+                        ax.Minimum = val;
                 }
             }
         }
@@ -1173,12 +1243,51 @@ namespace WaveViewerWithFilering
 
         private void channel_track_Enter(object sender, EventArgs e)
         {
-            axes_ranges[ch].wave.max = wave_chart.ChartAreas[0].AxisY.Maximum;
-            axes_ranges[ch].wave.min = wave_chart.ChartAreas[0].AxisY.Minimum;
-            axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
-            axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
-            axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
-            axes_ranges[ch].peak_a.min = peak_chart.ChartAreas[0].AxisY2.Minimum;
+            if (axes_ranges != null)
+            {
+                axes_ranges[ch].wave.max = wave_chart.ChartAreas[0].AxisY.Maximum;
+                axes_ranges[ch].wave.min = wave_chart.ChartAreas[0].AxisY.Minimum;
+                axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
+                axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
+                axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
+                axes_ranges[ch].peak_a.min = peak_chart.ChartAreas[0].AxisY2.Minimum;
+            }
+        }
+
+        private void AbsoluteTime_CheckedChanged(object sender, EventArgs e)
+        {
+
+            System.Windows.Forms.DataVisualization.Charting.ChartValueType val 
+                = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            if (AbsoluteTime.Checked)
+                val = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+            foreach (var item in peak_chart.Series)
+            {
+                item.XValueType = val;
+            }
+            foreach (var item in wave_chart.Series)
+            {
+                item.XValueType = val;
+            }
+            if (AbsoluteTime.Checked)
+            {
+                peak_chart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
+                wave_chart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
+            }
+            else
+            {
+                peak_chart.ChartAreas[0].AxisX.LabelStyle.Format = "g";
+                var ax = wave_chart.ChartAreas[0].AxisX;
+                ax.LabelStyle.Format = "g";
+                ax.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.FixedCount;
+                ax.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
+            }
+            force_chart_update = true;
+            update_wave_chart();
+            update_peak_chart();
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
+            peak_chart.ChartAreas[0].RecalculateAxesScale();
+            force_chart_update = false;
         }
 
     }
