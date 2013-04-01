@@ -583,11 +583,11 @@
             // 
             this.number_of_tap.Location = new System.Drawing.Point(370, 73);
             this.number_of_tap.Name = "number_of_tap";
-            this.number_of_tap.ReadOnly = true;
             this.number_of_tap.Size = new System.Drawing.Size(58, 19);
             this.number_of_tap.TabIndex = 5;
             this.number_of_tap.Text = "150";
             this.number_of_tap.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.number_of_tap.Validated += new System.EventHandler(this.number_of_tap_Validated);
             // 
             // label7
             // 

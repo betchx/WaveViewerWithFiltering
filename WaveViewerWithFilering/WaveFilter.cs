@@ -1405,6 +1405,30 @@ namespace WaveViewerWithFilering
             save_peaks(3);
         }
 
+        private void number_of_tap_Validated(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(number_of_tap.Text, out val))
+            {
+                if (val > 0)
+                {
+                    bool domax = false;
+                    if (upper_fc_track.Value == upper_fc_track.Maximum)
+                        domax = true;
+                    if (val > tap_track.Maximum)
+                    {
+                        tap_track.Maximum = val;
+                        upper_fc_track.Maximum = val;
+                        lower_fc_track.Maximum = val;
+                    }
+                    tap_track.Value = val;
+                    update_tap_info(); // update
+                    if (domax)
+                        upper_fc_track.Value = upper_fc_track.Maximum;
+                }
+            }
+        }
+
         private void resetAxes_Click(object sender, EventArgs e)
         {
             freq_chart.ChartAreas[0].RecalculateAxesScale();
