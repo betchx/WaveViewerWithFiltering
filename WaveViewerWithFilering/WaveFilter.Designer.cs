@@ -76,6 +76,8 @@
             this.SaveAllWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveAllFilteredWave = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveAllOversampledWave = new System.Windows.Forms.ToolStripMenuItem();
+            this.WaveChartMiscMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyRangeToAllCh = new System.Windows.Forms.ToolStripMenuItem();
             this.data_start = new System.Windows.Forms.HScrollBar();
             this.update = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -151,6 +153,13 @@
             this.label24 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.peak_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.peakChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.savePeakSubMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveP1Peaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveP2Peaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveYaPeaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveZaPeaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllPeaks = new System.Windows.Forms.ToolStripMenuItem();
             this.upper_val = new System.Windows.Forms.TextBox();
             this.lower_val = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -183,20 +192,24 @@
             this.wave_chart_max = new System.Windows.Forms.TextBox();
             this.wave_chart_min = new System.Windows.Forms.TextBox();
             this.AbsoluteTime = new System.Windows.Forms.CheckBox();
+            this.freq_chart_X_max = new System.Windows.Forms.TextBox();
+            this.freq_chart_X_min = new System.Windows.Forms.TextBox();
+            this.freq_chart_Y_primary_min = new System.Windows.Forms.TextBox();
+            this.freq_chart_Y_primary_max = new System.Windows.Forms.TextBox();
+            this.freq_chart_Y_secondary_min = new System.Windows.Forms.TextBox();
+            this.freq_chart_Y_secondary_max = new System.Windows.Forms.TextBox();
             this.frequencyDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gainDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Band = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.notchesBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.notchFilterInfo = new WaveViewerWithFilering.NotchFilterInfo();
-            this.WaveChartMiscMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.CopyRangeToAllCh = new System.Windows.Forms.ToolStripMenuItem();
-            this.peakChartMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.savePeakSubMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveP1Peaks = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveP2Peaks = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveYaPeaks = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveZaPeaks = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAllPeaks = new System.Windows.Forms.ToolStripMenuItem();
+            this.freq_chart_menu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetAxes = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
             this.waveChartMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tap_track)).BeginInit();
@@ -208,11 +221,12 @@
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.peak_chart)).BeginInit();
+            this.peakChartMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wave_fft_chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchesBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchFilterInfo)).BeginInit();
-            this.peakChartMenu.SuspendLayout();
+            this.freq_chart_menu.SuspendLayout();
             this.SuspendLayout();
             // 
             // auto_update
@@ -406,6 +420,21 @@
             this.SaveAllOversampledWave.Name = "SaveAllOversampledWave";
             this.SaveAllOversampledWave.Size = new System.Drawing.Size(167, 22);
             this.SaveAllOversampledWave.Text = "Oversampled Wave";
+            // 
+            // WaveChartMiscMenu
+            // 
+            this.WaveChartMiscMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CopyRangeToAllCh});
+            this.WaveChartMiscMenu.Name = "WaveChartMiscMenu";
+            this.WaveChartMiscMenu.Size = new System.Drawing.Size(228, 22);
+            this.WaveChartMiscMenu.Text = "Misc";
+            // 
+            // CopyRangeToAllCh
+            // 
+            this.CopyRangeToAllCh.Name = "CopyRangeToAllCh";
+            this.CopyRangeToAllCh.Size = new System.Drawing.Size(257, 22);
+            this.CopyRangeToAllCh.Text = "Copy Y axis range to other channels";
+            this.CopyRangeToAllCh.Click += new System.EventHandler(this.CopyRangeToAllCh_Click);
             // 
             // data_start
             // 
@@ -1287,6 +1316,60 @@
             this.peak_chart.TabStop = false;
             this.peak_chart.Text = "chart1";
             // 
+            // peakChartMenu
+            // 
+            this.peakChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.savePeakSubMenu,
+            this.saveAllPeaks});
+            this.peakChartMenu.Name = "peakChartMenu";
+            this.peakChartMenu.Size = new System.Drawing.Size(149, 48);
+            // 
+            // savePeakSubMenu
+            // 
+            this.savePeakSubMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveP1Peaks,
+            this.saveP2Peaks,
+            this.saveYaPeaks,
+            this.saveZaPeaks});
+            this.savePeakSubMenu.Name = "savePeakSubMenu";
+            this.savePeakSubMenu.Size = new System.Drawing.Size(148, 22);
+            this.savePeakSubMenu.Text = "Save peak of";
+            // 
+            // saveP1Peaks
+            // 
+            this.saveP1Peaks.Name = "saveP1Peaks";
+            this.saveP1Peaks.Size = new System.Drawing.Size(83, 22);
+            this.saveP1Peaks.Text = "P1";
+            this.saveP1Peaks.Click += new System.EventHandler(this.saveP1Peaks_Click);
+            // 
+            // saveP2Peaks
+            // 
+            this.saveP2Peaks.Name = "saveP2Peaks";
+            this.saveP2Peaks.Size = new System.Drawing.Size(83, 22);
+            this.saveP2Peaks.Text = "P2";
+            this.saveP2Peaks.Click += new System.EventHandler(this.saveP2Peaks_Click);
+            // 
+            // saveYaPeaks
+            // 
+            this.saveYaPeaks.Name = "saveYaPeaks";
+            this.saveYaPeaks.Size = new System.Drawing.Size(83, 22);
+            this.saveYaPeaks.Text = "Ya";
+            this.saveYaPeaks.Click += new System.EventHandler(this.saveYaPeaks_Click);
+            // 
+            // saveZaPeaks
+            // 
+            this.saveZaPeaks.Name = "saveZaPeaks";
+            this.saveZaPeaks.Size = new System.Drawing.Size(83, 22);
+            this.saveZaPeaks.Text = "Za";
+            this.saveZaPeaks.Click += new System.EventHandler(this.saveZaPeaks_Click);
+            // 
+            // saveAllPeaks
+            // 
+            this.saveAllPeaks.Name = "saveAllPeaks";
+            this.saveAllPeaks.Size = new System.Drawing.Size(148, 22);
+            this.saveAllPeaks.Text = "Save All Peaks";
+            this.saveAllPeaks.Click += new System.EventHandler(this.saveAllPeaks_Click);
+            // 
             // upper_val
             // 
             this.upper_val.Location = new System.Drawing.Point(302, 134);
@@ -1660,6 +1743,72 @@
             this.AbsoluteTime.UseVisualStyleBackColor = true;
             this.AbsoluteTime.CheckedChanged += new System.EventHandler(this.AbsoluteTime_CheckedChanged);
             // 
+            // freq_chart_X_max
+            // 
+            this.freq_chart_X_max.Location = new System.Drawing.Point(1086, 591);
+            this.freq_chart_X_max.Name = "freq_chart_X_max";
+            this.freq_chart_X_max.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_X_max.TabIndex = 28;
+            this.freq_chart_X_max.Tag = "XMax";
+            this.freq_chart_X_max.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_X_max.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_X_max.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
+            // freq_chart_X_min
+            // 
+            this.freq_chart_X_min.Location = new System.Drawing.Point(866, 591);
+            this.freq_chart_X_min.Name = "freq_chart_X_min";
+            this.freq_chart_X_min.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_X_min.TabIndex = 28;
+            this.freq_chart_X_min.Tag = "XMin";
+            this.freq_chart_X_min.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_X_min.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_X_min.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
+            // freq_chart_Y_primary_min
+            // 
+            this.freq_chart_Y_primary_min.Location = new System.Drawing.Point(808, 544);
+            this.freq_chart_Y_primary_min.Name = "freq_chart_Y_primary_min";
+            this.freq_chart_Y_primary_min.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_Y_primary_min.TabIndex = 28;
+            this.freq_chart_Y_primary_min.Tag = "XMin";
+            this.freq_chart_Y_primary_min.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_Y_primary_min.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_Y_primary_min.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
+            // freq_chart_Y_primary_max
+            // 
+            this.freq_chart_Y_primary_max.Location = new System.Drawing.Point(808, 348);
+            this.freq_chart_Y_primary_max.Name = "freq_chart_Y_primary_max";
+            this.freq_chart_Y_primary_max.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_Y_primary_max.TabIndex = 28;
+            this.freq_chart_Y_primary_max.Tag = "XMax";
+            this.freq_chart_Y_primary_max.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_Y_primary_max.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_Y_primary_max.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
+            // freq_chart_Y_secondary_min
+            // 
+            this.freq_chart_Y_secondary_min.Location = new System.Drawing.Point(1141, 544);
+            this.freq_chart_Y_secondary_min.Name = "freq_chart_Y_secondary_min";
+            this.freq_chart_Y_secondary_min.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_Y_secondary_min.TabIndex = 28;
+            this.freq_chart_Y_secondary_min.Tag = "XMin";
+            this.freq_chart_Y_secondary_min.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_Y_secondary_min.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_Y_secondary_min.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
+            // freq_chart_Y_secondary_max
+            // 
+            this.freq_chart_Y_secondary_max.Location = new System.Drawing.Point(1141, 348);
+            this.freq_chart_Y_secondary_max.Name = "freq_chart_Y_secondary_max";
+            this.freq_chart_Y_secondary_max.Size = new System.Drawing.Size(19, 19);
+            this.freq_chart_Y_secondary_max.TabIndex = 28;
+            this.freq_chart_Y_secondary_max.Tag = "XMax";
+            this.freq_chart_Y_secondary_max.TextChanged += new System.EventHandler(this.chart_range_changed);
+            this.freq_chart_Y_secondary_max.Enter += new System.EventHandler(this.chart_range_enter);
+            this.freq_chart_Y_secondary_max.Leave += new System.EventHandler(this.chart_range_leave);
+            // 
             // frequencyDataGridViewTextBoxColumn
             // 
             this.frequencyDataGridViewTextBoxColumn.DataPropertyName = "Frequency";
@@ -1691,74 +1840,55 @@
             this.notchFilterInfo.DataSetName = "NotchFilterInfo";
             this.notchFilterInfo.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
-            // WaveChartMiscMenu
+            // freq_chart_menu
             // 
-            this.WaveChartMiscMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CopyRangeToAllCh});
-            this.WaveChartMiscMenu.Name = "WaveChartMiscMenu";
-            this.WaveChartMiscMenu.Size = new System.Drawing.Size(228, 22);
-            this.WaveChartMiscMenu.Text = "Misc";
+            this.freq_chart_menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.resetAxes});
+            this.freq_chart_menu.Name = "peakChartMenu";
+            this.freq_chart_menu.Size = new System.Drawing.Size(170, 70);
             // 
-            // CopyRangeToAllCh
+            // toolStripMenuItem1
             // 
-            this.CopyRangeToAllCh.Name = "CopyRangeToAllCh";
-            this.CopyRangeToAllCh.Size = new System.Drawing.Size(257, 22);
-            this.CopyRangeToAllCh.Text = "Copy Y axis range to other channels";
-            this.CopyRangeToAllCh.Click += new System.EventHandler(this.CopyRangeToAllCh_Click);
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(169, 22);
+            this.toolStripMenuItem1.Text = "Save peak of";
             // 
-            // peakChartMenu
+            // toolStripMenuItem2
             // 
-            this.peakChartMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.savePeakSubMenu,
-            this.saveAllPeaks});
-            this.peakChartMenu.Name = "peakChartMenu";
-            this.peakChartMenu.Size = new System.Drawing.Size(149, 48);
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(83, 22);
+            this.toolStripMenuItem2.Text = "P1";
             // 
-            // savePeakSubMenu
+            // toolStripMenuItem3
             // 
-            this.savePeakSubMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveP1Peaks,
-            this.saveP2Peaks,
-            this.saveYaPeaks,
-            this.saveZaPeaks});
-            this.savePeakSubMenu.Name = "savePeakSubMenu";
-            this.savePeakSubMenu.Size = new System.Drawing.Size(148, 22);
-            this.savePeakSubMenu.Text = "Save peak of";
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(83, 22);
+            this.toolStripMenuItem3.Text = "P2";
             // 
-            // saveP1Peaks
+            // toolStripMenuItem4
             // 
-            this.saveP1Peaks.Name = "saveP1Peaks";
-            this.saveP1Peaks.Size = new System.Drawing.Size(152, 22);
-            this.saveP1Peaks.Text = "P1";
-            this.saveP1Peaks.Click += new System.EventHandler(this.saveP1Peaks_Click);
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(83, 22);
+            this.toolStripMenuItem4.Text = "Ya";
             // 
-            // saveP2Peaks
+            // toolStripMenuItem5
             // 
-            this.saveP2Peaks.Name = "saveP2Peaks";
-            this.saveP2Peaks.Size = new System.Drawing.Size(152, 22);
-            this.saveP2Peaks.Text = "P2";
-            this.saveP2Peaks.Click += new System.EventHandler(this.saveP2Peaks_Click);
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(83, 22);
+            this.toolStripMenuItem5.Text = "Za";
             // 
-            // saveYaPeaks
+            // resetAxes
             // 
-            this.saveYaPeaks.Name = "saveYaPeaks";
-            this.saveYaPeaks.Size = new System.Drawing.Size(152, 22);
-            this.saveYaPeaks.Text = "Ya";
-            this.saveYaPeaks.Click += new System.EventHandler(this.saveYaPeaks_Click);
-            // 
-            // saveZaPeaks
-            // 
-            this.saveZaPeaks.Name = "saveZaPeaks";
-            this.saveZaPeaks.Size = new System.Drawing.Size(152, 22);
-            this.saveZaPeaks.Text = "Za";
-            this.saveZaPeaks.Click += new System.EventHandler(this.saveZaPeaks_Click);
-            // 
-            // saveAllPeaks
-            // 
-            this.saveAllPeaks.Name = "saveAllPeaks";
-            this.saveAllPeaks.Size = new System.Drawing.Size(148, 22);
-            this.saveAllPeaks.Text = "Save All Peaks";
-            this.saveAllPeaks.Click += new System.EventHandler(this.saveAllPeaks_Click);
+            this.resetAxes.Name = "resetAxes";
+            this.resetAxes.Size = new System.Drawing.Size(169, 22);
+            this.resetAxes.Text = "Reset Axis Ranges";
+            this.resetAxes.Click += new System.EventHandler(this.resetAxes_Click);
             // 
             // WaveFilter
             // 
@@ -1771,13 +1901,19 @@
             this.Controls.Add(this.wave_chart_min);
             this.Controls.Add(this.peak_chart_Secondary_max);
             this.Controls.Add(this.peak_chart_Secondary_min);
+            this.Controls.Add(this.freq_chart_X_max);
             this.Controls.Add(this.peak_chart_Primary_min);
+            this.Controls.Add(this.freq_chart_X_min);
             this.Controls.Add(this.label29);
+            this.Controls.Add(this.freq_chart_Y_primary_max);
             this.Controls.Add(this.peakdisplay);
+            this.Controls.Add(this.freq_chart_Y_secondary_max);
             this.Controls.Add(this.DataStart);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnExpandFilterSettings);
+            this.Controls.Add(this.freq_chart_Y_primary_min);
             this.Controls.Add(this.chkShowPassBandOnly);
+            this.Controls.Add(this.freq_chart_Y_secondary_min);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.hide_over);
             this.Controls.Add(this.hide_result);
@@ -1849,11 +1985,12 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.peak_chart)).EndInit();
+            this.peakChartMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.wave_fft_chart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchesBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.notchFilterInfo)).EndInit();
-            this.peakChartMenu.ResumeLayout(false);
+            this.freq_chart_menu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2000,6 +2137,19 @@
         private System.Windows.Forms.ToolStripMenuItem saveYaPeaks;
         private System.Windows.Forms.ToolStripMenuItem saveZaPeaks;
         private System.Windows.Forms.ToolStripMenuItem saveAllPeaks;
+        private System.Windows.Forms.TextBox freq_chart_X_max;
+        private System.Windows.Forms.TextBox freq_chart_X_min;
+        private System.Windows.Forms.TextBox freq_chart_Y_primary_min;
+        private System.Windows.Forms.TextBox freq_chart_Y_primary_max;
+        private System.Windows.Forms.TextBox freq_chart_Y_secondary_min;
+        private System.Windows.Forms.TextBox freq_chart_Y_secondary_max;
+        private System.Windows.Forms.ContextMenuStrip freq_chart_menu;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem resetAxes;
 
     }
 }

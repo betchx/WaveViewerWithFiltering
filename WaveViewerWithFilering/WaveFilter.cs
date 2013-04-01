@@ -41,6 +41,12 @@ namespace WaveViewerWithFilering
             peak_chart_Secondary_min.Tag = peak_chart.ChartAreas[0].AxisY2;
             wave_chart_max.Tag = wave_chart.ChartAreas[0].AxisY;
             wave_chart_min.Tag = wave_chart.ChartAreas[0].AxisY;
+            freq_chart_X_min.Tag = freq_chart.ChartAreas[0].AxisX;
+            freq_chart_X_max.Tag = freq_chart.ChartAreas[0].AxisX;
+            freq_chart_Y_primary_max.Tag = freq_chart.ChartAreas[0].AxisY;
+            freq_chart_Y_primary_min.Tag = freq_chart.ChartAreas[0].AxisY;
+            freq_chart_Y_secondary_max.Tag = freq_chart.ChartAreas[0].AxisY2;
+            freq_chart_Y_secondary_min.Tag = freq_chart.ChartAreas[0].AxisY2;
         }
 
 
@@ -402,7 +408,7 @@ namespace WaveViewerWithFilering
                     ca.AxisX.Minimum = Math.Floor(double.Parse(lower_fc.Text));
                 }
             }
-            else
+            else if(false)
             {
                 foreach (var ca in freq_chart.ChartAreas)
                 {
@@ -410,7 +416,7 @@ namespace WaveViewerWithFilering
                     ca.AxisX.Minimum = 0.0;
                 }
             }
-            freq_chart.ChartAreas[0].RecalculateAxesScale();
+            //freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         /// <summary>
@@ -726,6 +732,10 @@ namespace WaveViewerWithFilering
             len_1sec.Enabled = true;
             len_5sec.Enabled = true;
 
+            freq_chart.ChartAreas[0].RecalculateAxesScale();
+            wave_chart.ChartAreas[0].RecalculateAxesScale();
+            filter_chart.ChartAreas[0].RecalculateAxesScale();
+            peak_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
         private void set_alpha(string text)
@@ -1393,6 +1403,11 @@ namespace WaveViewerWithFilering
         private void saveZaPeaks_Click(object sender, EventArgs e)
         {
             save_peaks(3);
+        }
+
+        private void resetAxes_Click(object sender, EventArgs e)
+        {
+            freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
     }

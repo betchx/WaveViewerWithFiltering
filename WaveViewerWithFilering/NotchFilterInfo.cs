@@ -2,6 +2,7 @@
     
     
     public partial class NotchFilterInfo {
+    
         partial class NotchesDataTable
         {
         }
