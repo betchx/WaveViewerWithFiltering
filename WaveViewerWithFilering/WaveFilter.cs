@@ -1420,6 +1420,10 @@ namespace WaveViewerWithFilering
                         tap_track.Maximum = val;
                         upper_fc_track.Maximum = val;
                         lower_fc_track.Maximum = val;
+                        int i = val / 10;
+                        tap_track.TickFrequency = i;
+                        upper_fc_track.TickFrequency = i;
+                        lower_fc_track.TickFrequency = i;
                     }
                     tap_track.Value = val;
                     update_tap_info(); // update
