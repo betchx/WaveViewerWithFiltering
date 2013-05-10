@@ -1518,6 +1518,40 @@ namespace WaveViewerWithFilering
         {
             save_spectrum(FreqSeriesType.Gain);
         }
+
+        private void upper_val_Validating(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            int i;
+            if(int.TryParse(upper_val.Text, out i)){
+                if(i <= tap_track.Value && i > lower_fc_track.Value){
+                    e.Cancel = false;
+                }
+            }
         }
+
+        private void upper_val_Validated(object sender, EventArgs e)
+        {
+            upper_fc_track.Value = int.Parse(upper_val.Text);
+        }
+
+        private void lower_val_Validated(object sender, EventArgs e)
+        {
+            lower_fc_track.Value = int.Parse(lower_val.Text);
+        }
+
+        private void lower_val_Validating(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            int i;
+            if (int.TryParse(lower_val.Text, out i))
+            {
+                if (i >= 0 && i < upper_fc_track.Value)
+                {
+                    e.Cancel = false;
+                }
+            }
+        }
+
     }
 }

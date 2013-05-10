@@ -1371,23 +1371,26 @@
             // 
             // upper_val
             // 
+            this.upper_val.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.upper_val.Location = new System.Drawing.Point(302, 134);
             this.upper_val.Name = "upper_val";
-            this.upper_val.ReadOnly = true;
             this.upper_val.Size = new System.Drawing.Size(29, 19);
             this.upper_val.TabIndex = 5;
             this.upper_val.Text = "150";
             this.upper_val.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.upper_val.Validating += new System.ComponentModel.CancelEventHandler(this.upper_val_Validating);
+            this.upper_val.Validated += new System.EventHandler(this.upper_val_Validated);
             // 
             // lower_val
             // 
             this.lower_val.Location = new System.Drawing.Point(302, 174);
             this.lower_val.Name = "lower_val";
-            this.lower_val.ReadOnly = true;
             this.lower_val.Size = new System.Drawing.Size(29, 19);
             this.lower_val.TabIndex = 5;
             this.lower_val.Text = "0";
             this.lower_val.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.lower_val.Validating += new System.ComponentModel.CancelEventHandler(this.lower_val_Validating);
+            this.lower_val.Validated += new System.EventHandler(this.lower_val_Validated);
             // 
             // label20
             // 
