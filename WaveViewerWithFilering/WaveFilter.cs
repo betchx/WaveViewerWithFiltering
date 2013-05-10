@@ -931,6 +931,72 @@ namespace WaveViewerWithFilering
             }
         }
 
+        private enum FreqSeriesType
+        {
+            Source = 0,
+            Filtered = 1,
+            Gain = 2,
+        }
+
+        private void save_spectrum(FreqSeriesType type)
+        {
+            if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                return;
+
+            using (var stream = saveFileDialogCSV.OpenFile())
+            {
+                using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
+                {
+                    writer.WriteLine("Original File, {0}", file_path.Text);
+                    writer.WriteLine("Data Start, {0}", data_start.Value);
+                    writer.WriteLine("Data Length, {0}", data_length.Text);
+                    writer.WriteLine("Sampling Rate, {0}", fs);
+                    writer.WriteLine("Ch, {0}", ch);
+                    writer.WriteLine("Channel name, {0}", channel_name.Text);
+                    writer.WriteLine("Comment of channel, {0}", channel_comment.Text);
+                    if (type == FreqSeriesType.Filtered)
+                    {
+                        writer.WriteLine("Tap, {0}", fir.tap);
+                        writer.WriteLine("Upper Fc, {1}, ({0} Hz)", upper_fc.Text, upper_val.Text);
+                        writer.WriteLine("Lower Fc, {1}, ({0} Hz)", lower_fc.Text, lower_val.Text);
+                        writer.WriteLine("Stop band gain, {0}", gain.Text);
+                        writer.Write("Filter type, {0}", fir.window_type.ToString());
+                        if (fir.window_type == FIRFilter.WindowType.Kaiser)
+                            writer.WriteLine(",{}", fir.alpha);
+                        else
+                            writer.WriteLine();
+                    }
+                    writer.WriteLine("");
+
+                    // Setup wave data
+                    double[] x = data[ch].freqs;
+                    double[] y;
+                    switch (type)
+                    {
+                        case FreqSeriesType.Source:
+                            y = data[ch].wave_spectrum_amplitude_in_dB();
+                            writer.WriteLine("Frequency, Source");
+                            break;
+                        case FreqSeriesType.Filtered:
+                            y = data[ch].Power(WaveDataSet.State.Filtered).ToArray();
+                            writer.WriteLine("Frequency, Filtered");
+                            break;
+                        case FreqSeriesType.Gain:
+                            y = data[ch].gains;
+                            writer.WriteLine("Frequency, Gain (dB)");
+                            break;
+                        default:
+                            throw new ArgumentException("Bug: index must be FreqSeriesType");
+                    }
+                    for (int i = 0; i < x.Length; i++)
+                    {
+                        writer.WriteLine("{0},{1}", x[i], y[i]);
+                    }
+                }
+            }
+        }
+
+
         #endregion // Operations
         #endregion // PrivateMethods
         #endregion // Internal Use
@@ -1438,5 +1504,20 @@ namespace WaveViewerWithFilering
             freq_chart.ChartAreas[0].RecalculateAxesScale();
         }
 
+        private void menuSpSaveSource_Click(object sender, EventArgs e)
+        {
+            save_spectrum(FreqSeriesType.Source);
+        }
+
+        private void menuSpSaveFiltered_Click(object sender, EventArgs e)
+        {
+            save_spectrum(FreqSeriesType.Filtered);
+        }
+
+        private void menuSpSaveGain_Click(object sender, EventArgs e)
+        {
+            save_spectrum(FreqSeriesType.Gain);
+        }
+        }
     }
 }
