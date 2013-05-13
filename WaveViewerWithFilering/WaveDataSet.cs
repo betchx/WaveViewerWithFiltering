@@ -449,8 +449,14 @@ namespace WaveViewerWithFilering
             // copy pre_data with filter
             for (int i = 0; i < tap; i++)
             {
-                extracted_raw_wave[nfft - 2 * tap + i] = (data[Math.Abs(i + n_start)] - base_line) * hann[tap - i];
-                extracted_raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
+                if (i+ n_start < 0)
+                    extracted_raw_wave[nfft - 2 * tap + i] = 0.0;
+                else
+                    extracted_raw_wave[nfft - 2 * tap + i] = (data[Math.Abs(i + n_start)] - base_line) * hann[tap - i];
+                if (i + n_start + tap < 0)
+                    extracted_raw_wave[nfft - 1 * tap + i] = 0.0;
+                else
+                    extracted_raw_wave[nfft - 1 * tap + i] = data[Math.Abs(i + tap + n_start)] - base_line;
             }
             // copy main_data
             int last_index = data.Length - 1;
@@ -469,8 +475,11 @@ namespace WaveViewerWithFilering
             for (int i = 0; i < tap; i++)
             {
                 int j = i + 3 * tap + num_disp;
-                int k = last_index - Math.Abs(last_index - (n_end + tap + i));
-                extracted_raw_wave[num_disp + tap + i] = (data[k] - base_line) * hann[i];
+ //               int k = last_index - Math.Abs(last_index - (n_end + tap + i));
+                if (j > last_index)
+                    extracted_raw_wave[num_disp + tap + i] = 0.0;
+                else
+                   extracted_raw_wave[num_disp + tap + i] = (data[j] - base_line) * hann[i];
             }
         }
 
