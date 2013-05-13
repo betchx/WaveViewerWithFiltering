@@ -241,6 +241,11 @@ namespace WaveFile
             if (dt != 0.0)
             {
                 res.SamplingRate = 1.0 / dt;
+                double rounded = Math.Round(res.SamplingRate);
+                if (Math.Abs(res.SamplingRate - rounded) < 1e-5)
+                {
+                    res.SamplingRate = rounded;
+                }
                 res.x_ = Enumerable.Range(0, nrow).Select(i => i * dt).ToArray();
             }
             res.opened = true;
