@@ -11,7 +11,8 @@
     <RootNamespace>WaveViewerWithFilering</RootNamespace>
     <AssemblyName>WaveViewerWithFilering</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -34,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ComplexArray">
-      <HintPath>..\..\ComplexArray\Debug\ComplexArray.dll</HintPath>
-    </Reference>
     <Reference Include="fftwlib">
       <HintPath>.\fftwlib.dll</HintPath>
     </Reference>
@@ -56,7 +54,6 @@
     <Compile Include="FIRFilter.cs" />
     <Compile Include="NotchFilterInfo.cs">
       <DependentUpon>NotchFilterInfo.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="NotchFilterInfo.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -113,6 +110,10 @@
     <Content Include="WavePair.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ComplexArray\ComplexArray\ComplexArray.vcxproj">
+      <Project>{b0f32a58-1907-48af-9668-c6e73aa00fe9}</Project>
+      <Name>ComplexArray</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WaveFile\WaveFile.csproj">
       <Project>{ADE4FEFE-E617-4051-976C-AD4F0668863D}</Project>
       <Name>WaveFile</Name>

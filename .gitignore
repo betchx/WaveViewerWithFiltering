@@ -1,3 +1,6 @@
 obj/
 bin/
 *.suo
+/Debug
+/.vs/WaveViewerWithFilering/v16
+/packages/NUnit.3.12.0
