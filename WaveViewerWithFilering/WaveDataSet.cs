@@ -459,7 +459,7 @@ namespace WaveViewerWithFilering
       }
       // copy main_data
       int last_index = data.Length - 1;
-      for (int i = 0; i < NumDisp; i++)
+      for (int i = 0; i < Math.Min(NumDisp,data.Length); i++)
       {
         int k = last_index - Math.Abs(last_index - (DataStart + i));
         extractedRawWave[i] = data[k] - base_line;
@@ -468,7 +468,10 @@ namespace WaveViewerWithFilering
       for (int i = 0; i < tap; i++)
       {
         int k = last_index - Math.Abs(last_index - (n_end + i));
-        extractedRawWave[NumDisp + i] = data[k] - base_line;
+        if (0 <= k && k < data.Length)
+        {
+          extractedRawWave[NumDisp + i] = data[k] - base_line;
+        }
       }
       // copy with filter
       for (int i = 0; i < tap; i++)
