@@ -116,11 +116,6 @@ namespace WaveFilterTool
       conf.WaveFile = WaveFile.DelimFile.OpenGeneralCsv(openCsvFileDialog.FileName);
     }
 
-    private void WaveFilterView_Load(object sender, EventArgs e)
-    {
-
-    }
-
     private void NumberOfDisplayedDataComboBox_TextChanged(object sender, EventArgs e)
     {
       if (int.TryParse(this.numberOfDisplayedDataComboBox.Text, out int value))

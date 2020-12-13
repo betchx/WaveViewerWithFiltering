@@ -57,7 +57,6 @@
       this.label1 = new System.Windows.Forms.Label();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.tapTrackBar = new System.Windows.Forms.TrackBar();
-      this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
       this.tapNumericUpDown = new System.Windows.Forms.NumericUpDown();
       this.lowerFcNumericUpDown = new System.Windows.Forms.NumericUpDown();
       this.lowerFcTrackBar = new System.Windows.Forms.TrackBar();
@@ -74,6 +73,7 @@
       this.channelListBox = new System.Windows.Forms.ListBox();
       this.currentChannelLabel2 = new System.Windows.Forms.Label();
       this.numberOfDisplayedDataComboBox = new System.Windows.Forms.ComboBox();
+      this.dataBindingSource = new System.Windows.Forms.BindingSource(this.components);
       tapLabel1 = new System.Windows.Forms.Label();
       lowerFcLabel = new System.Windows.Forms.Label();
       upperFcLabel = new System.Windows.Forms.Label();
@@ -84,7 +84,6 @@
       ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.spChart)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapTrackBar)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapNumericUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.lowerFcNumericUpDown)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.lowerFcTrackBar)).BeginInit();
@@ -92,6 +91,7 @@
       ((System.ComponentModel.ISupportInitialize)(this.upperFcTrackBar)).BeginInit();
       this.groupBox1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.channelNamesBindingSource)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).BeginInit();
       this.SuspendLayout();
       //
       // tapLabel1
@@ -166,7 +166,7 @@
       this.MainMenu.Location = new System.Drawing.Point(0, 0);
       this.MainMenu.Name = "MainMenu";
       this.MainMenu.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-      this.MainMenu.Size = new System.Drawing.Size(1903, 40);
+      this.MainMenu.Size = new System.Drawing.Size(1903, 48);
       this.MainMenu.TabIndex = 0;
       this.MainMenu.Text = "menuStrip1";
       //
@@ -177,7 +177,7 @@
             this.cSVファイルToolStripMenuItem,
             this.共和電業形式ToolStripMenuItem});
       this.ファイルToolStripMenuItem.Name = "ファイルToolStripMenuItem";
-      this.ファイルToolStripMenuItem.Size = new System.Drawing.Size(105, 36);
+      this.ファイルToolStripMenuItem.Size = new System.Drawing.Size(105, 44);
       this.ファイルToolStripMenuItem.Text = "開く(&O)";
       //
       // famosファイルToolStripMenuItem
@@ -204,19 +204,19 @@
       // 書き出しToolStripMenuItem
       //
       this.書き出しToolStripMenuItem.Name = "書き出しToolStripMenuItem";
-      this.書き出しToolStripMenuItem.Size = new System.Drawing.Size(206, 36);
+      this.書き出しToolStripMenuItem.Size = new System.Drawing.Size(206, 44);
       this.書き出しToolStripMenuItem.Text = "CSVで書き出し(&E)";
       //
       // toolStripMenuItem1
       //
       this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(84, 36);
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(84, 44);
       this.toolStripMenuItem1.Text = "       ";
       //
       // 終了ToolStripMenuItem
       //
       this.終了ToolStripMenuItem.Name = "終了ToolStripMenuItem";
-      this.終了ToolStripMenuItem.Size = new System.Drawing.Size(83, 36);
+      this.終了ToolStripMenuItem.Size = new System.Drawing.Size(83, 44);
       this.終了ToolStripMenuItem.Text = "終了";
       this.終了ToolStripMenuItem.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
       //
@@ -309,10 +309,6 @@
       this.tapTrackBar.TabIndex = 8;
       this.tapTrackBar.TickFrequency = 100;
       this.tapTrackBar.Value = 1;
-      //
-      // dataBindingSource
-      //
-      this.dataBindingSource.DataSource = typeof(WaveFilterTool.WaveDataAndConfigs);
       //
       // tapNumericUpDown
       //
@@ -505,6 +501,10 @@
       this.numberOfDisplayedDataComboBox.TabIndex = 19;
       this.numberOfDisplayedDataComboBox.TextChanged += new System.EventHandler(this.NumberOfDisplayedDataComboBox_TextChanged);
       //
+      // dataBindingSource
+      //
+      this.dataBindingSource.DataSource = typeof(WaveFilterTool.WaveDataAndConfigs);
+      //
       // WaveFilterView
       //
       this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 24F);
@@ -526,14 +526,12 @@
       this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
       this.Name = "WaveFilterView";
       this.Text = "波形データフィルタリングツール";
-      this.Load += new System.EventHandler(this.WaveFilterView_Load);
       this.Resize += new System.EventHandler(this.WaveFilterView_Resize);
       this.MainMenu.ResumeLayout(false);
       this.MainMenu.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.waveChart)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.spChart)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapTrackBar)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapNumericUpDown)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.lowerFcNumericUpDown)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.lowerFcTrackBar)).EndInit();
@@ -542,6 +540,7 @@
       this.groupBox1.ResumeLayout(false);
       this.groupBox1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.channelNamesBindingSource)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
