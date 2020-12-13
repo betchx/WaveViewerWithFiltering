@@ -148,20 +148,7 @@ namespace WaveFilterTool
       set
       {
         currentChannel = value;
-        if (waveFile != null)
-        {
-          if (waveFile.Cols <= currentChannel) currentChannel = waveFile.Cols - 1;
-          dataSet = new WaveViewerWithFilering.WaveDataSet(waveFile, currentChannel);
-          dataSet.PropertyChanged += datasetHandler;
-          dt = dataSet.TimeIncrement;
-          dataSet.Tap = Tap;
-          dataSet.Upper = upperFcNum;
-          dataSet.Lower = lowerFcNum;
-          dataSet.NumDisp = numberOfDisplayedData;
-          dataSet.Gain = gain;
-          dataSet.Update();
-        }
-        NotifyPropertyChanged("CurrentChannel");
+        Update();
       }
     }
 
@@ -203,24 +190,31 @@ namespace WaveFilterTool
       set
       {
         waveFile = value;
-        CurrentChannel = 0; // ここでdataSetが確保される．
+        CurrentChannel = (this.waves.Length > 1) ? 1 : 0;
         dataSet.DataStart = 0;
         dataSet.NumDisp = dataSet.Length;
         UpdateChannelNames();
         UpdateDescription();
+        Update();
         NotifyPropertyChanged("WaveFile");
       }
     }
 
-    public bool IsValid { get { dataSet.Update(); return dataSet.IsValid; } }
+    public bool IsValid
+    {
+      get
+      {
+        dataSet.Update(); return dataSet.IsValid;
+      }
+    }
 
     private void UpdateDescription()
     {
-      StringBuilder b = new StringBuilder(100);
-      b.AppendFormat("時間刻み：{0}\r\n", dt);
-      b.AppendFormat("チャンネル数：{0}\r\n", waveFile.Cols);
-      b.AppendFormat("データ長：{0} ({1}秒間)\r\n", waveFile.Rows, waveFile.Rows * dt);
-      Description = b.ToString();
+      var builder = new StringBuilder(100);
+      builder.AppendFormat("時間刻み：{0}\r\n", dt);
+      builder.AppendFormat("チャンネル数：{0}\r\n", waveFile.Cols);
+      builder.AppendFormat("データ長：{0} ({1}秒間)\r\n", waveFile.Rows, waveFile.Rows * dt);
+      Description = builder.ToString();
       NotifyPropertyChanged("Description");
     }
 
@@ -259,6 +253,24 @@ namespace WaveFilterTool
     {
       get { return dataSet.Xvalues; }
 
+    }
+
+    public void Update()
+    {
+      if (waveFile != null)
+      {
+        if (waveFile.Cols <= currentChannel) currentChannel = waveFile.Cols - 1;
+        dataSet = new WaveViewerWithFilering.WaveDataSet(waveFile, currentChannel);
+        dataSet.PropertyChanged += datasetHandler;
+        dt = dataSet.TimeIncrement;
+        dataSet.Tap = Tap;
+        dataSet.Upper = upperFcNum;
+        dataSet.Lower = lowerFcNum;
+        dataSet.NumDisp = numberOfDisplayedData;
+        dataSet.Gain = gain;
+        dataSet.Update();
+      }
+      NotifyPropertyChanged("CurrentChannel");
     }
   }
 }

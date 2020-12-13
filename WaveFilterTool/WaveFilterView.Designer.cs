@@ -35,15 +35,15 @@
       System.Windows.Forms.Label currentChannelLabel;
       System.Windows.Forms.Label numberOfDisplayedDataLabel;
       System.Windows.Forms.Label gainLabel;
-      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-      System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-      System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-      System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-      System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-      System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-      System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-      System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
+      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+      System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+      System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+      System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+      System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+      System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+      System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+      System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+      System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
       this.MainMenu = new System.Windows.Forms.MenuStrip();
       this.ファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.famosファイルToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,8 +52,8 @@
       this.書き出しToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.終了ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.wave_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-      this.sp_chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+      this.waveChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+      this.spChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
       this.label1 = new System.Windows.Forms.Label();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.tapTrackBar = new System.Windows.Forms.TrackBar();
@@ -81,8 +81,8 @@
       numberOfDisplayedDataLabel = new System.Windows.Forms.Label();
       gainLabel = new System.Windows.Forms.Label();
       this.MainMenu.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.sp_chart)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.waveChart)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.spChart)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapTrackBar)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapNumericUpDown)).BeginInit();
@@ -220,60 +220,60 @@
       this.終了ToolStripMenuItem.Text = "終了";
       this.終了ToolStripMenuItem.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
       //
-      // wave_chart
+      // waveChart
       //
-      chartArea3.Name = "ChartArea1";
-      this.wave_chart.ChartAreas.Add(chartArea3);
-      legend3.Name = "Legend1";
-      this.wave_chart.Legends.Add(legend3);
-      this.wave_chart.Location = new System.Drawing.Point(0, 814);
-      this.wave_chart.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
-      this.wave_chart.MinimumSize = new System.Drawing.Size(433, 200);
-      this.wave_chart.Name = "wave_chart";
-      series5.ChartArea = "ChartArea1";
-      series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-      series5.Legend = "Legend1";
-      series5.Name = "元データ";
-      series6.ChartArea = "ChartArea1";
-      series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-      series6.Legend = "Legend1";
-      series6.Name = "フィルタ後";
-      this.wave_chart.Series.Add(series5);
-      this.wave_chart.Series.Add(series6);
-      this.wave_chart.Size = new System.Drawing.Size(1887, 522);
-      this.wave_chart.TabIndex = 1;
-      this.wave_chart.Text = "chart1";
+      chartArea1.Name = "ChartArea1";
+      this.waveChart.ChartAreas.Add(chartArea1);
+      legend1.Name = "Legend1";
+      this.waveChart.Legends.Add(legend1);
+      this.waveChart.Location = new System.Drawing.Point(0, 814);
+      this.waveChart.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+      this.waveChart.MinimumSize = new System.Drawing.Size(433, 200);
+      this.waveChart.Name = "waveChart";
+      series1.ChartArea = "ChartArea1";
+      series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+      series1.Legend = "Legend1";
+      series1.Name = "元データ";
+      series2.ChartArea = "ChartArea1";
+      series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+      series2.Legend = "Legend1";
+      series2.Name = "フィルタ後";
+      this.waveChart.Series.Add(series1);
+      this.waveChart.Series.Add(series2);
+      this.waveChart.Size = new System.Drawing.Size(1887, 522);
+      this.waveChart.TabIndex = 1;
+      this.waveChart.Text = "chart1";
       //
-      // sp_chart
+      // spChart
       //
-      chartArea4.AxisX.Title = "周波数(Hz)";
-      chartArea4.AxisY.IsLogarithmic = true;
-      chartArea4.AxisY.Title = "パワースペクトル";
-      chartArea4.Name = "ChartArea1";
-      this.sp_chart.ChartAreas.Add(chartArea4);
-      legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-      legend4.Name = "Legend1";
-      this.sp_chart.Legends.Add(legend4);
-      this.sp_chart.Location = new System.Drawing.Point(951, 54);
-      this.sp_chart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-      this.sp_chart.MinimumSize = new System.Drawing.Size(217, 200);
-      this.sp_chart.Name = "sp_chart";
-      series7.ChartArea = "ChartArea1";
-      series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-      series7.Legend = "Legend1";
-      series7.Name = "元データ";
-      series8.ChartArea = "ChartArea1";
-      series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
-      series8.Legend = "Legend1";
-      series8.Name = "フィルタ後";
-      this.sp_chart.Series.Add(series7);
-      this.sp_chart.Series.Add(series8);
-      this.sp_chart.Size = new System.Drawing.Size(936, 776);
-      this.sp_chart.TabIndex = 2;
-      this.sp_chart.Text = "chart1";
-      title2.Name = "Title1";
-      title2.Text = "パワースペクトル";
-      this.sp_chart.Titles.Add(title2);
+      chartArea2.AxisX.Title = "周波数(Hz)";
+      chartArea2.AxisY.IsLogarithmic = true;
+      chartArea2.AxisY.Title = "パワースペクトル";
+      chartArea2.Name = "ChartArea1";
+      this.spChart.ChartAreas.Add(chartArea2);
+      legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+      legend2.Name = "Legend1";
+      this.spChart.Legends.Add(legend2);
+      this.spChart.Location = new System.Drawing.Point(951, 54);
+      this.spChart.Margin = new System.Windows.Forms.Padding(2);
+      this.spChart.MinimumSize = new System.Drawing.Size(217, 200);
+      this.spChart.Name = "spChart";
+      series3.ChartArea = "ChartArea1";
+      series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+      series3.Legend = "Legend1";
+      series3.Name = "元データ";
+      series4.ChartArea = "ChartArea1";
+      series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.FastLine;
+      series4.Legend = "Legend1";
+      series4.Name = "フィルタ後";
+      this.spChart.Series.Add(series3);
+      this.spChart.Series.Add(series4);
+      this.spChart.Size = new System.Drawing.Size(936, 776);
+      this.spChart.TabIndex = 2;
+      this.spChart.Text = "chart1";
+      title1.Name = "Title1";
+      title1.Text = "パワースペクトル";
+      this.spChart.Titles.Add(title1);
       //
       // label1
       //
@@ -323,6 +323,7 @@
       this.tapNumericUpDown.Name = "tapNumericUpDown";
       this.tapNumericUpDown.Size = new System.Drawing.Size(117, 31);
       this.tapNumericUpDown.TabIndex = 10;
+      this.tapNumericUpDown.ValueChanged += new System.EventHandler(this.TapNumericUpDown_ValueChanged);
       this.tapNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.TapNumericUpDown_Validating);
       //
       // lowerFcNumericUpDown
@@ -334,6 +335,7 @@
       this.lowerFcNumericUpDown.Name = "lowerFcNumericUpDown";
       this.lowerFcNumericUpDown.Size = new System.Drawing.Size(117, 31);
       this.lowerFcNumericUpDown.TabIndex = 11;
+      this.lowerFcNumericUpDown.ValueChanged += new System.EventHandler(this.LowerFcNumericUpDown_ValueChanged);
       //
       // lowerFcTrackBar
       //
@@ -355,6 +357,7 @@
       this.upperFcNumericUpDown.Name = "upperFcNumericUpDown";
       this.upperFcNumericUpDown.Size = new System.Drawing.Size(117, 31);
       this.upperFcNumericUpDown.TabIndex = 13;
+      this.upperFcNumericUpDown.ValueChanged += new System.EventHandler(this.UpperFcNumericUpDown_ValueChanged);
       //
       // upperFcTrackBar
       //
@@ -412,6 +415,7 @@
       this.gainComboBox.Name = "gainComboBox";
       this.gainComboBox.Size = new System.Drawing.Size(177, 32);
       this.gainComboBox.TabIndex = 19;
+      this.gainComboBox.SelectedIndexChanged += new System.EventHandler(this.GainComboBox_SelectedIndexChanged);
       //
       // lowerFcTextBox
       //
@@ -499,6 +503,7 @@
       this.numberOfDisplayedDataComboBox.Name = "numberOfDisplayedDataComboBox";
       this.numberOfDisplayedDataComboBox.Size = new System.Drawing.Size(258, 32);
       this.numberOfDisplayedDataComboBox.TabIndex = 19;
+      this.numberOfDisplayedDataComboBox.TextChanged += new System.EventHandler(this.NumberOfDisplayedDataComboBox_TextChanged);
       //
       // WaveFilterView
       //
@@ -514,8 +519,8 @@
       this.Controls.Add(this.statusStrip1);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.wave_info);
-      this.Controls.Add(this.sp_chart);
-      this.Controls.Add(this.wave_chart);
+      this.Controls.Add(this.spChart);
+      this.Controls.Add(this.waveChart);
       this.Controls.Add(this.MainMenu);
       this.MainMenuStrip = this.MainMenu;
       this.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
@@ -525,8 +530,8 @@
       this.Resize += new System.EventHandler(this.WaveFilterView_Resize);
       this.MainMenu.ResumeLayout(false);
       this.MainMenu.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.wave_chart)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.sp_chart)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.waveChart)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.spChart)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapTrackBar)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.dataBindingSource)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.tapNumericUpDown)).EndInit();
@@ -549,8 +554,8 @@
     private System.Windows.Forms.ToolStripMenuItem famosファイルToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem cSVファイルToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem 書き出しToolStripMenuItem;
-    private System.Windows.Forms.DataVisualization.Charting.Chart wave_chart;
-    private System.Windows.Forms.DataVisualization.Charting.Chart sp_chart;
+    private System.Windows.Forms.DataVisualization.Charting.Chart waveChart;
+    private System.Windows.Forms.DataVisualization.Charting.Chart spChart;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.StatusStrip statusStrip1;
     private System.Windows.Forms.BindingSource dataBindingSource;
