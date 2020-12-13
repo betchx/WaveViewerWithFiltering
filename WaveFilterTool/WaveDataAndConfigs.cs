@@ -190,12 +190,12 @@ namespace WaveFilterTool
       set
       {
         waveFile = value;
-        CurrentChannel = (this.waves.Length > 1) ? 1 : 0;
+        CurrentChannel = (value.Cols > 1) ? 1 : 0;
+        Update();
         dataSet.DataStart = 0;
         dataSet.NumDisp = dataSet.Length;
         UpdateChannelNames();
         UpdateDescription();
-        Update();
         NotifyPropertyChanged("WaveFile");
       }
     }
