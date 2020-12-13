@@ -6,36 +6,36 @@ namespace WaveFilterTool
 {
   public partial class WaveFilterView : Form
   {
-    private Data data;
+    private readonly WaveDataAndConfigs data_;
     public WaveFilterView()
     {
       InitializeComponent();
-      data = new Data();
-      data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
-      data.AddPropetryChangedHandlerToDataSet(new PropertyChangedEventHandler(dataset_PropertyChanged));
-      this.dataBindingSource.Add(data);
+      data_ = new WaveDataAndConfigs();
+      data_.PropertyChanged += new PropertyChangedEventHandler(Data_PropertyChanged);
+      data_.AddPropetryChangedHandlerToDataSet(new PropertyChangedEventHandler(Dataset_PropertyChanged));
+      this.dataBindingSource.Add(data_);
       AdjustSizeAndLocationOfControls();
 
-      data.TapMax = 300;
-      data.Tap = 150;
+      data_.TapMax = 300;
+      data_.Tap = 150;
     }
 
 
-    void dataset_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    void Dataset_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (e.PropertyName == "source")
       {
-        wave_chart.Series[0].Points.DataBindXY(data.XValues, data.SourceWave);
-        sp_chart.Series[0].Points.DataBindXY(data.Frequencies, data.PowerOfSource);
+        wave_chart.Series[0].Points.DataBindXY(data_.XValues, data_.SourceWave);
+        sp_chart.Series[0].Points.DataBindXY(data_.Frequencies, data_.PowerOfSource);
       }
       if (e.PropertyName == "filtered")
       {
-        wave_chart.Series[1].Points.DataBindXY(data.XValues, data.FilterdWave);
-        sp_chart.Series[1].Points.DataBindXY(data.Frequencies, data.PowerOfFiltered);
+        wave_chart.Series[1].Points.DataBindXY(data_.XValues, data_.FilterdWave);
+        sp_chart.Series[1].Points.DataBindXY(data_.Frequencies, data_.PowerOfFiltered);
       }
     }
 
-    void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    void Data_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
       if (e.PropertyName == "Tap") UpdateTap();
@@ -43,7 +43,7 @@ namespace WaveFilterTool
 
     private void UpdateTap()
     {
-      int tap = data.Tap;
+      int tap = data_.Tap;
       int tick = (tap + 1) / 5;
       upperFcTrackBar.TickFrequency = tick;
       lowerFcTrackBar.TickFrequency = tick;
@@ -53,7 +53,7 @@ namespace WaveFilterTool
     void UpdateChannelListBox()
     {
       this.channelListBox.Items.Clear();
-      foreach (var name in data.ChannelNames)
+      foreach (var name in data_.ChannelNames)
       {
         this.channelListBox.Items.Add(name);
       }
@@ -75,43 +75,48 @@ namespace WaveFilterTool
       AdjustSizeAndLocationOfControls();
     }
 
-    private void tapNumericUpDown_Validating(object sender, CancelEventArgs e)
+    private void TapNumericUpDown_Validating(object sender, CancelEventArgs e)
     {
-      if (tapNumericUpDown.Value > data.TapMax)
+      if (tapNumericUpDown.Value > data_.TapMax)
       {
-        data.TapMax = (int)tapNumericUpDown.Value;
+        data_.TapMax = (int)tapNumericUpDown.Value;
       }
     }
 
-    private void famosファイルToolStripMenuItem_Click(object sender, EventArgs e)
+    private void FamosファイルToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openFamosFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
-      data.WaveFile = new WaveFile.Famos(openFamosFileDialog.FileName);
+      data_.WaveFile = new WaveFile.Famos(openFamosFileDialog.FileName);
     }
 
     private void 共和電業形式ToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
-      data.WaveFile = WaveFile.DelimFile.KyowaCsv(openCsvFileDialog.FileName);
+      data_.WaveFile = WaveFile.DelimFile.OpenKyowaCsv(openCsvFileDialog.FileName);
     }
 
-    private void 一般ToolStripMenuItem_Click(object sender, EventArgs e)
+    private void CurrentChannelListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
-        return;
-      data.WaveFile = WaveFile.DelimFile.GeneralCsv(openCsvFileDialog.FileName);
-    }
-
-    private void currentChannelListBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      data.CurrentChannel = channelListBox.SelectedIndex;
+      data_.CurrentChannel = channelListBox.SelectedIndex;
     }
 
     private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
+    }
+
+    private void CSVファイルToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+        return;
+      data_.WaveFile = WaveFile.DelimFile.OpenGeneralCsv(openCsvFileDialog.FileName);
+    }
+
+    private void WaveFilterView_Load(object sender, EventArgs e)
+    {
+
     }
   }
 }

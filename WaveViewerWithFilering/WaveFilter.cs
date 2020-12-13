@@ -15,35 +15,35 @@ namespace WaveViewerWithFilering
     {
       InitializeComponent();
       data = null;
-      update_tap_info();
-      upper_fc_track.Value = tap_track.Value;
-      lower_fc_track.Value = 0;
-      sampling_rate.Text = "1000.0";
-      display_data_length.Text = "100";
+      UpdateTapInfo();
+      upperCutOffFrequencyTrack.Value = tapTrack.Value;
+      lowerCutOffFrequencyTrack.Value = 0;
+      samplingRate.Text = "1000.0";
+      displayDataLength.Text = "100";
       targets = new ComboBox[] { ch_P1, ch_P2, ch_Ya, ch_Za };
       thresholds = new TextBox[] { th_P1, th_P2, th_Ya, th_Za };
       required_lengths = new TextBox[] { rl_P1, rl_P2, rl_Ya, rl_Za };
-      over_sampling_ = 1;
+      overSampling = 1;
       integ.Text = "ACC";
-      update_chart_visible();
+      UpdateChartVisible();
       hide_flag = new bool[] { false, false, false, false, false };
       factor_id = 0u;
       filtered_id = 0u;
       gain_id = 0u;
       source_id = 0u;
       over_id = 0u;
-      peak_chart_Primary_max.Tag = peak_chart.ChartAreas[0].AxisY;
-      peak_chart_Primary_min.Tag = peak_chart.ChartAreas[0].AxisY;
-      peak_chart_Secondary_max.Tag = peak_chart.ChartAreas[0].AxisY2;
-      peak_chart_Secondary_min.Tag = peak_chart.ChartAreas[0].AxisY2;
-      wave_chart_max.Tag = wave_chart.ChartAreas[0].AxisY;
-      wave_chart_min.Tag = wave_chart.ChartAreas[0].AxisY;
-      freq_chart_X_min.Tag = freq_chart.ChartAreas[0].AxisX;
-      freq_chart_X_max.Tag = freq_chart.ChartAreas[0].AxisX;
-      freq_chart_Y_primary_max.Tag = freq_chart.ChartAreas[0].AxisY;
-      freq_chart_Y_primary_min.Tag = freq_chart.ChartAreas[0].AxisY;
-      freq_chart_Y_secondary_max.Tag = freq_chart.ChartAreas[0].AxisY2;
-      freq_chart_Y_secondary_min.Tag = freq_chart.ChartAreas[0].AxisY2;
+      peakChartPrimaryMax.Tag = peakChart.ChartAreas[0].AxisY;
+      peakChartPrimaryMin.Tag = peakChart.ChartAreas[0].AxisY;
+      peakChartSecondaryMax.Tag = peakChart.ChartAreas[0].AxisY2;
+      peakChartSecondaryMin.Tag = peakChart.ChartAreas[0].AxisY2;
+      waveChartMax.Tag = waveChart.ChartAreas[0].AxisY;
+      waveChartMin.Tag = waveChart.ChartAreas[0].AxisY;
+      freqChartXMin.Tag = freqChart.ChartAreas[0].AxisX;
+      freqChartXMax.Tag = freqChart.ChartAreas[0].AxisX;
+      freqChartYPrimaryMax.Tag = freqChart.ChartAreas[0].AxisY;
+      freqChartYPrimaryMin.Tag = freqChart.ChartAreas[0].AxisY;
+      freqChartYSecondaryMax.Tag = freqChart.ChartAreas[0].AxisY2;
+      freqChartYSecondaryMin.Tag = freqChart.ChartAreas[0].AxisY2;
     }
 
 
@@ -64,20 +64,22 @@ namespace WaveViewerWithFilering
     #region Field
     List<WaveDataSet> data;
     int ch;
-    int num_point;
+#pragma warning disable IDE0052 // 読み取られていないプライベート メンバーを削除
+    private int num_point;
+#pragma warning restore IDE0052 // 読み取られていないプライベート メンバーを削除
     int step;
     const int max_points = 10000;
     private double fs;
     private double fn;
     private IWaveFile wavefile;
-    bool[] hide_flag;
+    readonly bool[] hide_flag;
     const int HIDE_WAVE = 0;
     const int HIDE_ANS = 1;
     const int HIDE_OVER = 2;
-    ComboBox[] targets;
-    TextBox[] thresholds;
-    TextBox[] required_lengths;
-    private int over_sampling_;
+    readonly ComboBox[] targets;
+    readonly TextBox[] thresholds;
+    readonly TextBox[] required_lengths;
+    private int overSampling;
     const int MAX_DISP_SIZE = 100000;
     private uint over_id;
     private uint source_id;
@@ -89,86 +91,86 @@ namespace WaveViewerWithFilering
     private bool force_chart_update;
     #endregion
     #region Properties
-    private int nfft { get { return data[ch].nfft; } }
-    private int tap { get { return tap_track.Value; } }
-    private WaveDataSet fir { get { return data[ch]; } }// fir setting affects only active data set.
+    private int Nfft { get { return data[ch].Nfft; } }
+    private int Tap { get { return tapTrack.Value; } }
+    private WaveDataSet Fir { get { return data[ch]; } }// fir setting affects only active data set.
 
-    private int over_sampling
+    private int OverSampling
     {
-      get { return over_sampling_; }
+      get { return overSampling; }
       set
       {
-        if (over_sampling_ != value)
+        if (overSampling != value)
         {
-          over_sampling_ = value;
+          overSampling = value;
           if (data != null)
             System.Threading.Tasks.Parallel.ForEach(data, (wd) =>
             {
-              wd.over_sample = value;
+              wd.OverSample = value;
             });
         }
       }
     }
 
-    private int num_disp
+    private int NumberOfDisplayed
     {
       get
       {
         if (data == null) return 0;
-        return data[ch].num_disp;
+        return data[ch].NumDisp;
       }
       set
       {
         if (data != null)
-          System.Threading.Tasks.Parallel.ForEach(data, (d) => d.num_disp = value);
+          System.Threading.Tasks.Parallel.ForEach(data, (d) => d.NumDisp = value);
       }
     }
-    private int num_data
+    private int NumberOfData
     {
       get
       {
         if (data == null) return 0;
-        return data[ch].data.Length;
+        return data[ch].Length;
       }
     }
 
-    private double dt { get { return data[ch].dt; } }
+    private double TimeIncrement { get { return data[ch].TimeIncrement; } }
     #endregion
     #region PrivateMethods
     #region UpdateMethods
 
     private void CheckUpdate()
     {
-      if (auto_update.Checked)
-        data_update();
+      if (autoUpdate.Checked)
+        DataUpdate();
     }
 
-    private void data_update()
+    private void DataUpdate()
     {
       if (wavefile == null)
         return;
 
-      data[ch].update(); // for debug
+      data[ch].Update(); // for debug
                          //System.Threading.Tasks.Parallel.ForEach(data, d => d.update());
-      data.AsParallel().ForAll(d => d.update());
+      data.AsParallel().ForAll(d => d.Update());
 
-      update_wave_chart();
-      update_filter_chart();
-      update_freq_chart();
-      if (show_fft_data.Checked)
-        update_wave_fft_chart();
+      UpdateWaveChart();
+      UpdateFilterChart();
+      UpdateFrequencyChart();
+      if (showFftData.Checked)
+        UpdateWaveFftChart();
       else
-        update_peak_chart();
+        UpdatePeakChart();
     }
 
     #region ChartUpdaters
-    private void update_wave_fft_chart()
+    private void UpdateWaveFftChart()
     {
-      var waves = data[ch].debug_waves();
+      var waves = data[ch].DebugWaves();
 
       for (int i = 0; i < waves.Length; i++)
       {
-        var s = wave_fft_chart.Series[i].Points;
+        var s = waveFftChart.Series[i].Points;
         s.Clear();
         if (hide_flag[i])
           continue;
@@ -179,29 +181,24 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void update_peak_chart()
+    private void UpdatePeakChart()
     {
-      int channel;
-
-      int required_length;
-      double threshold;
-
-      var wave_peaks = wave_chart.Series[3].Points;
+      var wave_peaks = waveChart.Series[3].Points;
       wave_peaks.Clear();
 
       for (int i = 0; i < targets.Length; i++)
       {
-        if (int.TryParse(targets[i].Text, out channel) &&
-            double.TryParse(thresholds[i].Text, out threshold) &&
-            int.TryParse(required_lengths[i].Text, out required_length))
+        if (int.TryParse(targets[i].Text, out int channel) &&
+            double.TryParse(thresholds[i].Text, out double threshold) &&
+            int.TryParse(required_lengths[i].Text, out int required_length))
         {
           var wave = data[channel];
           var finder = new PeakFinder(threshold, required_length);
-          wave.over_sample = over_sampling;
-          var peaks = finder.apply(wave.over_sampled.ToArray());
-          var x0 = wave.x0;
-          var dx = wave.dt / over_sampling;
-          var s = peak_chart.Series[i].Points;
+          wave.OverSample = OverSampling;
+          var peaks = finder.Apply(wave.OverSampled.ToArray());
+          var x0 = wave.StartTime;
+          var dx = wave.TimeIncrement / OverSampling;
+          var s = peakChart.Series[i].Points;
           s.Clear();
 
           bool add_wave = ch == channel;
@@ -227,56 +224,56 @@ namespace WaveViewerWithFilering
         }
       }
       // reset axes
-      wave_chart.ChartAreas[0].RecalculateAxesScale();
-      peak_chart.ChartAreas[0].AxisX.Minimum = wave_chart.ChartAreas[0].AxisX.Minimum;
-      peak_chart.ChartAreas[0].AxisX.Maximum = wave_chart.ChartAreas[0].AxisX.Maximum;
-      peak_chart.ChartAreas[0].AxisX.MajorGrid.Interval = wave_chart.ChartAreas[0].AxisX.MajorGrid.Interval;
-      peak_chart.ChartAreas[0].AxisX.MajorTickMark.Interval = wave_chart.ChartAreas[0].AxisX.MajorTickMark.Interval;
-      peak_chart.ChartAreas[0].AxisX.LabelStyle.Interval = wave_chart.ChartAreas[0].AxisX.LabelStyle.Interval;
-      peak_chart.ChartAreas[0].RecalculateAxesScale();
+      waveChart.ChartAreas[0].RecalculateAxesScale();
+      peakChart.ChartAreas[0].AxisX.Minimum = waveChart.ChartAreas[0].AxisX.Minimum;
+      peakChart.ChartAreas[0].AxisX.Maximum = waveChart.ChartAreas[0].AxisX.Maximum;
+      peakChart.ChartAreas[0].AxisX.MajorGrid.Interval = waveChart.ChartAreas[0].AxisX.MajorGrid.Interval;
+      peakChart.ChartAreas[0].AxisX.MajorTickMark.Interval = waveChart.ChartAreas[0].AxisX.MajorTickMark.Interval;
+      peakChart.ChartAreas[0].AxisX.LabelStyle.Interval = waveChart.ChartAreas[0].AxisX.LabelStyle.Interval;
+      peakChart.ChartAreas[0].RecalculateAxesScale();
     }
 
-    private void update_wave_chart()
+    private void UpdateWaveChart()
     {
-      update_wave_chart_source();
-      update_wave_chart_filtered();
-      update_wave_chart_oversampled();
-      wave_chart.ChartAreas[0].RecalculateAxesScale();
-      wave_chart.Invalidate();
+      UpdateWaveChartSource();
+      UpdateFilteredWaveChart();
+      UpdateOverSampledWaveChart();
+      waveChart.ChartAreas[0].RecalculateAxesScale();
+      waveChart.Invalidate();
       waveChartMenu.Enabled = true;
       saveDisplayedMenu.Enabled = true;
       SaveAllDisplayedMenu.Enabled = true;
     }
 
-    private void update_wave_chart_source()
+    private void UpdateWaveChartSource()
     {
-      data[ch].update();
-      if (!force_chart_update && source_id == data[ch].source_id)
+      data[ch].Update();
+      if (!force_chart_update && source_id == data[ch].SourceId)
         return;
 
-      var s = wave_chart.Series[0].Points;
-      source_id = data[ch].source_id;
+      var s = waveChart.Series[0].Points;
+      source_id = data[ch].SourceId;
 
-      int pos = data_start.Value;
-      num_point = Math.Min(num_disp, num_data - pos - 1) / step;
+      int pos = dataStart.Value;
+      num_point = Math.Min(NumberOfDisplayed, NumberOfData - pos - 1) / step;
 
       s.Clear();
-      if (hide_source.Checked) return;
-      var val = data[ch].source;
+      if (hideSource.Checked) return;
+      var val = data[ch].Source;
       if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
       {
         var origin = wavefile.Time;
-        var x = data[ch].xvalues.Select(v => origin.AddSeconds(v)).ToArray();
-        for (int i = 0; i < num_disp; i += step)
+        var x = data[ch].Xvalues.Select(v => origin.AddSeconds(v)).ToArray();
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
       }
       else
       {
-        var x = data[ch].xvalues;
+        var x = data[ch].Xvalues;
 
-        for (int i = 0; i < num_disp; i += step)
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
@@ -284,38 +281,38 @@ namespace WaveViewerWithFilering
       double max = val.Max();
       double min = val.Min();
       double range = max - min;
-      peakdisplay.Items[1] = string.Format("     max:{0:g3}", max);
-      peakdisplay.Items[2] = string.Format("     min:{0:g3}", min);
-      peakdisplay.Items[3] = string.Format("   range:{0:g3}", range);
-      peakdisplay.Invalidate();
+      peakDisplay.Items[1] = string.Format("     max:{0:g3}", max);
+      peakDisplay.Items[2] = string.Format("     min:{0:g3}", min);
+      peakDisplay.Items[3] = string.Format("   range:{0:g3}", range);
+      peakDisplay.Invalidate();
     }
 
-    private void update_wave_chart_filtered()
+    private void UpdateFilteredWaveChart()
     {
-      if (!force_chart_update && filtered_id == data[ch].filtered_id)
+      if (!force_chart_update && filtered_id == data[ch].FilteredId)
         return;
-      filtered_id = data[ch].filtered_id;
+      filtered_id = data[ch].FilteredId;
 
-      var s = wave_chart.Series[1].Points;
+      var s = waveChart.Series[1].Points;
       s.Clear();
-      if (hide_result.Checked || data[ch].xvalues == null)
+      if (hideResult.Checked || data[ch].Xvalues == null)
         return;
-      var val = data[ch].filtered;
+      var val = data[ch].Filtered;
       if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
       {
         var origin = wavefile.Time;
-        wave_chart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
-        var x = data[ch].xvalues.Select(v => origin.AddSeconds(v)).ToArray();
-        for (int i = 0; i < num_disp; i += step)
+        waveChart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+        var x = data[ch].Xvalues.Select(v => origin.AddSeconds(v)).ToArray();
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
       }
       else
       {
-        var x = data[ch].xvalues;
-        wave_chart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-        for (int i = 0; i < num_disp; i += step)
+        var x = data[ch].Xvalues;
+        waveChart.Series[1].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
@@ -323,36 +320,36 @@ namespace WaveViewerWithFilering
       double max = val.Max();
       double min = val.Min();
       double range = max - min;
-      peakdisplay.Items[5] = string.Format("     max:{0:g3}", max);
-      peakdisplay.Items[6] = string.Format("     min:{0:g3}", min);
-      peakdisplay.Items[7] = string.Format("   range:{0:g3}", range);
-      peakdisplay.Invalidate();
+      peakDisplay.Items[5] = string.Format("     max:{0:g3}", max);
+      peakDisplay.Items[6] = string.Format("     min:{0:g3}", min);
+      peakDisplay.Items[7] = string.Format("   range:{0:g3}", range);
+      peakDisplay.Invalidate();
     }
 
-    private void update_wave_chart_oversampled()
+    private void UpdateOverSampledWaveChart()
     {
       // skip update if id does not changed
-      if (!force_chart_update && over_id == data[ch].over_id)
+      if (!force_chart_update && over_id == data[ch].OverId)
         return;
 
-      over_id = data[ch].over_id;
+      over_id = data[ch].OverId;
 
-      var s = wave_chart.Series[2].Points;
+      var s = waveChart.Series[2].Points;
 
       s.Clear();
-      if (hide_over.Checked || data[ch].over_sampled == null || step > 1)
+      if (hideOver.Checked || data[ch].OverSampled == null || step > 1)
         return;
 
-      double x0 = data[ch].x0;
-      double dx = dt / over_sampling;
-      var val = data[ch].over_sampled;
+      double x0 = data[ch].StartTime;
+      double dx = TimeIncrement / OverSampling;
+      var val = data[ch].OverSampled;
 
       if (AbsoluteTime.Enabled && AbsoluteTime.Checked)
       {
         var origin = wavefile.Time;
-        wave_chart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
+        waveChart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
         var x = Enumerable.Range(0, val.Length).Select(i => origin.AddSeconds((x0 + dx * i))).ToArray();
-        for (int i = 0; i < num_disp; i += step)
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
@@ -360,8 +357,8 @@ namespace WaveViewerWithFilering
       else
       {
         var x = Enumerable.Range(0, val.Length).Select(i => x0 + dx * i).ToArray();
-        wave_chart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-        for (int i = 0; i < num_disp; i += step)
+        waveChart.Series[2].XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+        for (int i = 0; i < NumberOfDisplayed; i += step)
         {
           s.AddXY(x[i], val[i]);
         }
@@ -369,64 +366,54 @@ namespace WaveViewerWithFilering
       double max = val.Max();
       double min = val.Min();
       double range = max - min;
-      peakdisplay.Items[9] = string.Format("     max:{0:g3}", max);
-      peakdisplay.Items[10] = string.Format("     min:{0:g3}", min);
-      peakdisplay.Items[11] = string.Format("   range:{0:g3}", range);
-      peakdisplay.Invalidate();
+      peakDisplay.Items[9] = string.Format("     max:{0:g3}", max);
+      peakDisplay.Items[10] = string.Format("     min:{0:g3}", min);
+      peakDisplay.Items[11] = string.Format("   range:{0:g3}", range);
+      peakDisplay.Invalidate();
     }
 
-    private void update_filter_chart()
+    private void UpdateFilterChart()
     {
-      if (factor_id == data[ch].factor_id)
+      if (factor_id == data[ch].FactorId)
         return;
-      factor_id = data[ch].factor_id;
+      factor_id = data[ch].FactorId;
 
-      var f = filter_chart.Series[0].Points;
-      var s = filter_chart.Series[1].Points;
+      var f = filterChart.Series[0].Points;
+      var s = filterChart.Series[1].Points;
       f.Clear();
       s.Clear();
-      for (int i = -tap; i < tap; i++)
+      for (int i = -Tap; i < Tap; i++)
       {
-        f.Add(data[ch].factor[Math.Abs(i)]);
-        s.Add(data[ch].window[i]);
+        f.Add(data[ch].Factor[Math.Abs(i)]);
+        s.Add(data[ch].Window[i]);
       }
     }
 
-    private void update_freq_chart()
+    private void UpdateFrequencyChart()
     {
-      update_freq_chart_source();
-      update_freq_chart_filtered();
-      update_freq_chart_gain();
+      UpdateFrequencyChartSource();
+      UpdateFilderedFrequencyChart();
+      UpdateFrequencyChartGain();
       if (chkShowPassBandOnly.Checked)
       {
-        foreach (var ca in freq_chart.ChartAreas)
+        foreach (var ca in freqChart.ChartAreas)
         {
-          ca.AxisX.Maximum = Math.Ceiling(double.Parse(upper_fc.Text));
-          ca.AxisX.Minimum = Math.Floor(double.Parse(lower_fc.Text));
+          ca.AxisX.Maximum = Math.Ceiling(double.Parse(upperCutOffFrequency.Text));
+          ca.AxisX.Minimum = Math.Floor(double.Parse(lowerCutOffFrequency.Text));
         }
       }
-      else if (false)
-      {
-        foreach (var ca in freq_chart.ChartAreas)
-        {
-          ca.AxisX.Maximum = double.Parse(nyquist_frequency.Text);
-          ca.AxisX.Minimum = 0.0;
-        }
-      }
-      //freq_chart.ChartAreas[0].RecalculateAxesScale();
     }
 
     /// <summary>
     ///  Update PowerSpectrum Series in Frequency Chart
     /// </summary>
-    private void update_freq_chart_source()
+    private void UpdateFrequencyChartSource()
     {
-      double df = fs / nfft;
-      var s = freq_chart.Series[0].Points;
-      var amps = data[ch].wave_spectrum_amplitude_in_dB();
-      var x = data[ch].freqs;
-      int n = nfft / 2;
-      if (data[ch].category == "DIS" || data[ch].category == "VEL")
+      var s = freqChart.Series[0].Points;
+      var amps = data[ch].WaveSpectrumAmplitudeIn_dB();
+      var x = data[ch].Freqs;
+      int n = Nfft / 2;
+      if (data[ch].Category == "DIS" || data[ch].Category == "VEL")
       {
         n -= 1;
       }
@@ -438,13 +425,13 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void update_freq_chart_filtered()
+    private void UpdateFilderedFrequencyChart()
     {
-      var s = freq_chart.Series[1].Points;
+      var s = freqChart.Series[1].Points;
       var amps = data[ch].Power(WaveDataSet.State.Filtered).Select(v => 20.0 * Math.Log10(v)).ToArray();
-      var x = data[ch].freqs;
-      int n = nfft / 2;
-      if (data[ch].category == "DIS" || data[ch].category == "VEL")
+      var x = data[ch].Freqs;
+      int n = Nfft / 2;
+      if (data[ch].Category == "DIS" || data[ch].Category == "VEL")
       {
         n -= 1;
       }
@@ -456,59 +443,59 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void update_freq_chart_gain()
+    private void UpdateFrequencyChartGain()
     {
-      if (gain_id == data[ch].gain_id)
+      if (gain_id == data[ch].GainId)
         return;
-      gain_id = data[ch].gain_id;
+      gain_id = data[ch].GainId;
 
-      var s = this.freq_chart.Series[2].Points;
-      var gains = data[ch].gains.Take(tap + 1).ToArray();
+      var s = this.freqChart.Series[2].Points;
+      var gains = data[ch].Gains.Take(Tap + 1).ToArray();
 
       s.Clear();
-      for (int i = 0; i < tap + 1; i++)
+      for (int i = 0; i < Tap + 1; i++)
         s.AddXY(tap_freqs[i], gains[i]);
     }
 
-    private void update_chart_visible()
+    private void UpdateChartVisible()
     {
-      wave_fft_chart.Visible = show_fft_data.Checked;
-      peak_chart.Visible = !show_fft_data.Checked;
+      waveFftChart.Visible = showFftData.Checked;
+      peakChart.Visible = !showFftData.Checked;
     }
     #endregion
 
-    private void channel_change()
+    private void ChannelChange()
     {
-      ch = channel_track.Value;
+      ch = channelTrack.Value;
 
       channel.Text = ch.ToString();
-      channel_name.Text = wavefile.name(ch);
-      channel_comment.Text = wavefile.comment(ch);
-      data_length.Text = data[ch].length.ToString();
+      channelName.Text = wavefile.Name(ch);
+      channelComment.Text = wavefile.Comment(ch);
+      dataLength.Text = data[ch].Length.ToString();
 
-      fs = 1.0 / dt;
-      sampling_rate.Text = fs.ToString();
-      sampling_rate.ReadOnly = true;
+      fs = 1.0 / TimeIncrement;
+      samplingRate.Text = fs.ToString();
+      samplingRate.ReadOnly = true;
       fn = fs / 2.0;
-      nyquist_frequency.Text = fn.ToString();
+      nyquistFrequency.Text = fn.ToString();
 
-      freq_chart.ChartAreas[0].AxisX.Maximum = fn;
-      update_display_data_length();
-      data_start.Maximum = num_data - num_disp;
+      freqChart.ChartAreas[0].AxisX.Maximum = fn;
+      UpdateDisplayedDataLength();
+      dataStart.Maximum = NumberOfData - NumberOfDisplayed;
       // change data_start
-      data[ch].data_start = data_start.Value;
+      data[ch].DataStart = dataStart.Value;
 
       // update filter information
-      var window_type = data[ch].window_type; // save
-      tap_track.Value = data[ch].tap;
-      update_tap_info();
+      var window_type = data[ch].WindowType; // save
+      tapTrack.Value = data[ch].Tap;
+      UpdateTapInfo();
 
-      alpha.Text = data[ch].alpha.ToString(); // filter's window type is chened to Kaiser automatically.
+      alpha.Text = data[ch].Alpha.ToString(); // filter's window type is chened to Kaiser automatically.
 
-      lower_fc_track.Value = data[ch].lower;
-      update_lower_fc();
-      upper_fc_track.Value = data[ch].upper;
-      update_upper_fc();
+      lowerCutOffFrequencyTrack.Value = data[ch].Lower;
+      UpdateLowerCutOffFrequency();
+      upperCutOffFrequencyTrack.Value = data[ch].Upper;
+      UpdateUpperCutOffFrequency();
 
 
       // switch to actual window_type
@@ -516,117 +503,115 @@ namespace WaveViewerWithFilering
       {
         case FIRFilter.WindowType.None:
         case FIRFilter.WindowType.Rectangle:
-          rectangle_window.Checked = true;
+          rectangleWindow.Checked = true;
           break;
         case FIRFilter.WindowType.Han:
-          hann_window.Checked = true;
+          hannWindow.Checked = true;
           break;
         case FIRFilter.WindowType.Hamming:
-          hamming_widow.Checked = true;
+          hammingWindow.Checked = true;
           break;
         case FIRFilter.WindowType.Kaiser:
-          kaiser_window.Checked = true;
+          kaiserWindow.Checked = true;
           break;
         case FIRFilter.WindowType.Blackman:
-          blackman_window.Checked = true;
+          blackmanWindow.Checked = true;
           break;
         default:
           throw new ApplicationException("Error in Window type");
       }
-      lower_fc_track.Value = data[ch].lower;
-      update_lower_fc();
-      upper_fc_track.Value = data[ch].upper;
-      update_upper_fc();
-      tap_track.Value = data[ch].tap;
-      update_tap_info();
-      update_display_data_length();
+      lowerCutOffFrequencyTrack.Value = data[ch].Lower;
+      UpdateLowerCutOffFrequency();
+      upperCutOffFrequencyTrack.Value = data[ch].Upper;
+      UpdateUpperCutOffFrequency();
+      tapTrack.Value = data[ch].Tap;
+      UpdateTapInfo();
+      UpdateDisplayedDataLength();
       CheckUpdate();
     }
 
-    private void update_tap_info()
+    private void UpdateTapInfo()
     {
-      int tap = tap_track.Value;
+      int tap = tapTrack.Value;
 
-      if (lower_fc_track.Value > tap)
-        lower_fc_track.Value = tap - 1;
-      lower_fc_track.Maximum = tap - 1;
-      if (upper_fc_track.Value > tap)
-        upper_fc_track.Value = tap;
-      upper_fc_track.Maximum = tap;
+      if (lowerCutOffFrequencyTrack.Value > tap)
+        lowerCutOffFrequencyTrack.Value = tap - 1;
+      lowerCutOffFrequencyTrack.Maximum = tap - 1;
+      if (upperCutOffFrequencyTrack.Value > tap)
+        upperCutOffFrequencyTrack.Value = tap;
+      upperCutOffFrequencyTrack.Maximum = tap;
 
-      number_of_tap.Text = tap.ToString();
+      numberOfTap.Text = tap.ToString();
       int filter_size = tap * 2 - 1;
-      filter_length.Text = filter_size.ToString();
+      filterLength.Text = filter_size.ToString();
 
       if (data != null)
-        fir.tap = tap;
+        Fir.Tap = tap;
 
       double df = fs / tap / 2;
       tap_freqs = Enumerable.Range(0, tap + 1).Select(i => df * i).ToArray();
     }
 
-    private void update_display_data_length()
+    private void UpdateDisplayedDataLength()
     {
-      int val;
-      if (int.TryParse(display_data_length.Text, out val))
+      if (int.TryParse(displayDataLength.Text, out int val))
       {
-        if (val > num_data || val > MAX_DISP_SIZE)
+        if (val > NumberOfData || val > MAX_DISP_SIZE)
         {
-          display_data_length.Text = Math.Min(num_data, MAX_DISP_SIZE).ToString();
+          displayDataLength.Text = Math.Min(NumberOfData, MAX_DISP_SIZE).ToString();
           return;
         }
-        num_disp = val;
-        step = 1 + ((num_disp - 1) / max_points);
-        data_start.LargeChange = num_disp / 5;
-        int largest = num_data - num_disp;
+        NumberOfDisplayed = val;
+        step = 1 + ((NumberOfDisplayed - 1) / max_points);
+        dataStart.LargeChange = NumberOfDisplayed / 5;
+        int largest = NumberOfData - NumberOfDisplayed;
         //if (data_start.Value > largest)
         //    data_start.Value = largest;
-        data_start.Maximum = largest;
+        dataStart.Maximum = largest;
       }
     }
 
-    private void update_upper_fc()
+    private void UpdateUpperCutOffFrequency()
     {
-      upper_val.Text = upper_fc_track.Value.ToString();
-      upper_fc.Text = (upper_fc_track.Value * fn / tap).ToString();
-      if (upper_fc_track.Value <= lower_fc_track.Value)
+      upperValue.Text = upperCutOffFrequencyTrack.Value.ToString();
+      upperCutOffFrequency.Text = (upperCutOffFrequencyTrack.Value * fn / Tap).ToString();
+      if (upperCutOffFrequencyTrack.Value <= lowerCutOffFrequencyTrack.Value)
       {
-        lower_fc_track.Value = upper_fc_track.Value - 1;
-      }
-      if (data != null)
-        fir.upper = upper_fc_track.Value;
-    }
-
-    private void update_lower_fc()
-    {
-      lower_val.Text = lower_fc_track.Value.ToString();
-      lower_fc.Text = (lower_fc_track.Value * fn / tap).ToString();
-      if (lower_fc_track.Value >= upper_fc_track.Value)
-      {
-        upper_fc_track.Value = lower_fc_track.Value + 1;
+        lowerCutOffFrequencyTrack.Value = upperCutOffFrequencyTrack.Value - 1;
       }
       if (data != null)
-        fir.lower = lower_fc_track.Value;
+        Fir.Upper = upperCutOffFrequencyTrack.Value;
     }
 
-    private void update_gain()
+    private void UpdateLowerCutOffFrequency()
     {
-      double val;
-      if (double.TryParse(gain.Text, out val))
+      lowerValue.Text = lowerCutOffFrequencyTrack.Value.ToString();
+      lowerCutOffFrequency.Text = (lowerCutOffFrequencyTrack.Value * fn / Tap).ToString();
+      if (lowerCutOffFrequencyTrack.Value >= upperCutOffFrequencyTrack.Value)
       {
-        fir.gain = val;
+        upperCutOffFrequencyTrack.Value = lowerCutOffFrequencyTrack.Value + 1;
+      }
+      if (data != null)
+        Fir.Lower = lowerCutOffFrequencyTrack.Value;
+    }
+
+    private void UpdateGain()
+    {
+      if (double.TryParse(gain.Text, out double val))
+      {
+        Fir.Gain = val;
       }
     }
     #endregion
     #region Operations
 
-    private void open_file(string file_name)
+    private void OpenFile(string file_name)
     {
-      file_path.Text = file_name;
+      filePath.Text = file_name;
       var ext = System.IO.Path.GetExtension(file_name).ToUpper();
       if (ext == ".DAT")
       {
-        if (Famos.is_famos(file_name))
+        if (Famos.IsFamos(file_name))
         {
           wavefile = new Famos(file_name);
           if (wavefile != null)
@@ -643,13 +628,13 @@ namespace WaveViewerWithFilering
       {
         if (DelimFile.IsKyowaCsv(file_name))
         {
-          wavefile = DelimFile.KyowaCsv(file_name);
+          wavefile = DelimFile.OpenKyowaCsv(file_name);
           if (wavefile != null)
             AbsoluteTime.Enabled = true;
         }
         else
         {
-          wavefile = DelimFile.GeneralCsv(file_name);
+          wavefile = DelimFile.OpenGeneralCsv(file_name);
           if (wavefile != null)
             AbsoluteTime.Enabled = false;
         }
@@ -663,34 +648,33 @@ namespace WaveViewerWithFilering
       }
       progressBar1.Value = 0;
       progressBar1.Visible = true;
-      if (!wavefile.opened)
+      if (!wavefile.Opened)
         return;
-      progressBar1.Maximum = wavefile.cols + 2;
+      progressBar1.Maximum = wavefile.Cols + 2;
       progressBar1.Value = 1;
 
       var default_window_type = FIRFilter.WindowType.None;
-      double a = 1.5;
-      double.TryParse(alpha.Text, out a);
-      if (rectangle_window.Checked) default_window_type = FIRFilter.WindowType.Rectangle;
-      if (hann_window.Checked) default_window_type = FIRFilter.WindowType.Han;
-      if (hamming_widow.Checked) default_window_type = FIRFilter.WindowType.Hamming;
-      if (blackman_window.Checked) default_window_type = FIRFilter.WindowType.Blackman;
-      if (kaiser_window.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
+      double.TryParse(alpha.Text, out double a);
+      if (rectangleWindow.Checked) default_window_type = FIRFilter.WindowType.Rectangle;
+      if (hannWindow.Checked) default_window_type = FIRFilter.WindowType.Han;
+      if (hammingWindow.Checked) default_window_type = FIRFilter.WindowType.Hamming;
+      if (blackmanWindow.Checked) default_window_type = FIRFilter.WindowType.Blackman;
+      if (kaiserWindow.Checked) default_window_type = FIRFilter.WindowType.Kaiser;
 
-      data = new List<WaveDataSet>(wavefile.cols);
+      data = new List<WaveDataSet>(wavefile.Cols);
 
-      for (int i = 0; i < wavefile.cols; i++)
+      for (int i = 0; i < wavefile.Cols; i++)
       {
         progressBar1.Value = i + 2;
         var wave = new WaveDataSet(wavefile, i);
         data.Add(wave);
-        wave.tap = tap_track.Value;
-        wave.lower = lower_fc_track.Value;
-        wave.upper = upper_fc_track.Value;
-        wave.alpha = a;
-        wave.window_type = default_window_type;
+        wave.Tap = tapTrack.Value;
+        wave.Lower = lowerCutOffFrequencyTrack.Value;
+        wave.Upper = upperCutOffFrequencyTrack.Value;
+        wave.Alpha = a;
+        wave.WindowType = default_window_type;
 
-        wave.gain = -80.0;
+        wave.Gain = -80.0;
       }
       progressBar1.Value = progressBar1.Maximum;
 
@@ -699,16 +683,16 @@ namespace WaveViewerWithFilering
       {
         item.Text = "";
         item.Items.Clear();
-        for (int i = 0; i < wavefile.cols; i++)
+        for (int i = 0; i < wavefile.Cols; i++)
         {
           item.Items.Add(i.ToString());
         }
       }
 
-      channel_track.Value = 0;
-      channel_track.Maximum = wavefile.cols - 1;
-      axes_ranges = new AxisRanges[wavefile.cols];
-      for (int i = 0; i < wavefile.cols; i++)
+      channelTrack.Value = 0;
+      channelTrack.Maximum = wavefile.Cols - 1;
+      axes_ranges = new AxisRanges[wavefile.Cols];
+      for (int i = 0; i < wavefile.Cols; i++)
       {
         // NaN means automatic
         axes_ranges[i].wave.max = axes_ranges[i].wave.min = double.NaN;
@@ -716,9 +700,9 @@ namespace WaveViewerWithFilering
         //axes_ranges[i].peak_a.max = axes_ranges[i].peak_a.min = double.NaN;
       }
 
-      update_tap_info();
+      UpdateTapInfo();
 
-      channel_change();
+      ChannelChange();
 
       progressBar1.Visible = false;
 
@@ -729,46 +713,45 @@ namespace WaveViewerWithFilering
       len_1sec.Enabled = true;
       len_5sec.Enabled = true;
 
-      freq_chart.ChartAreas[0].RecalculateAxesScale();
-      wave_chart.ChartAreas[0].RecalculateAxesScale();
-      filter_chart.ChartAreas[0].RecalculateAxesScale();
-      peak_chart.ChartAreas[0].RecalculateAxesScale();
+      freqChart.ChartAreas[0].RecalculateAxesScale();
+      waveChart.ChartAreas[0].RecalculateAxesScale();
+      filterChart.ChartAreas[0].RecalculateAxesScale();
+      peakChart.ChartAreas[0].RecalculateAxesScale();
     }
 
-    private void set_alpha(string text)
+    private void SetAlpha(string text)
     {
-      double val;
-      if (double.TryParse(text, out val))
+      if (double.TryParse(text, out double val))
       {
-        fir.alpha = val;
+        Fir.Alpha = val;
       }
     }
 
-    private string find_channel(string in_name)
+    private string FindChannel(string in_name)
     {
-      for (int i = 0; i < wavefile.cols; i++)
+      for (int i = 0; i < wavefile.Cols; i++)
       {
-        if (wavefile.name(i).Contains(in_name))
+        if (wavefile.Name(i).Contains(in_name))
           return i.ToString();
       }
       return "";
     }
 
-    void search_channels(string side)
+    void SearchChannels(string side)
     {
-      ch_P1.Text = find_channel(side + "_P1").ToString();
-      ch_P2.Text = find_channel(side + "_P2").ToString();
-      ch_Ya.Text = find_channel(side + "_Ya").ToString();
-      ch_Za.Text = find_channel(side + "_Za").ToString();
+      ch_P1.Text = FindChannel(side + "_P1").ToString();
+      ch_P2.Text = FindChannel(side + "_P2").ToString();
+      ch_Ya.Text = FindChannel(side + "_Ya").ToString();
+      ch_Za.Text = FindChannel(side + "_Za").ToString();
     }
 
-    private void set_data_length_by_duration(double dur)
+    private void SetDataLengthByDuration(double dur)
     {
-      int count = (int)(dur / dt);
-      display_data_length.Text = count.ToString();
+      int count = (int)(dur / TimeIncrement);
+      displayDataLength.Text = count.ToString();
     }
 
-    private void save_wave(int idx)
+    private void SaveWave(int idx)
     {
       if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
@@ -777,33 +760,33 @@ namespace WaveViewerWithFilering
       {
         using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
         {
-          writer.WriteLine("Original File, {0}", file_path.Text);
-          writer.WriteLine("Data Start, {0}", data_start.Value);
-          writer.WriteLine("Data Length, {0}", data_length.Text);
+          writer.WriteLine("Original File, {0}", filePath.Text);
+          writer.WriteLine("Data Start, {0}", dataStart.Value);
+          writer.WriteLine("Data Length, {0}", dataLength.Text);
           writer.WriteLine("Sampling Rate, {0}", fs);
           writer.WriteLine("Ch, {0}", ch);
-          writer.WriteLine("Channel name, {0}", channel_name.Text);
-          writer.WriteLine("Comment of channel, {0}", channel_comment.Text);
+          writer.WriteLine("Channel name, {0}", channelName.Text);
+          writer.WriteLine("Comment of channel, {0}", channelComment.Text);
           writer.WriteLine("");
-          writer.WriteLine("time, {0} Wave", wave_chart.Series[idx].Name);
+          writer.WriteLine("time, {0} Wave", waveChart.Series[idx].Name);
 
           // Setup wave data
-          double[] x = data[ch].xvalues;
+          double[] x = data[ch].Xvalues;
           double[] y;
           switch (idx)
           {
             case 0:
-              y = data[ch].source;
+              y = data[ch].Source;
               break;
             case 1:
-              y = data[ch].filtered;
+              y = data[ch].Filtered;
               break;
             case 2:
-              y = data[ch].over_sampled;
+              y = data[ch].OverSampled;
               break;
             case 3:
-              y = wave_chart.Series[3].Points.Select(v => v.YValues[0]).ToArray();
-              x = wave_chart.Series[3].Points.Select(v => v.XValue).ToArray();
+              y = waveChart.Series[3].Points.Select(v => v.YValues[0]).ToArray();
+              x = waveChart.Series[3].Points.Select(v => v.XValue).ToArray();
               break;
             default:
               throw new ArgumentException("index must be in 0 to 3");
@@ -816,43 +799,43 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void save_all_waves(int idx)
+    private void SaveAllWaves(int idx)
     {
       if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
 
       // need to update data start for all channnels
-      System.Threading.Tasks.Parallel.ForEach(data, (d) => { d.data_start = data_start.Value; d.update(); });
+      System.Threading.Tasks.Parallel.ForEach(data, (d) => { d.DataStart = dataStart.Value; d.Update(); });
 
       using (var stream = saveFileDialogCSV.OpenFile())
       {
         using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
         {
-          writer.WriteLine("Original File, {0}", file_path.Text);
-          writer.WriteLine("Data Start, {0}", data_start.Value);
-          writer.WriteLine("Data Length, {0}", data_length.Text);
+          writer.WriteLine("Original File, {0}", filePath.Text);
+          writer.WriteLine("Data Start, {0}", dataStart.Value);
+          writer.WriteLine("Data Length, {0}", dataLength.Text);
           writer.WriteLine("Sampling Rate, {0}", fs);
           var chs = Enumerable.Range(0, data.Count);
           writer.WriteLine("Ch, {0}", string.Join(",", chs));
-          writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i => wavefile.name(i))));
-          writer.WriteLine("Comment of channel, {0}", string.Join(",", chs.Select(i => wavefile.comment(i))));
-          writer.WriteLine("Wave Type, {0}", wave_chart.Series[idx].Name);
+          writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i => wavefile.Name(i))));
+          writer.WriteLine("Comment of channel, {0}", string.Join(",", chs.Select(i => wavefile.Comment(i))));
+          writer.WriteLine("Wave Type, {0}", waveChart.Series[idx].Name);
           writer.WriteLine("");
           writer.WriteLine("time, {0}", string.Join(",", chs.Select(i => "Ch" + i.ToString())));
 
           // Setup wave data
-          double[] x = data[0].xvalues;
+          double[] x = data[0].Xvalues;
           IEnumerable<double[]> y;
           switch (idx)
           {
             case 0:
-              y = data.Select(v => v.source);
+              y = data.Select(v => v.Source);
               break;
             case 1:
-              y = data.Select(v => v.filtered);
+              y = data.Select(v => v.Filtered);
               break;
             case 2:
-              y = data.Select(v => v.over_sampled);
+              y = data.Select(v => v.OverSampled);
               break;
             default:
               throw new ArgumentException("index must be in 0 to 2");
@@ -865,7 +848,7 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void save_all_peaks()
+    private void SaveAllPeaks()
     {
       if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
@@ -874,22 +857,22 @@ namespace WaveViewerWithFilering
       {
         using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
         {
-          writer.WriteLine("Original File, {0}", file_path.Text);
-          writer.WriteLine("Source Data Start, {0}", data_start.Value);
-          writer.WriteLine("Source Data Length, {0}", data_length.Text);
+          writer.WriteLine("Original File, {0}", filePath.Text);
+          writer.WriteLine("Source Data Start, {0}", dataStart.Value);
+          writer.WriteLine("Source Data Length, {0}", dataLength.Text);
           writer.WriteLine("Sampling Rate of Original Data, {0}", fs);
           var chs = targets.Select(t => int.Parse(t.Text));
           writer.WriteLine("Ch, {0}", string.Join(",", chs));
-          writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i => wavefile.name(i))));
-          writer.WriteLine("Comment of channel, {0}", string.Join(",", chs.Select(i => wavefile.comment(i))));
+          writer.WriteLine("Channel name, {0}", string.Join(",", chs.Select(i => wavefile.Name(i))));
+          writer.WriteLine("Comment of channel, {0}", string.Join(",", chs.Select(i => wavefile.Comment(i))));
           writer.WriteLine("Wave Type, Peaks");
-          var peak_counts = peak_chart.Series.Select(s => s.Points.Count).ToArray();
+          var peak_counts = peakChart.Series.Select(s => s.Points.Count).ToArray();
           writer.WriteLine("Number of Peaks, {0}", string.Join(",", peak_counts));
           writer.WriteLine("");
           writer.WriteLine("time, P1, time, P2, time, Ya, time, Za");
           var len = peak_counts.Max();
           var res = peak_counts.Select((n, i) =>
-              peak_chart.Series[i].Points
+              peakChart.Series[i].Points
                   .Select(p => string.Format("{0},{1}", p.XValue, p.YValues[0]))
                   .Concat(Enumerable.Repeat(",", len - n)).ToArray());
           for (int i = 0; i < peak_counts.Max(); i++)
@@ -900,7 +883,7 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void save_peaks(int idx)
+    private void SavePeaks(int idx)
     {
       if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
@@ -908,19 +891,19 @@ namespace WaveViewerWithFilering
       {
         using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
         {
-          writer.WriteLine("Original File, {0}", file_path.Text);
-          writer.WriteLine("Source Data Start, {0}", data_start.Value);
-          writer.WriteLine("Source Data Length, {0}", data_length.Text);
+          writer.WriteLine("Original File, {0}", filePath.Text);
+          writer.WriteLine("Source Data Start, {0}", dataStart.Value);
+          writer.WriteLine("Source Data Length, {0}", dataLength.Text);
           writer.WriteLine("Sampling Rate of Original Data, {0}", fs);
           var target_ch = int.Parse(targets[idx].Text);
           writer.WriteLine("Ch, {0}", targets[idx].Text);
-          writer.WriteLine("Channel name, {0}", wavefile.name(target_ch));
-          writer.WriteLine("Comment of channel, {0}", wavefile.comment(target_ch));
+          writer.WriteLine("Channel name, {0}", wavefile.Name(target_ch));
+          writer.WriteLine("Comment of channel, {0}", wavefile.Comment(target_ch));
           writer.WriteLine("Wave Type, Peaks");
-          writer.WriteLine("Number of Peaks, {0}", peak_chart.Series[idx].Points.Count);
+          writer.WriteLine("Number of Peaks, {0}", peakChart.Series[idx].Points.Count);
           writer.WriteLine("");
           writer.WriteLine("time, {0}", targets[idx].Name.Substring(3));
-          foreach (var item in peak_chart.Series[idx].Points)
+          foreach (var item in peakChart.Series[idx].Points)
           {
             writer.WriteLine("{0},{1}", item.XValue, item.YValues[0]);
           }
@@ -935,7 +918,7 @@ namespace WaveViewerWithFilering
       Gain = 2,
     }
 
-    private void save_spectrum(FreqSeriesType type)
+    private void SaveSpectrum(FreqSeriesType type)
     {
       if (saveFileDialogCSV.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
@@ -944,34 +927,34 @@ namespace WaveViewerWithFilering
       {
         using (var writer = new System.IO.StreamWriter(stream, Encoding.Default))
         {
-          writer.WriteLine("Original File, {0}", file_path.Text);
-          writer.WriteLine("Data Start, {0}", data_start.Value);
-          writer.WriteLine("Data Length, {0}", data_length.Text);
+          writer.WriteLine("Original File, {0}", filePath.Text);
+          writer.WriteLine("Data Start, {0}", dataStart.Value);
+          writer.WriteLine("Data Length, {0}", dataLength.Text);
           writer.WriteLine("Sampling Rate, {0}", fs);
           writer.WriteLine("Ch, {0}", ch);
-          writer.WriteLine("Channel name, {0}", channel_name.Text);
-          writer.WriteLine("Comment of channel, {0}", channel_comment.Text);
+          writer.WriteLine("Channel name, {0}", channelName.Text);
+          writer.WriteLine("Comment of channel, {0}", channelComment.Text);
           if (type == FreqSeriesType.Filtered)
           {
-            writer.WriteLine("Tap, {0}", fir.tap);
-            writer.WriteLine("Upper Fc, {1}, ({0} Hz)", upper_fc.Text, upper_val.Text);
-            writer.WriteLine("Lower Fc, {1}, ({0} Hz)", lower_fc.Text, lower_val.Text);
+            writer.WriteLine("Tap, {0}", Fir.Tap);
+            writer.WriteLine("Upper Fc, {1}, ({0} Hz)", upperCutOffFrequency.Text, upperValue.Text);
+            writer.WriteLine("Lower Fc, {1}, ({0} Hz)", lowerCutOffFrequency.Text, lowerValue.Text);
             writer.WriteLine("Stop band gain, {0}", gain.Text);
-            writer.Write("Filter type, {0}", fir.window_type.ToString());
-            if (fir.window_type == FIRFilter.WindowType.Kaiser)
-              writer.WriteLine(",{}", fir.alpha);
+            writer.Write("Filter type, {0}", Fir.WindowType.ToString());
+            if (Fir.WindowType == FIRFilter.WindowType.Kaiser)
+              writer.WriteLine(",{}", Fir.Alpha);
             else
               writer.WriteLine();
           }
           writer.WriteLine("");
 
           // Setup wave data
-          double[] x = data[ch].freqs;
+          double[] x = data[ch].Freqs;
           double[] y;
           switch (type)
           {
             case FreqSeriesType.Source:
-              y = data[ch].wave_spectrum_amplitude_in_dB();
+              y = data[ch].WaveSpectrumAmplitudeIn_dB();
               writer.WriteLine("Frequency, Source");
               break;
             case FreqSeriesType.Filtered:
@@ -979,7 +962,7 @@ namespace WaveViewerWithFilering
               writer.WriteLine("Frequency, Filtered");
               break;
             case FreqSeriesType.Gain:
-              y = data[ch].gains;
+              y = data[ch].Gains;
               writer.WriteLine("Frequency, Gain (dB)");
               break;
             default:
@@ -1000,36 +983,36 @@ namespace WaveViewerWithFilering
 
     #region EventHandler
 
-    private void tap_track_Scroll(object sender, EventArgs e)
+    private void TapTrack_Scroll(object sender, EventArgs e)
     {
-      update_tap_info();
+      UpdateTapInfo();
       CheckUpdate();
     }
 
-    private void upper_fc_track_Scroll(object sender, EventArgs e)
+    private void UpperCutOffFrecquencyTrack_Scroll(object sender, EventArgs e)
     {
-      update_upper_fc();
-      CheckUpdate();
-    }
-
-
-    private void lower_fc_track_Scroll(object sender, EventArgs e)
-    {
-      update_lower_fc();
+      UpdateUpperCutOffFrequency();
       CheckUpdate();
     }
 
 
-    private void update_Click(object sender, EventArgs e)
+    private void LowerCutOffFrequencyTrack_Scroll(object sender, EventArgs e)
     {
-      data_update();
+      UpdateLowerCutOffFrequency();
+      CheckUpdate();
     }
 
-    private void channel_track_Scroll(object sender, EventArgs e)
+
+    private void Update_Click(object sender, EventArgs e)
     {
-      channel_change();
-      wave_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].wave.max;
-      wave_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].wave.min;
+      DataUpdate();
+    }
+
+    private void ChannelTrack_Scroll(object sender, EventArgs e)
+    {
+      ChannelChange();
+      waveChart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].wave.max;
+      waveChart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].wave.min;
       //peak_chart.ChartAreas[0].AxisY.Maximum = axes_ranges[ch].peak_P.max;
       //peak_chart.ChartAreas[0].AxisY.Minimum = axes_ranges[ch].peak_P.min;
       //peak_chart.ChartAreas[0].AxisY2.Maximum = axes_ranges[ch].peak_a.max;
@@ -1037,159 +1020,158 @@ namespace WaveViewerWithFilering
       CheckUpdate();
     }
 
-    private void select_file_Click(object sender, EventArgs e)
+    private void SelectFile_Click(object sender, EventArgs e)
     {
       if (openFamosDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
 
-      open_file(openFamosDialog.FileName);
+      OpenFile(openFamosDialog.FileName);
     }
 
 
-    private void display_data_length_TextChanged(object sender, EventArgs e)
+    private void DisplayDataLength_TextChanged(object sender, EventArgs e)
     {
-      update_display_data_length();
+      UpdateDisplayedDataLength();
       CheckUpdate();
     }
 
 
-    private void kaiser_window_CheckedChanged(object sender, EventArgs e)
+    private void KaiserWindow_CheckedChanged(object sender, EventArgs e)
     {
-      set_alpha(alpha.Text);
+      SetAlpha(alpha.Text);
       CheckUpdate();
     }
 
-    private void alpha_TextChanged(object sender, EventArgs e)
+    private void Alpha_TextChanged(object sender, EventArgs e)
     {
-      if (kaiser_window.Checked)
-        set_alpha(alpha.Text);
+      if (kaiserWindow.Checked)
+        SetAlpha(alpha.Text);
       CheckUpdate();
     }
 
-    private void rectangle_window_CheckedChanged(object sender, EventArgs e)
+    private void RectangleWindow_CheckedChanged(object sender, EventArgs e)
     {
-      fir.window_type = FIRFilter.WindowType.Rectangle;
+      Fir.WindowType = FIRFilter.WindowType.Rectangle;
       CheckUpdate();
     }
 
-    private void blackman_window_CheckedChanged(object sender, EventArgs e)
+    private void BlackmanWindow_CheckedChanged(object sender, EventArgs e)
     {
-      fir.window_type = FIRFilter.WindowType.Blackman;
+      Fir.WindowType = FIRFilter.WindowType.Blackman;
       CheckUpdate();
     }
 
-    private void hann_window_CheckedChanged(object sender, EventArgs e)
+    private void HannWindow_CheckedChanged(object sender, EventArgs e)
     {
-      fir.window_type = FIRFilter.WindowType.Han;
+      Fir.WindowType = FIRFilter.WindowType.Han;
       CheckUpdate();
     }
 
-    private void hamming_widow_CheckedChanged(object sender, EventArgs e)
+    private void HammingWindow_CheckedChanged(object sender, EventArgs e)
     {
-      fir.window_type = FIRFilter.WindowType.Hamming;
+      Fir.WindowType = FIRFilter.WindowType.Hamming;
       CheckUpdate();
     }
 
-    private void data_start_ValueChanged(object sender, EventArgs e)
+    private void DataStart_ValueChanged(object sender, EventArgs e)
     {
-      DataStart.Text = data_start.Value.ToString();
+      DataStart.Text = dataStart.Value.ToString();
       if (data != null)
-        data[ch].data_start = data_start.Value;
+        data[ch].DataStart = dataStart.Value;
       foreach (var item in targets)
       {
-        int i;
-        if (int.TryParse(item.Text, out i))
+        if (int.TryParse(item.Text, out int i))
         {
-          data[i].data_start = data_start.Value;
+          data[i].DataStart = dataStart.Value;
         }
       }
       CheckUpdate();
     }
 
-    private void gain_TextChanged(object sender, EventArgs e)
+    private void Gain_TextChanged(object sender, EventArgs e)
     {
-      update_gain();
+      UpdateGain();
     }
 
-    private void umi_Click(object sender, EventArgs e)
+    private void Umi_Click(object sender, EventArgs e)
     {
-      bool state = auto_update.Checked;
-      auto_update.Checked = false;
-      search_channels("UMI");
-      auto_update.Checked = state;
-      data_start_ValueChanged(sender, e);
+      bool state = autoUpdate.Checked;
+      autoUpdate.Checked = false;
+      SearchChannels("UMI");
+      autoUpdate.Checked = state;
+      DataStart_ValueChanged(sender, e);
       CheckUpdate();
     }
 
-    private void yama_Click(object sender, EventArgs e)
+    private void Yama_Click(object sender, EventArgs e)
     {
-      bool state = auto_update.Checked;
-      auto_update.Checked = false;
-      search_channels("YAMA");
-      auto_update.Checked = state;
-      data_start_ValueChanged(sender, e);
+      bool state = autoUpdate.Checked;
+      autoUpdate.Checked = false;
+      SearchChannels("YAMA");
+      autoUpdate.Checked = state;
+      DataStart_ValueChanged(sender, e);
       CheckUpdate();
     }
 
-    private void len_0_1sec_Click(object sender, EventArgs e)
+    private void Len_0_1sec_Click(object sender, EventArgs e)
     {
-      set_data_length_by_duration(0.1);
+      SetDataLengthByDuration(0.1);
       CheckUpdate();
     }
 
 
-    private void len_0_5sec_Click(object sender, EventArgs e)
+    private void Len_0_5sec_Click(object sender, EventArgs e)
     {
-      set_data_length_by_duration(0.5);
+      SetDataLengthByDuration(0.5);
       CheckUpdate();
     }
 
-    private void len_1sec_Click(object sender, EventArgs e)
+    private void Len_1sec_Click(object sender, EventArgs e)
     {
-      set_data_length_by_duration(1.0);
+      SetDataLengthByDuration(1.0);
       CheckUpdate();
     }
 
-    private void len_5sec_Click(object sender, EventArgs e)
+    private void Len_5sec_Click(object sender, EventArgs e)
     {
-      set_data_length_by_duration(5.0);
+      SetDataLengthByDuration(5.0);
       CheckUpdate();
     }
 
-    private void sampling_rate_TextChanged(object sender, EventArgs e)
+    private void SamplingRate_TextChanged(object sender, EventArgs e)
     {
-      if (!sampling_rate.ReadOnly)
+      if (!samplingRate.ReadOnly)
       {
-        if (double.TryParse(sampling_rate.Text, out fs))
+        if (double.TryParse(samplingRate.Text, out fs))
         {
           fn = (fs / 2.0);
-          nyquist_frequency.Text = fn.ToString();
-          update_upper_fc();
-          update_lower_fc();
+          nyquistFrequency.Text = fn.ToString();
+          UpdateUpperCutOffFrequency();
+          UpdateLowerCutOffFrequency();
         }
       }
     }
-    private void over_sampling_1_CheckedChanged(object sender, EventArgs e)
+    private void OverSampling1_CheckedChanged(object sender, EventArgs e)
     {
-      over_sampling = 1;
+      OverSampling = 1;
       CheckUpdate();
     }
 
-    private void over_sampling_2_CheckedChanged(object sender, EventArgs e)
+    private void OverSampling2_CheckedChanged(object sender, EventArgs e)
     {
-      over_sampling = 2;
+      OverSampling = 2;
       CheckUpdate();
     }
 
-    private void over_sampling_4_CheckedChanged(object sender, EventArgs e)
+    private void OverSampling4_CheckedChanged(object sender, EventArgs e)
     {
-      over_sampling = 4;
+      OverSampling = 4;
       CheckUpdate();
     }
 
-    private void over_sampling_8_CheckedChanged(object sender, EventArgs e)
+    private void OverSampling8_CheckedChanged(object sender, EventArgs e)
     {
-      over_sampling = 8;
+      OverSampling = 8;
       CheckUpdate();
     }
 
@@ -1199,139 +1181,138 @@ namespace WaveViewerWithFilering
     }
 
 
-    private void integ_SelectedIndexChanged(object sender, EventArgs e)
+    private void Integ_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (data == null)
         return;
       foreach (var item in data)
       {
-        item.category = integ.Text;
+        item.Category = integ.Text;
       }
       CheckUpdate();
     }
 
 
-    private void hide_over_CheckedChanged(object sender, EventArgs e)
+    private void HideOver_CheckedChanged(object sender, EventArgs e)
     {
-      hide_flag[HIDE_OVER] = hide_over.Checked;
+      hide_flag[HIDE_OVER] = hideOver.Checked;
       over_id = 0;
-      update_wave_chart_oversampled();
-      wave_chart.Invalidate();
+      UpdateOverSampledWaveChart();
+      waveChart.Invalidate();
     }
 
-    private void hide_result_CheckedChanged(object sender, EventArgs e)
+    private void HideResult_CheckedChanged(object sender, EventArgs e)
     {
-      hide_flag[HIDE_ANS] = hide_result.Checked;
+      hide_flag[HIDE_ANS] = hideResult.Checked;
       filtered_id = 0;
-      update_wave_chart_filtered();
-      wave_chart.Invalidate();
+      UpdateFilteredWaveChart();
+      waveChart.Invalidate();
     }
 
-    private void hide_source_CheckedChanged(object sender, EventArgs e)
+    private void HideSource_CheckedChanged(object sender, EventArgs e)
     {
-      hide_flag[HIDE_WAVE] = hide_source.Checked;
+      hide_flag[HIDE_WAVE] = hideSource.Checked;
       source_id = 0;
-      update_wave_chart_source();
-      wave_chart.Invalidate();
+      UpdateWaveChartSource();
+      waveChart.Invalidate();
     }
 
-    private void show_fft_data_CheckedChanged(object sender, EventArgs e)
+    private void ShowFftData_CheckedChanged(object sender, EventArgs e)
     {
-      update_chart_visible();
+      UpdateChartVisible();
       CheckUpdate();
     }
 
 
     private void DataStart_Validated(object sender, EventArgs e)
     {
-      data_start.Value = int.Parse(DataStart.Text);
+      dataStart.Value = int.Parse(DataStart.Text);
     }
 
     private void DataStart_Validating(object sender, CancelEventArgs e)
     {
-      int val;
-      if (!int.TryParse(DataStart.Text, out val))
+      if (!int.TryParse(DataStart.Text, out int val))
       {
         e.Cancel = true;
         return;
       }
       if (val < 0) DataStart.Text = "0";
-      if (val > data_start.Maximum) DataStart.Text = data_start.Maximum.ToString();
+      if (val > dataStart.Maximum) DataStart.Text = dataStart.Maximum.ToString();
     }
     #endregion
 
     //#region saveWaveHandlers
-    private void sourceWaveToolStripMenuItem_Click(object sender, EventArgs e)
+    private void SourceWaveToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      save_wave(0);
+      SaveWave(0);
     }
     private void SaveDisplayedFilteredWave_Click(object sender, EventArgs e)
     {
-      save_wave(1);
+      SaveWave(1);
     }
 
     private void SaveDisplayedOverWave_Click(object sender, EventArgs e)
     {
-      save_wave(2);
+      SaveWave(2);
     }
 
-    private void peakWaveToolStripMenuItem_Click(object sender, EventArgs e)
+    private void PeakWaveToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      save_wave(3);
+      SaveWave(3);
     }
 
-    private void saveAllDisplayedSourceWaves_Click(object sender, EventArgs e)
+    private void SaveAllDisplayedSourceWaves_Click(object sender, EventArgs e)
     {
-      save_all_waves(0);
+      SaveAllWaves(0);
     }
 
-    private void saveAllDisplayedFilteredWaves_Click(object sender, EventArgs e)
+    private void SaveAllDisplayedFilteredWaves_Click(object sender, EventArgs e)
     {
-      save_all_waves(1);
+      SaveAllWaves(1);
     }
 
-    private void saveAllDisplayedOversampledWaves_Click(object sender, EventArgs e)
+    private void SaveAllDisplayedOversampledWaves_Click(object sender, EventArgs e)
     {
-      save_all_waves(2);
+      SaveAllWaves(2);
     }
 
-    private void chkShowPassBandOnly_CheckedChanged(object sender, EventArgs e)
+    private void ChkShowPassBandOnly_CheckedChanged(object sender, EventArgs e)
     {
-      update_freq_chart();
+      UpdateFrequencyChart();
     }
 
-    private void btnExpandFilterSettings_Click(object sender, EventArgs e)
+    private void BtnExpandFilterSettings_Click(object sender, EventArgs e)
     {
       var curr = data[ch];
       for (int i = 0; i < data.Count; i++)
       {
         if (i == ch) continue;
         var tgt = data[i];
-        tgt.tap = curr.tap;
-        tgt.upper = curr.upper;
-        tgt.lower = curr.lower;
-        tgt.alpha = curr.alpha;
-        tgt.window_type = curr.window_type;
-        tgt.gain = curr.gain;
-        tgt.data_start += 1;
-        tgt.data_start = curr.data_start;
-        tgt.update();
+        tgt.Tap = curr.Tap;
+        tgt.Upper = curr.Upper;
+        tgt.Lower = curr.Lower;
+        tgt.Alpha = curr.Alpha;
+        tgt.WindowType = curr.WindowType;
+        tgt.Gain = curr.Gain;
+        tgt.DataStart += 1;
+        tgt.DataStart = curr.DataStart;
+        tgt.Update();
       }
     }
 
-    private void dataGridView1_Validated(object sender, EventArgs e)
+    private void DataGridView1_Validated(object sender, EventArgs e)
     {
       if (data != null)
       {
         foreach (var item in data)
         {
-          item.notch = this.notchFilterInfo.Notches;
+          item.Notch = this.notchFilterInfo.Notches;
         }
         CheckUpdate();
       }
     }
 
-    private void chart_range_enter(object o_sender, EventArgs e)
+    private void ChartRange_Enter(object o_sender, EventArgs e)
     {
       TextBox sender = (TextBox)o_sender;
       sender.Width = 80;
@@ -1348,11 +1329,10 @@ namespace WaveViewerWithFilering
 
     }
 
-    private void chart_range_changed(object o_sender, EventArgs e)
+    private void ChartRange_Changed(object o_sender, EventArgs e)
     {
       TextBox sender = (TextBox)o_sender;
       var ax = (System.Windows.Forms.DataVisualization.Charting.Axis)sender.Tag;
-      double val;
       if (sender.Text == "")
       {
         if (sender.Width == 20)
@@ -1362,7 +1342,7 @@ namespace WaveViewerWithFilering
         else
           ax.Minimum = double.NaN;
       }
-      else if (double.TryParse(sender.Text, out val))
+      else if (double.TryParse(sender.Text, out double val))
       {
         if (sender.Name.Contains("max"))
         {
@@ -1376,19 +1356,19 @@ namespace WaveViewerWithFilering
         }
       }
     }
-    private void chart_range_leave(object o_sender, EventArgs e)
+    private void ChartRange_Leave(object o_sender, EventArgs e)
     {
       TextBox sender = (TextBox)o_sender;
       sender.Width = 20;
       sender.Text = "";
     }
 
-    private void channel_track_Enter(object sender, EventArgs e)
+    private void ChannelTrack_Enter(object sender, EventArgs e)
     {
       if (axes_ranges != null)
       {
-        axes_ranges[ch].wave.max = wave_chart.ChartAreas[0].AxisY.Maximum;
-        axes_ranges[ch].wave.min = wave_chart.ChartAreas[0].AxisY.Minimum;
+        axes_ranges[ch].wave.max = waveChart.ChartAreas[0].AxisY.Maximum;
+        axes_ranges[ch].wave.min = waveChart.ChartAreas[0].AxisY.Minimum;
         //axes_ranges[ch].peak_P.max = peak_chart.ChartAreas[0].AxisY.Maximum;
         //axes_ranges[ch].peak_P.min = peak_chart.ChartAreas[0].AxisY.Minimum;
         //axes_ranges[ch].peak_a.max = peak_chart.ChartAreas[0].AxisY2.Maximum;
@@ -1403,39 +1383,39 @@ namespace WaveViewerWithFilering
           = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
       if (AbsoluteTime.Checked)
         val = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Time;
-      foreach (var item in peak_chart.Series)
+      foreach (var item in peakChart.Series)
       {
         item.XValueType = val;
       }
-      foreach (var item in wave_chart.Series)
+      foreach (var item in waveChart.Series)
       {
         item.XValueType = val;
       }
       if (AbsoluteTime.Checked)
       {
-        peak_chart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
-        wave_chart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
+        peakChart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
+        waveChart.ChartAreas[0].AxisX.LabelStyle.Format = "hh:mm:ss.FFF";
       }
       else
       {
-        peak_chart.ChartAreas[0].AxisX.LabelStyle.Format = "g";
-        var ax = wave_chart.ChartAreas[0].AxisX;
+        peakChart.ChartAreas[0].AxisX.LabelStyle.Format = "g";
+        var ax = waveChart.ChartAreas[0].AxisX;
         ax.LabelStyle.Format = "g";
         ax.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.FixedCount;
         ax.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
       }
       force_chart_update = true;
-      update_wave_chart();
-      update_peak_chart();
-      wave_chart.ChartAreas[0].RecalculateAxesScale();
-      peak_chart.ChartAreas[0].RecalculateAxesScale();
+      UpdateWaveChart();
+      UpdatePeakChart();
+      waveChart.ChartAreas[0].RecalculateAxesScale();
+      peakChart.ChartAreas[0].RecalculateAxesScale();
       force_chart_update = false;
     }
 
     private void CopyRangeToAllCh_Click(object sender, EventArgs e)
     {
-      var max = wave_chart.ChartAreas[0].AxisY.Maximum;
-      var min = wave_chart.ChartAreas[0].AxisY.Minimum;
+      var max = waveChart.ChartAreas[0].AxisY.Maximum;
+      var min = waveChart.ChartAreas[0].AxisY.Minimum;
       for (int i = 0; i < data.Count; i++)
       {
         axes_ranges[i].wave.max = max;
@@ -1443,109 +1423,106 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private void saveAllPeaks_Click(object sender, EventArgs e)
+    private void SaveAllPeaks_Click(object sender, EventArgs e)
     {
-      save_all_peaks();
+      SaveAllPeaks();
     }
 
-    private void saveP1Peaks_Click(object sender, EventArgs e)
+    private void SaveP1Peaks_Click(object sender, EventArgs e)
     {
-      save_peaks(0);
+      SavePeaks(0);
     }
 
-    private void saveP2Peaks_Click(object sender, EventArgs e)
+    private void SaveP2Peaks_Click(object sender, EventArgs e)
     {
-      save_peaks(1);
+      SavePeaks(1);
     }
 
-    private void saveYaPeaks_Click(object sender, EventArgs e)
+    private void SaveYaPeaks_Click(object sender, EventArgs e)
     {
-      save_peaks(2);
+      SavePeaks(2);
     }
 
-    private void saveZaPeaks_Click(object sender, EventArgs e)
+    private void SaveZaPeaks_Click(object sender, EventArgs e)
     {
-      save_peaks(3);
+      SavePeaks(3);
     }
 
-    private void number_of_tap_Validated(object sender, EventArgs e)
+    private void NumberOfTap_Validated(object sender, EventArgs e)
     {
-      int val;
-      if (int.TryParse(number_of_tap.Text, out val))
+      if (int.TryParse(numberOfTap.Text, out int val))
       {
         if (val > 0)
         {
           bool domax = false;
-          if (upper_fc_track.Value == upper_fc_track.Maximum)
+          if (upperCutOffFrequencyTrack.Value == upperCutOffFrequencyTrack.Maximum)
             domax = true;
-          if (val > tap_track.Maximum)
+          if (val > tapTrack.Maximum)
           {
-            tap_track.Maximum = val;
-            upper_fc_track.Maximum = val;
-            lower_fc_track.Maximum = val;
+            tapTrack.Maximum = val;
+            upperCutOffFrequencyTrack.Maximum = val;
+            lowerCutOffFrequencyTrack.Maximum = val;
             int i = val / 10;
-            tap_track.TickFrequency = i;
-            upper_fc_track.TickFrequency = i;
-            lower_fc_track.TickFrequency = i;
+            tapTrack.TickFrequency = i;
+            upperCutOffFrequencyTrack.TickFrequency = i;
+            lowerCutOffFrequencyTrack.TickFrequency = i;
           }
-          tap_track.Value = val;
-          update_tap_info(); // update
+          tapTrack.Value = val;
+          UpdateTapInfo(); // update
           if (domax)
-            upper_fc_track.Value = upper_fc_track.Maximum;
+            upperCutOffFrequencyTrack.Value = upperCutOffFrequencyTrack.Maximum;
         }
       }
     }
 
-    private void resetAxes_Click(object sender, EventArgs e)
+    private void ResetAxes_Click(object sender, EventArgs e)
     {
-      freq_chart.ChartAreas[0].RecalculateAxesScale();
+      freqChart.ChartAreas[0].RecalculateAxesScale();
     }
 
-    private void menuSpSaveSource_Click(object sender, EventArgs e)
+    private void MenuSpSaveSource_Click(object sender, EventArgs e)
     {
-      save_spectrum(FreqSeriesType.Source);
+      SaveSpectrum(FreqSeriesType.Source);
     }
 
-    private void menuSpSaveFiltered_Click(object sender, EventArgs e)
+    private void MenuSpSaveFiltered_Click(object sender, EventArgs e)
     {
-      save_spectrum(FreqSeriesType.Filtered);
+      SaveSpectrum(FreqSeriesType.Filtered);
     }
 
-    private void menuSpSaveGain_Click(object sender, EventArgs e)
+    private void MenuSpSaveGain_Click(object sender, EventArgs e)
     {
-      save_spectrum(FreqSeriesType.Gain);
+      SaveSpectrum(FreqSeriesType.Gain);
     }
 
-    private void upper_val_Validating(object sender, CancelEventArgs e)
+    private void UpperVal_Validating(object sender, CancelEventArgs e)
     {
       e.Cancel = true;
-      int i;
-      if (int.TryParse(upper_val.Text, out i))
+      if (int.TryParse(upperValue.Text, out int i))
       {
-        if (i <= tap_track.Value && i > lower_fc_track.Value)
+        if (i <= tapTrack.Value && i > lowerCutOffFrequencyTrack.Value)
         {
           e.Cancel = false;
         }
       }
     }
 
-    private void upper_val_Validated(object sender, EventArgs e)
+    private void UpperVal_Validated(object sender, EventArgs e)
     {
-      upper_fc_track.Value = int.Parse(upper_val.Text);
+      upperCutOffFrequencyTrack.Value = int.Parse(upperValue.Text);
     }
 
-    private void lower_val_Validated(object sender, EventArgs e)
+    private void LowerVal_Validated(object sender, EventArgs e)
     {
-      lower_fc_track.Value = int.Parse(lower_val.Text);
+      lowerCutOffFrequencyTrack.Value = int.Parse(lowerValue.Text);
     }
 
-    private void lower_val_Validating(object sender, CancelEventArgs e)
+    private void LowerVal_Validating(object sender, CancelEventArgs e)
     {
       e.Cancel = true;
-      int i;
-      if (int.TryParse(lower_val.Text, out i))
+      if (int.TryParse(lowerValue.Text, out int i))
       {
-        if (i >= 0 && i < upper_fc_track.Value)
+        if (i >= 0 && i < upperCutOffFrequencyTrack.Value)
         {
           e.Cancel = false;
         }

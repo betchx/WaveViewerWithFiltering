@@ -5,8 +5,8 @@ namespace WaveViewerWithFilering
 {
   class PeakFinder
   {
-    double th;
-    int num;
+    readonly double th;
+    readonly int num;
     int idx;
     double peak;
     int dur;
@@ -19,7 +19,7 @@ namespace WaveViewerWithFilering
       dur = 0;
     }
 
-    public List<KeyValuePair<int, double>> apply(double[] wave)
+    public List<KeyValuePair<int, double>> Apply(double[] wave)
     {
       var ans = new List<KeyValuePair<int, double>>();
       for (int i = 0; i < wave.Length; i++)
@@ -31,10 +31,9 @@ namespace WaveViewerWithFilering
           {
             if (peak < amp)
             {
-              peak = amp;
               idx = i;
+              peak = amp;
             }
-
           }
           else
           {

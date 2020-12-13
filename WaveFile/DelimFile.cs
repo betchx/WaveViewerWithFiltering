@@ -7,9 +7,9 @@ namespace WaveFile
 {
   public class DelimFile : IWaveFile
   {
-    private int cols_;
-    private int rows_;
-    private double[][] data_;
+    private readonly int cols_;
+    private readonly int rows_;
+    private readonly double[][] data_;
     private double[] x_;
     private double dt_;
     private double Fs_;
@@ -23,7 +23,7 @@ namespace WaveFile
     {
       cols_ = ncol;
       rows_ = 0;
-      this.opened = false;
+      this.Opened = false;
     }
 
     public DelimFile(int ncol, int nrow)
@@ -31,13 +31,12 @@ namespace WaveFile
       cols_ = ncol;
       rows_ = nrow;
       data_ = Enumerable.Range(0, ncol).Select((i) => new double[nrow]).ToArray();
-      this.opened = false;
+      this.Opened = false;
     }
 
     public string Title { get; private set; }
 
     public DateTime Time { get; private set; }
-
 
     public double SamplingRate { get { return Fs_; } set { Fs_ = value; dt_ = 1.0 / value; } }
 
@@ -54,30 +53,30 @@ namespace WaveFile
       get { return x_; }
     }
 
-    public double dt(int i) { return dt_; }
-    int IWaveFile.cols
+    public double TimeIncrement(int i) { return dt_; }
+
+    int IWaveFile.Cols
     {
       get { return this.cols_; }
     }
 
-    int IWaveFile.rows
+    int IWaveFile.Rows
     {
       get { return this.rows_; }
     }
 
 
-    public string name(int ch)
+    public string Name(int ch)
     {
       return names_[ch];
     }
 
-    public string comment(int ch)
+    public string Comment(int ch)
     {
       return comments_[ch];
     }
 
-    public bool opened { get; private set; }
-
+    public bool Opened { get; private set; }
 
     // generation with file
     #region Kyowa
@@ -100,23 +99,22 @@ namespace WaveFile
       NumberOfHeader = 14,
     }
 
-    private static string[] kyowa_header(string[] header, KyowaHeaderType target)
+    private static string[] Kyowa_header(string[] header, KyowaHeaderType target)
     {
       return header[(int)target].TrimEnd(',').Split(',').Skip(1).Select(s => s.Trim('"')).ToArray();
     }
 
-    private static string kyowa_header_str(string[] header, KyowaHeaderType target)
+    private static string Kyowa_header_str(string[] header, KyowaHeaderType target)
     {
-      return string.Join(" ", kyowa_header(header, target));
+      return string.Join(" ", Kyowa_header(header, target));
     }
-    private static int kyowa_header_int(string[] header, KyowaHeaderType target)
+
+    private static int Kyowa_header_int(string[] header, KyowaHeaderType target)
     {
-      int res;
-      if (int.TryParse(kyowa_header_str(header, target), out res))
+      if (int.TryParse(Kyowa_header_str(header, target), out int res))
         return res;
       return 0;
     }
-
 
     public static bool IsKyowaCsv(string path)
     {
@@ -136,7 +134,7 @@ namespace WaveFile
       return res;
     }
 
-    public static DelimFile KyowaCsv(string path)
+    public static DelimFile OpenKyowaCsv(string path)
     {
       // format check
       if (!IsKyowaCsv(path))
@@ -144,19 +142,19 @@ namespace WaveFile
 
       string[] contents = File.ReadAllLines(path, Encoding.Default);
 
-      int ncol = kyowa_header_int(contents, KyowaHeaderType.NumberOfChannels);
+      int ncol = Kyowa_header_int(contents, KyowaHeaderType.NumberOfChannels);
       if (ncol == 0)
         throw new ArgumentException("ファイルに間違いがあります．(測定チャンネル数)");
-      int nrow = kyowa_header_int(contents, KyowaHeaderType.NumberOfData);
+      int nrow = Kyowa_header_int(contents, KyowaHeaderType.NumberOfData);
 
       // allocate
-      DelimFile res = new DelimFile(ncol, nrow);
-
-      res.headers_ = contents.Take((int)KyowaHeaderType.NumberOfHeader).ToArray();
-      res.Title = kyowa_header_str(contents, KyowaHeaderType.Title);
-      var date_time = kyowa_header_str(contents, KyowaHeaderType.DateTime);
-      DateTime dtm;
-      if (DateTime.TryParse(date_time, out dtm))
+      DelimFile res = new DelimFile(ncol, nrow)
+      {
+        headers_ = contents.Take((int)KyowaHeaderType.NumberOfHeader).ToArray(),
+        Title = Kyowa_header_str(contents, KyowaHeaderType.Title)
+      };
+      var date_time = Kyowa_header_str(contents, KyowaHeaderType.DateTime);
+      if (DateTime.TryParse(date_time, out DateTime dtm))
       {
         res.Time = dtm;
       }
@@ -165,19 +163,19 @@ namespace WaveFile
         var fi = new FileInfo(path);
         res.Time = fi.CreationTime;
       }
-      res.SamplingRate = double.Parse(kyowa_header_str(contents, KyowaHeaderType.SamplingFrequency));
+      res.SamplingRate = double.Parse(Kyowa_header_str(contents, KyowaHeaderType.SamplingFrequency));
       double dt = 1.0 / res.SamplingRate;
       res.x_ = Enumerable.Range(0, nrow).Select(i => i * dt).ToArray();
       res.dt_ = dt;
 
-      res.names_ = kyowa_header(contents, KyowaHeaderType.ChannelNames);
+      res.names_ = Kyowa_header(contents, KyowaHeaderType.ChannelNames);
       // comments
-      var cnames = kyowa_header(contents, KyowaHeaderType.ChannelNames);
-      var cnums = kyowa_header(contents, KyowaHeaderType.ChannelNumbers);
-      var ranges = kyowa_header(contents, KyowaHeaderType.Ranges);
-      var factors = kyowa_header(contents, KyowaHeaderType.CalibrationFactor);
-      var offsets = kyowa_header(contents, KyowaHeaderType.Offsets);
-      var units = kyowa_header(contents, KyowaHeaderType.Units);
+      var cnames = Kyowa_header(contents, KyowaHeaderType.ChannelNames);
+      var cnums = Kyowa_header(contents, KyowaHeaderType.ChannelNumbers);
+      var ranges = Kyowa_header(contents, KyowaHeaderType.Ranges);
+      var factors = Kyowa_header(contents, KyowaHeaderType.CalibrationFactor);
+      var offsets = Kyowa_header(contents, KyowaHeaderType.Offsets);
+      var units = Kyowa_header(contents, KyowaHeaderType.Units);
       //for (int i = 0; i < ncol; i++)
       res.comments_ = res.names_.Select((ttl, i) =>
       {
@@ -194,17 +192,14 @@ namespace WaveFile
         {
           double.TryParse(s, out res.data_[col++][row]);
         }
-
-
       }
 
-      res.opened = true;
+      res.Opened = true;
       return res;
     }
     #endregion
 
-
-    public static IWaveFile GeneralCsv(string file_name)
+    public static IWaveFile OpenGeneralCsv(string file_name)
     {
       string[] contents = File.ReadAllLines(file_name);
       double tmp;
@@ -249,12 +244,8 @@ namespace WaveFile
         }
         res.x_ = Enumerable.Range(0, nrow).Select(i => i * dt).ToArray();
       }
-      res.opened = true;
+      res.Opened = true;
       return res;
     }
-
-
-
-
   }
 }

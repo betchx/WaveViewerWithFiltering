@@ -4,24 +4,24 @@ using System.Text;
 
 namespace WaveFilterTool
 {
-  public class Data : System.ComponentModel.INotifyPropertyChanged
+  public class WaveDataAndConfigs : System.ComponentModel.INotifyPropertyChanged
   {
     private WaveViewerWithFilering.WaveDataSet dataSet;
 
-    public Data()
+    public WaveDataAndConfigs()
     {
       channelNames = new System.Collections.ObjectModel.ObservableCollection<string>();
       TapMax = 300;
       Gain = -80;
       Tap = 150;
-      UpperFcNum = tap;
-      LowerFcNum = 0;
+      UpperCutOffFrequencyIndex = tap;
+      LowerCutOffFrequencyIndex = 0;
       NumberOfDisplayedData = 1000;
     }
 
     private double dt;
 
-    public double Dt
+    public double TimeIncrement
     {
       get { return dt; }
       set { dt = value; }
@@ -35,14 +35,15 @@ namespace WaveFilterTool
       set
       {
         tap = value;
-        if (dataSet != null) dataSet.tap = value;
+        if (dataSet != null) dataSet.Tap = value;
         NotifyPropertyChanged("Tap");
       }
     }
-    public double UpperFc { get; private set; }
+    public double UpperCutOffFrequency { get; private set; }
+
     private int upperFcNum;
 
-    public int UpperFcNum
+    public int UpperCutOffFrequencyIndex
     {
       get { return upperFcNum; }
       set
@@ -50,22 +51,23 @@ namespace WaveFilterTool
         upperFcNum = value;
         if (dataSet != null)
         {
-          dataSet.upper = value;
-          dataSet.update();
+          dataSet.Upper = value;
+          dataSet.Update();
         }
-        NotifyPropertyChanged("UpperFcNum");
+        NotifyPropertyChanged("UpperCutOffFrequencyIndex");
         if (dt != 0.0)
         {
-          UpperFc = upperFcNum / (2 * tap * dt);
-          NotifyPropertyChanged("UpperFc");
+          UpperCutOffFrequency = upperFcNum / (2 * tap * dt);
+          NotifyPropertyChanged("UpperCutOffFrequency");
         }
       }
     }
 
-    public double LowerFc { get; private set; }
+    public double LowerCutOffFrequency { get; private set; }
+
     private int lowerFcNum;
 
-    public int LowerFcNum
+    public int LowerCutOffFrequencyIndex
     {
       get { return lowerFcNum; }
       set
@@ -73,14 +75,14 @@ namespace WaveFilterTool
         lowerFcNum = value;
         if (dataSet != null)
         {
-          dataSet.lower = value;
-          dataSet.update();
+          dataSet.Lower = value;
+          dataSet.Update();
         }
-        NotifyPropertyChanged("LowerFcNum");
+        NotifyPropertyChanged("LowerCutOffFrequencyIndex");
         if (dt != 0.0)
         {
-          LowerFc = lowerFcNum / (2 * tap * dt);
-          NotifyPropertyChanged("LowerFc");
+          LowerCutOffFrequency = lowerFcNum / (2 * tap * dt);
+          NotifyPropertyChanged("LowerCutOffFrequency");
         }
       }
     }
@@ -92,9 +94,15 @@ namespace WaveFilterTool
       set { waves = value; }
     }
 
-    public IEnumerable<double> SourceWave { get { dataSet.update(); return dataSet.source; } }
-    public IEnumerable<double> FilterdWave { get { dataSet.update(); return dataSet.filtered; } }
+    public IEnumerable<double> SourceWave
+    {
+      get { dataSet.Update(); return dataSet.Source; }
+    }
 
+    public IEnumerable<double> FilterdWave
+    {
+      get { dataSet.Update(); return dataSet.Filtered; }
+    }
 
     private double[][] spectrums;
 
@@ -103,16 +111,25 @@ namespace WaveFilterTool
       get { return spectrums; }
       set { spectrums = value; }
     }
-    public double[] Frequencies { get { return dataSet.freqs; } }
-    public double[] PowerOfSource { get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Source); } }
-    public double[] PowerOfFiltered { get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Filtered); } }
+
+    public double[] Frequencies
+    {
+      get { return dataSet.Freqs; }
+    }
+
+    public double[] PowerOfSource
+    {
+      get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Source); }
+    }
+
+    public double[] PowerOfFiltered
+    {
+      get { return dataSet.Power(WaveViewerWithFilering.WaveDataSet.State.Filtered); }
+    }
 
     private void NotifyPropertyChanged(string property_name)
     {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(property_name));
-      }
+      PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(property_name));
     }
 
     private int tapMax;
@@ -133,16 +150,16 @@ namespace WaveFilterTool
         currentChannel = value;
         if (waveFile != null)
         {
-          if (waveFile.cols <= currentChannel) currentChannel = waveFile.cols - 1;
+          if (waveFile.Cols <= currentChannel) currentChannel = waveFile.Cols - 1;
           dataSet = new WaveViewerWithFilering.WaveDataSet(waveFile, currentChannel);
           dataSet.PropertyChanged += datasetHandler;
-          dt = dataSet.dt;
-          dataSet.tap = Tap;
-          dataSet.upper = upperFcNum;
-          dataSet.lower = lowerFcNum;
-          dataSet.num_disp = numberOfDisplayedData;
-          dataSet.gain = gain;
-          dataSet.update();
+          dt = dataSet.TimeIncrement;
+          dataSet.Tap = Tap;
+          dataSet.Upper = upperFcNum;
+          dataSet.Lower = lowerFcNum;
+          dataSet.NumDisp = numberOfDisplayedData;
+          dataSet.Gain = gain;
+          dataSet.Update();
         }
         NotifyPropertyChanged("CurrentChannel");
       }
@@ -163,7 +180,7 @@ namespace WaveFilterTool
       get
       {
         if (dataSet != null)
-          return dataSet.gain;
+          return dataSet.Gain;
         return gain;
       }
       set
@@ -171,8 +188,8 @@ namespace WaveFilterTool
         gain = value;
         if (dataSet != null)
         {
-          dataSet.gain = value;
-          dataSet.update();
+          dataSet.Gain = value;
+          dataSet.Update();
         }
         NotifyPropertyChanged("Gain");
       }
@@ -187,22 +204,22 @@ namespace WaveFilterTool
       {
         waveFile = value;
         CurrentChannel = 0; // ここでdataSetが確保される．
-        dataSet.data_start = 0;
-        dataSet.num_disp = dataSet.length;
+        dataSet.DataStart = 0;
+        dataSet.NumDisp = dataSet.Length;
         UpdateChannelNames();
         UpdateDescription();
         NotifyPropertyChanged("WaveFile");
       }
     }
 
-    public bool IsValid { get { dataSet.update(); return dataSet.is_valid; } }
+    public bool IsValid { get { dataSet.Update(); return dataSet.IsValid; } }
 
     private void UpdateDescription()
     {
       StringBuilder b = new StringBuilder(100);
       b.AppendFormat("時間刻み：{0}\r\n", dt);
-      b.AppendFormat("チャンネル数：{0}\r\n", waveFile.cols);
-      b.AppendFormat("データ長：{0} ({1}秒間)\r\n", waveFile.rows, waveFile.rows * dt);
+      b.AppendFormat("チャンネル数：{0}\r\n", waveFile.Cols);
+      b.AppendFormat("データ長：{0} ({1}秒間)\r\n", waveFile.Rows, waveFile.Rows * dt);
       Description = b.ToString();
       NotifyPropertyChanged("Description");
     }
@@ -210,9 +227,9 @@ namespace WaveFilterTool
     private void UpdateChannelNames()
     {
       channelNames.Clear();
-      for (int i = 0; i < waveFile.cols; i++)
+      for (int i = 0; i < waveFile.Cols; i++)
       {
-        channelNames.Add(waveFile.name(i));
+        channelNames.Add(waveFile.Name(i));
       }
       NotifyPropertyChanged("ChannelNames");
     }
@@ -226,6 +243,7 @@ namespace WaveFilterTool
     }
 
     System.ComponentModel.PropertyChangedEventHandler datasetHandler;
+
     public void AddPropetryChangedHandlerToDataSet(System.ComponentModel.PropertyChangedEventHandler handler)
     {
       datasetHandler = handler;
@@ -236,9 +254,10 @@ namespace WaveFilterTool
     public string Description { get; set; }
 
     public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
     public IEnumerable<double> XValues
     {
-      get { return dataSet.xvalues; }
+      get { return dataSet.Xvalues; }
 
     }
   }

@@ -4,22 +4,22 @@ namespace WaveViewerWithFilering
 {
   public class WindowFunction
   {
-    private double[] factor_; public double[] factor { get { return factor_; } }
-    private int n_; public int n { get { return n_; } }
+    private readonly double[] factor; public double[] Factor { get { return factor; } }
+    private readonly int size; public int Size { get { return size; } }
 
     public WindowFunction(int n)
     {
-      n_ = n;
-      factor_ = new double[n + 1];
+      size = n;
+      factor = new double[n + 1];
     }
 
     public double this[int k]
     {
       get
       {
-        if (Math.Abs(k) > n)
+        if (Math.Abs(k) > Size)
           return 0.0;
-        return factor[Math.Abs(k)];
+        return Factor[Math.Abs(k)];
       }
     }
   }
@@ -31,7 +31,7 @@ namespace WaveViewerWithFilering
     {
       for (int i = 0; i <= n; i++)
       {
-        factor[i] = 1.0;
+        Factor[i] = 1.0;
       }
     }
   }
@@ -44,7 +44,7 @@ namespace WaveViewerWithFilering
       for (int i = 0; i <= n; i++)
       {
         double x = 0.5 + (0.5 * i) / n;
-        factor[i] = 0.5 - 0.5 * Math.Cos(2 * Math.PI * x);
+        Factor[i] = 0.5 - 0.5 * Math.Cos(2 * Math.PI * x);
       }
     }
   }
@@ -62,7 +62,7 @@ namespace WaveViewerWithFilering
       for (int i = 0; i <= n; i++)
       {
         double x = 0.5 + (0.5 * i) / n;
-        factor[i] = 0.54 - 0.46 * Math.Cos(2 * Math.PI * x);
+        Factor[i] = 0.54 - 0.46 * Math.Cos(2 * Math.PI * x);
       }
     }
   }
@@ -75,11 +75,10 @@ namespace WaveViewerWithFilering
       for (int i = 0; i <= n; i++)
       {
         double x = 0.5 + (0.5 * i) / n;
-        factor[i] = 0.42 - 0.5 * Math.Cos(2 * Math.PI * x) + 0.08 * Math.Cos(4 * Math.PI * x);
+        Factor[i] = 0.42 - 0.5 * Math.Cos(2 * Math.PI * x) + 0.08 * Math.Cos(4 * Math.PI * x);
       }
     }
   }
-
 
   class KaiserWindow : WindowFunction
   {
@@ -91,10 +90,9 @@ namespace WaveViewerWithFilering
       {
         double x = 0.5 + (0.5 * i) / n;
         double y = Math.PI * alpha * Math.Sqrt(1 - Math.Pow(2 * x - 1, 2));
-        factor[i] = bessi0(y) / z;
+        Factor[i] = bessi0(y) / z;
       }
     }
-
 
     /// <summary>
     /// Modified bessel funcion I0
@@ -124,6 +122,5 @@ namespace WaveViewerWithFilering
       }
     }
   }
-
 
 }

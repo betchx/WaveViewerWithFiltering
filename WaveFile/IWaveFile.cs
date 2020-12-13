@@ -4,13 +4,13 @@ namespace WaveFile
 {
   public interface IWaveFile
   {
-    double dt(int channel_number);
-    int cols { get; }
-    int rows { get; }
+    double TimeIncrement(int channel_number);
+    int Cols { get; }
+    int Rows { get; }
     double[] this[int ch] { get; }
     DateTime Time { get; }
-    string name(int ch);
-    string comment(int ch);
-    bool opened { get; }
+    string Name(int ch);
+    string Comment(int ch);
+    bool Opened { get; }
   }
 }
