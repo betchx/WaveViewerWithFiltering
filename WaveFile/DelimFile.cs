@@ -13,7 +13,9 @@ namespace WaveFile
     private double[] x_;
     private double dt_;
     private double Fs_;
+#pragma warning disable IDE0052, CS0414 // 読み取られていないプライベート メンバーを削除
     private string[] headers_;
+#pragma warning restore IDE0052, CS0414 // 読み取られていないプライベート メンバーを削除
     private string[] names_;
     private string[] comments_;
 
