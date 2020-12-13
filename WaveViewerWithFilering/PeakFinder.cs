@@ -1,64 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WaveViewerWithFilering
 {
-    class PeakFinder
+  class PeakFinder
+  {
+    double th;
+    int num;
+    int idx;
+    double peak;
+    int dur;
+    public PeakFinder(double threshold, int required_count)
     {
-        double th;
-        int num;
-        int idx;
-        double peak;
-        int dur;
-        public PeakFinder(double threshold, int required_count)
-        {
-            th = threshold;
-            num = required_count;
-            idx = 0;
-            peak = 0.0;
-            dur = 0;
-        }
+      th = threshold;
+      num = required_count;
+      idx = 0;
+      peak = 0.0;
+      dur = 0;
+    }
 
-        public  List<KeyValuePair<int, double>> apply(double[] wave)
+    public List<KeyValuePair<int, double>> apply(double[] wave)
+    {
+      var ans = new List<KeyValuePair<int, double>>();
+      for (int i = 0; i < wave.Length; i++)
+      {
+        var amp = Math.Abs(wave[i]);
+        if (amp > th)
         {
-            var ans = new List<KeyValuePair<int, double>>();
-            for (int i = 0; i < wave.Length; i++)
+          if (dur > 0)
+          {
+            if (peak < amp)
             {
-                var amp = Math.Abs(wave[i]);
-                if (amp > th)
-                {
-                    if (dur>0)
-                    {
-                        if (peak < amp)
-                        {
-                            peak = amp;
-                            idx = i;
-                        }
-
-                    }
-                    else
-                    {
-                        idx = i;
-                        peak = amp;
-                    }
-                    dur += 1;
-                }
-                else
-                {
-                    if (dur > num)
-                    {
-                        //store
-                        ans.Add(new KeyValuePair<int, double>(idx, peak));
-                        idx = 0;
-                        peak = 0.0;
-                    }
-                    dur = 0;
-                }
+              peak = amp;
+              idx = i;
             }
 
-            return ans;
+          }
+          else
+          {
+            idx = i;
+            peak = amp;
+          }
+          dur += 1;
         }
+        else
+        {
+          if (dur > num)
+          {
+            //store
+            ans.Add(new KeyValuePair<int, double>(idx, peak));
+            idx = 0;
+            peak = 0.0;
+          }
+          dur = 0;
+        }
+      }
+
+      return ans;
     }
+  }
 }
