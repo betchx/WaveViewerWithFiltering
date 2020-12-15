@@ -14,7 +14,7 @@ namespace WaveViewerWithFilering
       data = wave;
       TimeIncrement = delta_t;
       IsAcc = acc_data;
-      Init();
+      init();
     }
     public WaveDataSet(IWaveFile wavefile, int ch)
     {
@@ -22,7 +22,7 @@ namespace WaveViewerWithFilering
       TimeIncrement = wavefile.TimeIncrement(ch);
       IsAcc = wavefile.Name(ch).Contains("_Ya_") || wavefile.Name(ch).Contains("_Za_");
 
-      Init();
+      init();
 
       foreach (var tag in new string[] { "速度", "キロ程" })
       {
@@ -30,7 +30,7 @@ namespace WaveViewerWithFilering
           DisableBaselineShift = true;
       }
     }
-    private void Init()
+    private void init()
     {
       initialized = false;
       DisableBaselineShift = false;
@@ -46,22 +46,22 @@ namespace WaveViewerWithFilering
       else
         integral = -1;
       Nfft = 0;
-      UpdateNfft();
+      updateNfft();
     }
     #endregion
 
     #region Properties
 
     // with Setter
-    public int Lower { get { return filter.Lower; } set { filter.Lower = value; UpdateFactors(); } }
-    public int Upper { get { return filter.Upper; } set { filter.Upper = value; UpdateFactors(); } }
-    public double Gain { get { return filter.Gain; } set { filter.Gain = value; UpdateFactors(); } }
-    public double Alpha { get { return filter.Alpha; } set { filter.Alpha = value; UpdateFactors(); } }
+    public int Lower { get { return filter.Lower; } set { filter.Lower = value; updateFactors(); } }
+    public int Upper { get { return filter.Upper; } set { filter.Upper = value; updateFactors(); } }
+    public double Gain { get { return filter.Gain; } set { filter.Gain = value; updateFactors(); } }
+    public double Alpha { get { return filter.Alpha; } set { filter.Alpha = value; updateFactors(); } }
 
     public FIRFilter.WindowType WindowType
     {
       get { return filter.windowType; }
-      set { filter.windowType = value; UpdateFactors(); }
+      set { filter.windowType = value; updateFactors(); }
     }
 
     public int NumDisp
@@ -70,8 +70,8 @@ namespace WaveViewerWithFilering
       set
       {
         numDisp = value;
-        UpdateNfft();
-        SetupRawWave();
+        updateNfft();
+        setupRawWave();
       }
     }
 
@@ -81,8 +81,8 @@ namespace WaveViewerWithFilering
       set
       {
         dataStart = value;
-        SetupRawWave();
-        NotifyPropertyChanged("data_start");
+        setupRawWave();
+        notifyPropertyChanged("data_start");
       }
     }
 
@@ -93,8 +93,8 @@ namespace WaveViewerWithFilering
       {
         filter.Tap = value;
         hann = new HannWindow(value);
-        UpdateNfft();
-        NotifyPropertyChanged("tap");
+        updateNfft();
+        notifyPropertyChanged("tap");
       }
     }
 
@@ -122,7 +122,7 @@ namespace WaveViewerWithFilering
           default:
             throw new ArgumentException("over_sample can be 1, 2, 4 or 8");
         }
-        NotifyPropertyChanged("over_sample");
+        notifyPropertyChanged("over_sample");
       }
     }
 
@@ -142,8 +142,8 @@ namespace WaveViewerWithFilering
           if (val != integral)
           {
             integral = val;
-            UpdateWave(true);
-            NotifyPropertyChanged("category");
+            updateWave(true);
+            notifyPropertyChanged("category");
           }
         }
       }
@@ -205,8 +205,8 @@ namespace WaveViewerWithFilering
         now_updating = true;
       }
 
-      SetupRawWave();
-      ApplyFilter();
+      setupRawWave();
+      applyFilter();
 
       if (currentOverSample != OverSample || over.wave_id < ans.wave_id)
       {
@@ -230,7 +230,7 @@ namespace WaveViewerWithFilering
         }
         OverSampled = over.Wave.Take(NumDisp * OverSample).ToArray();
         currentOverSample = OverSample; //calc
-        NotifyPropertyChanged("over_sampled");
+        notifyPropertyChanged("over_sampled");
       }
       initialized = true;
       lock (this)
@@ -339,7 +339,7 @@ namespace WaveViewerWithFilering
     /// <summary>
     /// NFFT： Number of data for FFT (= 2^n > 4tap + num_disp, >1024)
     /// </summary>
-    private void UpdateNfft()
+    private void updateNfft()
     {
       int val = 1024;
       while (val < NumDisp + filter.Tap * 4)
@@ -384,7 +384,7 @@ namespace WaveViewerWithFilering
     }
 
     // copy wave data and FFT
-    private bool SetupRawWave(bool force = false)
+    private bool setupRawWave(bool force = false)
     {
       if (NumDisp == 0)
         return false;
@@ -414,7 +414,7 @@ namespace WaveViewerWithFilering
             .Select((a) => new Tuple<int, double>(a.Count(), a.Key * 0.1))
             .OrderByDescending((a) => a.Item1)
             .First().Item2;
-        TakeRawWaveWithBaseline(base_line);
+        takeRawWaveWithBaseline(base_line);
         //var range = base_wave.Max() - base_wave.Min();
         //var delta = range / 1e6;
 
@@ -429,14 +429,14 @@ namespace WaveViewerWithFilering
         //}
         rawWave.Wave = extractedRawWave;
       }
-      NotifyPropertyChanged("raw_wave");
+      notifyPropertyChanged("raw_wave");
       rawWaveStart = DataStart;
       rawWaveNumDisp = NumDisp;
 
       return true;
     }
 
-    private void TakeRawWaveWithBaseline(double base_line)
+    private void takeRawWaveWithBaseline(double base_line)
     {
       int tap = filter.Tap;
       int n_start = DataStart - tap * 2;
@@ -485,9 +485,9 @@ namespace WaveViewerWithFilering
       }
     }
 
-    private bool UpdateWave(bool force = false)
+    private bool updateWave(bool force = false)
     {
-      SetupRawWave();
+      setupRawWave();
       if (force || wave.wave_id < rawWave.wave_id)
       {
         if (integral < 1)
@@ -504,13 +504,13 @@ namespace WaveViewerWithFilering
           wave.Spectrum = rawWave.Spectrum.Zip(w, (a, b) => a * b);
         }
         Source = wave.Wave.Take(NumDisp).ToArray(); // calc
-        NotifyPropertyChanged("source");
+        notifyPropertyChanged("source");
         return true;
       }
       return false;
     }
 
-    private bool UpdateFactors(bool force = false)
+    private bool updateFactors(bool force = false)
     {
 
       if (force || filter.Design() || factors.wave_id == 0) // refresh filter if needed
@@ -520,20 +520,20 @@ namespace WaveViewerWithFilering
         {
           factors[Nfft - i] = factors[i] = filter.Factors[i];
         }
-        NotifyPropertyChanged("factors");
+        notifyPropertyChanged("factors");
         return true;
       }
       return false;
     }
 
-    private void ApplyFilter(bool force = false)
+    private void applyFilter(bool force = false)
     {
       if (wave.wave_id < rawWave.wave_id)
       {
-        UpdateWave();
+        updateWave();
       }
 
-      UpdateFactors();
+      updateFactors();
 
       if (force ||
           ans.wave_id < wave.wave_id ||
@@ -543,11 +543,11 @@ namespace WaveViewerWithFilering
         ans.Spectrum = wave.Spectrum.Zip(factors.Spectrum, (a, b) => a * b);
         // copy result to filtered
         Filtered = ans.Wave.Take(NumDisp).ToArray(); // calc
-        NotifyPropertyChanged("filtered");
+        notifyPropertyChanged("filtered");
       }
     }
 
-    private void NotifyPropertyChanged(string propertyName)
+    private void notifyPropertyChanged(string propertyName)
     {
       PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
     }

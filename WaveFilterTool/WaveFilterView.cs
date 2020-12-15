@@ -12,17 +12,18 @@ namespace WaveFilterTool
     {
       InitializeComponent();
       conf = new WaveDataAndConfigs();
-      conf.PropertyChanged += new PropertyChangedEventHandler(Data_PropertyChanged);
-      conf.AddPropetryChangedHandlerToDataSet(new PropertyChangedEventHandler(Dataset_PropertyChanged));
+      conf.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
+      conf.AddPropetryChangedHandlerToDataSet(new PropertyChangedEventHandler(dataset_PropertyChanged));
       this.dataBindingSource.Add(conf);
-      AdjustSizeAndLocationOfControls();
+
+      this.SetBounds(100, 100, groupBox1.Right + spChart.Width, groupBox1.Bottom + waveChart.Height+ statusStrip1.Height);
 
       conf.TapMax = 300;
       conf.Tap = 150;
     }
 
 
-    void Dataset_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    void dataset_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
       if (e.PropertyName == "source")
       {
@@ -36,13 +37,13 @@ namespace WaveFilterTool
       }
     }
 
-    void Data_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    void data_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (e.PropertyName == "ChannelNames") UpdateChannelListBox();
-      if (e.PropertyName == "Tap") UpdateTap();
+      if (e.PropertyName == "ChannelNames") updateChannelListBox();
+      if (e.PropertyName == "Tap") updateTap();
     }
 
-    private void UpdateTap()
+    private void updateTap()
     {
       int tap = conf.Tap;
       int tick = (tap + 1) / 5;
@@ -51,7 +52,7 @@ namespace WaveFilterTool
     }
 
 
-    void UpdateChannelListBox()
+    void updateChannelListBox()
     {
       this.channelListBox.Items.Clear();
       foreach (var name in conf.ChannelNames)
@@ -60,23 +61,17 @@ namespace WaveFilterTool
       }
     }
 
-    private void AdjustSizeAndLocationOfControls()
+    private void waveFilterView_Resize(object sender, EventArgs e)
     {
-      var half_w = this.Width / 2;
-      wave_info.Width = half_w;
-      spChart.Width = half_w;
-      spChart.Left = half_w;
+      spChart.Width = this.ClientSize.Width - spChart.Left - 20;
 
-      waveChart.Height = statusStrip1.Top - waveChart.Top; //   Math.Max(100, this.Height - wave_chart.Top - statusStrip1.Height);
-      waveChart.Width = this.Width;
+      if (this.ClientSize.Height > waveChart.Top - statusStrip1.Height)
+      {
+        waveChart.Size = new System.Drawing.Size(this.ClientSize.Width, this.ClientSize.Height - waveChart.Top - statusStrip1.Height);
+      }
     }
 
-    private void WaveFilterView_Resize(object sender, EventArgs e)
-    {
-      AdjustSizeAndLocationOfControls();
-    }
-
-    private void TapNumericUpDown_Validating(object sender, CancelEventArgs e)
+    private void tapNumericUpDown_Validating(object sender, CancelEventArgs e)
     {
       if (tapNumericUpDown.Value > conf.TapMax)
       {
@@ -84,39 +79,39 @@ namespace WaveFilterTool
       }
     }
 
-    private void FamosファイルToolStripMenuItem_Click(object sender, EventArgs e)
+    private void readFamosFileToolStripMenuIte_Click(object sender, EventArgs e)
     {
       if (openFamosFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
       conf.WaveFile = new WaveFile.Famos(openFamosFileDialog.FileName);
     }
 
-    private void 共和電業形式ToolStripMenuItem_Click(object sender, EventArgs e)
+    private void readKyowaFormatCsvFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
       conf.WaveFile = WaveFile.DelimFile.OpenKyowaCsv(openCsvFileDialog.FileName);
     }
 
-    private void CurrentChannelListBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void currentChannelListBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       conf.CurrentChannel = channelListBox.SelectedIndex;
       conf.Update();
     }
 
-    private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
+    private void terminateToolStripMenuItem_Click(object sender, EventArgs e)
     {
       this.Close();
     }
 
-    private void CSVファイルToolStripMenuItem_Click(object sender, EventArgs e)
+    private void readGeneralCsvFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openCsvFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
         return;
       conf.WaveFile = WaveFile.DelimFile.OpenGeneralCsv(openCsvFileDialog.FileName);
     }
 
-    private void NumberOfDisplayedDataComboBox_TextChanged(object sender, EventArgs e)
+    private void numberOfDisplayedDataComboBox_TextChanged(object sender, EventArgs e)
     {
       if (int.TryParse(this.numberOfDisplayedDataComboBox.Text, out int value))
       {
@@ -125,7 +120,7 @@ namespace WaveFilterTool
       }
     }
 
-    private void GainComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void gainComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (double.TryParse(this.gainComboBox.Text, out double value))
       {
@@ -134,19 +129,19 @@ namespace WaveFilterTool
       }
     }
 
-    private void TapNumericUpDown_ValueChanged(object sender, EventArgs e)
+    private void tapNumericUpDown_ValueChanged(object sender, EventArgs e)
     {
       conf.Tap = (int)tapNumericUpDown.Value;
       conf.Update();
     }
 
-    private void UpperFcNumericUpDown_ValueChanged(object sender, EventArgs e)
+    private void upperFcNumericUpDown_ValueChanged(object sender, EventArgs e)
     {
       conf.UpperCutOffFrequencyIndex = (int)upperFcNumericUpDown.Value;
       conf.Update();
     }
 
-    private void LowerFcNumericUpDown_ValueChanged(object sender, EventArgs e)
+    private void lowerFcNumericUpDown_ValueChanged(object sender, EventArgs e)
     {
       conf.LowerCutOffFrequencyIndex = (int)lowerFcNumericUpDown.Value;
       conf.Update();
