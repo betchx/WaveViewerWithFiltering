@@ -168,11 +168,11 @@ namespace WaveViewerWithFilering
     public double[] OverSampled { get; private set; }
     public double[] Filtered { get; private set; }
 
-    public uint OverId { get { return over.wave_id; } }
-    public uint FilteredId { get { return ans.wave_id; } }
-    public uint FactorId { get { return factors.wave_id; } }
-    public uint GainId { get { return factors.sp_id; } }
-    public uint SourceId { get { return wave.wave_id; } }
+    public uint OverId { get { return over.WaveID; } }
+    public uint FilteredId { get { return ans.WaveID; } }
+    public uint FactorId { get { return factors.WaveID; } }
+    public uint GainId { get { return factors.SpectrumID; } }
+    public uint SourceId { get { return wave.WaveID; } }
 
     public bool IsValid
     {
@@ -194,7 +194,7 @@ namespace WaveViewerWithFilering
 
     public double[] WaveSpectrumAmplitudeIn_dB()
     {
-      return wave.dB.ToArray();
+      return wave.Decibel.ToArray();
     }
 
     public void Update()
@@ -208,7 +208,7 @@ namespace WaveViewerWithFilering
       setupRawWave();
       applyFilter();
 
-      if (currentOverSample != OverSample || over.wave_id < ans.wave_id)
+      if (currentOverSample != OverSample || over.WaveID < ans.WaveID)
       {
         if (over.Length != ans.Length * OverSample)
         {
@@ -225,8 +225,8 @@ namespace WaveViewerWithFilering
         }
         else
         {
-          over.clear_sp(); // need clear
-          over.Spectrum = ans.Spectrum.Select(x => x * OverSample);
+          over.ClearSpectrum(); // need clear
+          over.Spectrums = ans.Spectrums.Select(x => x * OverSample);
         }
         OverSampled = over.Wave.Take(NumDisp * OverSample).ToArray();
         currentOverSample = OverSample; //calc
@@ -488,12 +488,12 @@ namespace WaveViewerWithFilering
     private bool updateWave(bool force = false)
     {
       setupRawWave();
-      if (force || wave.wave_id < rawWave.wave_id)
+      if (force || wave.WaveID < rawWave.WaveID)
       {
         if (integral < 1)
         {
           // ACC and others are not need integration.
-          wave.Spectrum = rawWave.Spectrum;
+          wave.Spectrums = rawWave.Spectrums;
         }
         else
         {
@@ -501,7 +501,7 @@ namespace WaveViewerWithFilering
           ComplexArray w = integral == 1 ? omega : omega2;
 
           // Integrate in frequency domain.
-          wave.Spectrum = rawWave.Spectrum.Zip(w, (a, b) => a * b);
+          wave.Spectrums = rawWave.Spectrums.Zip(w, (a, b) => a * b);
         }
         Source = wave.Wave.Take(NumDisp).ToArray(); // calc
         notifyPropertyChanged("source");
@@ -513,7 +513,7 @@ namespace WaveViewerWithFilering
     private bool updateFactors(bool force = false)
     {
 
-      if (force || filter.Design() || factors.wave_id == 0) // refresh filter if needed
+      if (force || filter.Design() || factors.WaveID == 0) // refresh filter if needed
       {
         factors[0] = filter.Factors[0];
         for (int i = 1; i <= filter.Tap; i++)
@@ -528,7 +528,7 @@ namespace WaveViewerWithFilering
 
     private void applyFilter(bool force = false)
     {
-      if (wave.wave_id < rawWave.wave_id)
+      if (wave.WaveID < rawWave.WaveID)
       {
         updateWave();
       }
@@ -536,11 +536,11 @@ namespace WaveViewerWithFilering
       updateFactors();
 
       if (force ||
-          ans.wave_id < wave.wave_id ||
-          ans.wave_id < factors.wave_id)
+          ans.WaveID < wave.WaveID ||
+          ans.WaveID < factors.WaveID)
       {
         // convolution in Frequency domain
-        ans.Spectrum = wave.Spectrum.Zip(factors.Spectrum, (a, b) => a * b);
+        ans.Spectrums = wave.Spectrums.Zip(factors.Spectrums, (a, b) => a * b);
         // copy result to filtered
         Filtered = ans.Wave.Take(NumDisp).ToArray(); // calc
         notifyPropertyChanged("filtered");
